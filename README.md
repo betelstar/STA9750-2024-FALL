@@ -1,0 +1,2 @@
+# STA9750-2024-FALL
+ Projects from STA9750-2024-FALL
