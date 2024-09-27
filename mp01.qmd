@@ -1,0 +1,525 @@
+---
+title: "Transit Data Analysis"
+author: "Hugo Andrade"
+format: 
+  html:
+    code-fold: true
+    code-summary: "Show the code"
+editor: visual
+---
+
+# Transit Data Analysis Project
+
+This document contains code to load, process, and analyze transit data.
+
+## Setup
+
+Let's begin by clearing the environment and setting the working directory.
+
+```{r}
+#| echo: false
+
+# Clear variables rm(list = ls())
+
+# Set working directory setwd("C:/Users/Hugo/Documents/STAT 9750/Project 1")
+```
+
+# Let's start with creating the 2022_fare_revenue.xls file
+
+```{r}
+# Suppress package loading messages
+suppressPackageStartupMessages({
+  if(!require("tidyverse")) install.packages("tidyverse")
+  library(tidyverse)
+})
+
+# Let's start by downloading the 2022 fare revenue file if it does not exist
+if(!file.exists("2022_fare_revenue.xlsx")){
+  # Download the file to the working directory
+  download.file("http://www.transit.dot.gov/sites/fta.dot.gov/files/2024-04/2022%20Fare%20Revenue.xlsx", 
+                destfile = "2022_fare_revenue.xlsx", 
+                quiet = FALSE, 
+                method = "wget")
+}
+
+```
+
+# 1 Var Create Variable Fares
+
+```{r}
+suppressPackageStartupMessages({
+  if(!require("readxl")) install.packages("readxl")
+  library(readxl)
+})
+
+# Create Variable FARES from the fare revenue data
+FARES <- readxl::read_xlsx("2022_fare_revenue.xlsx") |>
+  select(-`State/Parent NTD ID`, 
+         -`Reporter Type`,
+         -`Reporting Module`,
+         -`TOS`,
+         -`Passenger Paid Fares`,
+         -`Organization Paid Fares`) |>
+  filter(`Expense Type` == "Funds Earned During Period") |>
+  select(-`Expense Type`) |>
+  group_by(`NTD ID`, `Agency Name`, `Mode`) |> 
+  summarize(`Total Fares` = sum(`Total Fares`)) |>
+  ungroup()
+
+# Preview the first few rows of the FARES variable
+head(FARES)
+```
+
+Next, Create File 2022_expenses.csv
+
+```{r}
+# Check if the 2022_expenses.csv file exists, if not, download it
+if(!file.exists("2022_expenses.csv")){
+  # Download the 2022 expenses data
+  download.file("https://data.transportation.gov/api/views/dkxx-zjd6/rows.csv?date=20231102&accessType=DOWNLOAD&bom=true&format=true", 
+                destfile = "2022_expenses.csv", 
+                quiet = FALSE, 
+                method = "wget")
+}
+
+# Load the 2022_expenses.csv data
+EXPENSES <- readr::read_csv("2022_expenses.csv")
+
+# Preview the first few rows of the EXPENSES data
+head(EXPENSES)
+```
+
+# Create the EXPENSES variable by reading the 2022_expenses.csv and processing it
+
+```{r}
+EXPENSES <- readr::read_csv("2022_expenses.csv") |>
+  select(`NTD ID`, 
+         `Agency`,
+         `Total`, 
+         `Mode`) |>
+  mutate(`NTD ID` = as.integer(`NTD ID`)) |>  # Ensure NTD ID is integer
+  rename(Expenses = Total) |>  # Rename the Total column to Expenses
+  group_by(`NTD ID`, `Mode`) |>  # Group by NTD ID and Mode
+  summarize(Expenses = sum(Expenses)) |>  # Summarize the total expenses
+  ungroup()
+```
+
+# Join the FARES and EXPENSES datasets to create the FINANCIALS dataset
+
+```{r}
+FINANCIALS <- inner_join(FARES, EXPENSES, join_by(`NTD ID`, `Mode`))
+
+# Preview the resulting FINANCIALS dataset
+head(FINANCIALS)
+```
+
+# Create the Monthly Transit Numbers file: ridership.xlsx
+
+```{r}
+library(tidyverse)
+# Check if ridership.xlsx file exists, if not, download it
+if(!file.exists("ridership.xlsx")){
+  download.file("https://www.transit.dot.gov/sites/fta.dot.gov/files/2024-09/July%202024%20Complete%20Monthly%20Ridership%20%28with%20adjustments%20and%20estimates%29_240903.xlsx", 
+                destfile = "ridership.xlsx", 
+                quiet = FALSE, 
+                method = "wget")
+}
+```
+
+# Create the TRIPS variable by reading the UPT sheet
+
+```{r}
+TRIPS <- readxl::read_xlsx("ridership.xlsx", sheet = "UPT") |>
+  filter(`Mode/Type of Service Status` == "Active") |> 
+  select(-`Legacy NTD ID`, -`Reporter Type`, -`Mode/Type of Service Status`, -`UACE CD`, -`TOS`) |> 
+  pivot_longer(-c(`NTD ID`:`3 Mode`), names_to = "month", values_to = "UPT") |> 
+  drop_na() |> 
+  mutate(month = my(month))  # Parse _m_onth _y_ear date specs
+```
+
+# Create the MILES variable by reading the VRM sheet
+
+```{r}
+MILES <- readxl::read_xlsx("ridership.xlsx", sheet = "VRM") |>
+  filter(`Mode/Type of Service Status` == "Active") |> 
+  select(-`Legacy NTD ID`, -`Reporter Type`, -`Mode/Type of Service Status`, -`UACE CD`, -`TOS`) |> 
+  pivot_longer(-c(`NTD ID`:`3 Mode`), names_to = "month", values_to = "VRM") |> 
+  drop_na() |> 
+  group_by(`NTD ID`, `Agency`, `UZA Name`, `Mode`, `3 Mode`, month) |> 
+  summarize(VRM = sum(VRM)) |> 
+  ungroup() |> 
+  mutate(month = my(month))  # Parse _m_onth _y_ear date specs
+```
+
+# Create the USAGE variable by merging TRIPS and MILES
+
+```{r}
+USAGE <- inner_join(TRIPS, MILES) |> 
+  mutate(`NTD ID` = as.integer(`NTD ID`))
+
+# Display a summary of USAGE
+head(USAGE)
+
+```
+
+To begin, we load the necessary packages, ensuring DT is available for interactive table creation. A sample of the USAGE table (first 1000 rows) is displayed to understand the data. Next, we rename the UZA Name column to metro_area across the datasets. Finally, we remove the unnecessary 3 Mode column to clean up the data for further analysis.
+
+```{r}
+
+# Load the required packages
+if(!require("DT")) install.packages("DT")
+library(DT)
+
+# Display a sample of the USAGE table (first 1000 rows)
+sample_n(USAGE, 10) |> 
+  mutate(month = as.character(month)) |> 
+  DT::datatable()
+
+# Task 1: Rename UZA Name to metro_area
+MILES <- MILES |> rename(metro_area = `UZA Name`)
+TRIPS <- TRIPS |> rename(metro_area = `UZA Name`)
+USAGE <- USAGE |> rename(metro_area = `UZA Name`)
+USAGE <- USAGE |> rename(Trips = UPT, Miles = VRM)
+
+# View the first few rows of the MILES, TRIPS, and USAGE datasets
+head(MILES)
+head(TRIPS)
+head(USAGE)
+
+# Remove the '3 Mode' column from the datasets
+MILES <- MILES |> select(-`3 Mode`)
+TRIPS <- TRIPS |> select(-`3 Mode`)
+USAGE <- USAGE |> select(-`3 Mode`)
+```
+
+Secound Table: Now that your data is clean, you may want to create an attractive summary table of your cleaned up USAGE table using the following snippet:
+
+```{r}
+if(!require("DT")) install.packages("DT")
+library(DT)
+
+sample_n(USAGE, 10) |> 
+  mutate(month=as.character(month)) |> 
+  DT::datatable()
+```
+
+To create the third table, we group the data by NTD ID, Agency, Metro Area, and Mode, then summarize the total UPT and VRM for 2022 using the group_by and summarize functions. The year function is used to filter the data for the year 2022. The resulting table is displayed using both DT and gt for interactive and formatted outputs
+
+```{r}
+# Load required libraries
+library(tidyverse)
+library(lubridate)
+library(DT)
+library(gt)
+
+# Step 1: Filter, group, and summarize the data for 2022, including NTD ID
+USAGE_2022_ANNUAL <- USAGE |>
+  filter(year(month) == 2022) |>  # Filter for the year 2022
+  group_by(`NTD ID`, Agency, metro_area, Mode) |>  # Group by NTD ID, Agency, metro_area, and Mode
+  summarize(Trips = sum(Trips),  # Sum the Trips
+            Miles = sum(Miles)) |>  # Sum the Miles
+  ungroup() |>  # Ungroup the data
+  slice(1:10)  # Select only the top 10 rows
+
+# Step 2: Display using DT (interactive table, but USAGE_2022_ANNUAL remains unchanged)
+datatable(USAGE_2022_ANNUAL)
+
+# Step 3: Display using gt (formatted table for reporting)
+USAGE_2022_ANNUAL |>
+  gt() |>
+  tab_header(
+    title = "Annual Transit Usage Summary for 2022 (Top 10 Rows)",
+    subtitle = "Total Trips and Miles by Agency and Mode"
+  ) |>
+  fmt_number(
+    columns = c(Trips, Miles),
+    decimals = 0  # Show no decimals
+  ) |>
+  cols_label(
+    `NTD ID` = "NTD ID",  # Ensure NTD ID is included
+    Agency = "Transit Agency",
+    metro_area = "Metro Area",
+    Mode = "Mode",
+    Trips = "Total Trips (2022)",
+    Miles = "Total Miles (2022)"
+  )
+
+```
+
+# FOURTH TABLE
+
+# Once you have created the USAGE_2022_ANNUAL table, merge it with FINANCIALS data
+
+```{r}
+
+USAGE_AND_FINANCIALS <- left_join(USAGE_2022_ANNUAL, 
+                                  FINANCIALS, 
+                                  join_by(`NTD ID`, Mode)) |>
+  drop_na()
+```
+
+# FIFTH TABLE
+
+# Clean the table by removing the 'NTD ID' column
+
+```{r}
+USAGE <- USAGE |> 
+  select(-`NTD ID`)  # Unselect the NTD ID column
+
+# Install and load DT package if necessary
+if(!require("DT")) install.packages("DT")
+library(DT)
+
+# Display the first 1000 rows of the cleaned USAGE dataset as a datatable
+DT::datatable(USAGE |> slice(1:10))
+```
+
+# TASK 3: ANSWERING INSTRUCTOR SPECIFIED QUESTIONS WITH DPLYR
+
+# 1. What transit agency had the most total (VRM Vehicle Revenue Miles) in our data set?
+
+```{r}
+top_agency <- USAGE |>
+  group_by(Agency) |>
+  summarize(Total_Miles = sum(Miles)) |>
+  arrange(desc(Total_Miles)) |>
+  slice(1)
+
+agency_name <- top_agency$Agency
+total_miles <- top_agency$Total_Miles
+glue::glue("Name of the Agency: {agency_name}\nTotal Miles: {format(total_miles, big.mark = ',', scientific = FALSE)} miles")
+```
+
+# 2. What transit mode had the most total VRM renamed to Miles in our data set?
+
+```{r}
+top_mode <- USAGE |>
+  group_by(Mode) |>
+  summarize(Total_Miles = sum(Miles)) |>
+  arrange(desc(Total_Miles)) |>
+  slice(1)
+
+mode_name <- top_mode$Mode
+total_miles <- top_mode$Total_Miles
+glue::glue("Top Mode of Transit: {mode_name}\nTotal Miles: {format(total_miles, big.mark = ',', scientific = FALSE)} miles")
+```
+
+# 3. How many trips were taken on the NYC Subway (Heavy Rail) in May 2024?
+
+```{r}
+nyc_subway_trips_may_2024 <- USAGE |>
+  filter(Mode == "Heavy Rail", Agency == "MTA New York City Transit", month == as.Date("2024-05-01")) |>
+  summarize(Total_Trips = sum(Trips))
+
+total_trips <- nyc_subway_trips_may_2024$Total_Trips
+glue::glue("Agency: MTA New York City Transit\nTotal Trips in May 2024: {format(total_trips, big.mark = ',', scientific = FALSE)} trips")
+```
+
+# 4. Summarize total trips for April 2019 and April 2020
+
+```{r}
+trips_april_2019_2020 <- USAGE |>
+  filter(month %in% as.Date(c("2019-04-01", "2020-04-01"))) |>
+  group_by(month) |>
+  summarize(Total_Trips = sum(Trips))
+
+april_2019_trips <- trips_april_2019_2020$Total_Trips[trips_april_2019_2020$month == as.Date("2019-04-01")]
+april_2020_trips <- trips_april_2019_2020$Total_Trips[trips_april_2019_2020$month == as.Date("2020-04-01")]
+glue::glue("Total Trips in April 2019: {format(april_2019_trips, big.mark = ',', scientific = FALSE)} trips\nTotal Trips in April 2020: {format(april_2020_trips, big.mark = ',', scientific = FALSE)} trips")
+```
+
+# 5. How much did NYC subway ridership fall between April 2019 and April 2020?
+
+```{r}
+nyc_subway_april_2019_2020 <- USAGE |>
+  filter(Mode == "Heavy Rail", Agency == "MTA New York City Transit", month %in% as.Date(c("2019-04-01", "2020-04-01"))) |>
+  group_by(month) |>
+  summarize(Total_Trips = sum(Trips))
+
+april_2019_trips <- nyc_subway_april_2019_2020$Total_Trips[nyc_subway_april_2019_2020$month == as.Date("2019-04-01")]
+april_2020_trips <- nyc_subway_april_2019_2020$Total_Trips[nyc_subway_april_2019_2020$month == as.Date("2020-04-01")]
+fall_in_trips <- april_2019_trips - april_2020_trips
+percentage_fall <- (fall_in_trips / april_2019_trips) * 100
+glue::glue("Fall in NYC Subway Ridership from April 2019 to April 2020: {format(fall_in_trips, big.mark = ',', scientific = FALSE)} trips ({round(percentage_fall, 2)}%)")
+```
+
+# TASK 5: TABLE SUMMARIZATION
+
+# Create a new table summarizing annual totals for 2022
+
+```{r}
+annual_usage_2022 <- USAGE |>
+  mutate(year = lubridate::year(month)) |>   # Extract year from month
+  filter(year == 2022) |>  # Filter for 2022
+  group_by(Agency, Mode) |>  # Group by Agency and Mode
+  summarize(Total_Trips = sum(Trips), Total_Miles = sum(Miles)) |>  # Sum Trips and Miles
+  ungroup()
+
+# Display result
+print(annual_usage_2022)
+```
+
+# Task 4: Explore and Analyze
+
+# Fact 1: Top 10 Transit Systems by Total Fares
+
+```{r}
+# Create a summary of the top 10 transit systems by total fares
+top_10_fares <- USAGE_AND_FINANCIALS |>
+  group_by(Agency, Mode) |> 
+  summarize(Total_Fares = sum(`Total Fares`, na.rm = TRUE), .groups = 'drop') |>
+  arrange(desc(Total_Fares)) |>
+  slice(1:10)  # Select the top 10
+
+# Create a bar chart
+ggplot(top_10_fares, aes(x = reorder(paste(Agency, Mode, sep = " - "), -Total_Fares), y = Total_Fares)) +
+  geom_bar(stat = "identity", fill = "blue") +
+  coord_flip() +  # Flip the chart to make it more readable
+  labs(title = "Top 10 Transit Systems by Total Fares", x = "Transit System", y = "Total Fares") +
+  theme_minimal()
+```
+
+# Fact 2: Top 10 Transit Systems by Vehicle Revenue Miles (VRM)
+
+```{r}
+# Create a summary of the top 10 transit systems by Miles (VRM)
+top_10_vrm <- USAGE_AND_FINANCIALS |>
+  group_by(Agency, Mode) |> 
+  summarize(Total_VRM = sum(Miles, na.rm = TRUE), .groups = 'drop') |>  # Sum total miles (VRM)
+  arrange(desc(Total_VRM)) |>  # Sort by total VRM in descending order
+  slice(1:10)  # Select the top 10
+
+# Plot the top 10 transit systems by VRM (Miles)
+ggplot(top_10_vrm, aes(x = reorder(paste(Agency, Mode, sep = " - "), -Total_VRM), y = Total_VRM)) +
+  geom_bar(stat = "identity", fill = "orange") +
+  coord_flip() +  # Flip the chart for better readability
+  labs(title = "Top 10 Transit Systems by Vehicle Revenue Miles (VRM)", x = "Transit System", y = "Total Miles (VRM)") +
+  theme_minimal()
+```
+
+# Fact 3: Average Expenses per Trip for Top 10 Transit Systems
+
+```{r}
+# Create a summary of the top 10 transit systems by average expenses per trip
+top_10_expenses_per_trip <- USAGE_AND_FINANCIALS |>
+  filter(Trips > 0) |>  # Ensure no division by zero
+  group_by(Agency, Mode) |> 
+  summarize(Average_Expense_per_Trip = mean(Expenses / Trips, na.rm = TRUE), .groups = 'drop') |>
+  arrange(desc(Average_Expense_per_Trip)) |>  # Sort by highest average expense per trip
+  slice(1:10)  # Select the top 10
+
+# Create a bar chart
+ggplot(top_10_expenses_per_trip, aes(x = reorder(paste(Agency, Mode, sep = " - "), -Average_Expense_per_Trip), y = Average_Expense_per_Trip)) +
+  geom_bar(stat = "identity", fill = "green") +
+  coord_flip() +  # Flip the chart to make it more readable
+  labs(title = "Top 10 Transit Systems by Average Expense per Trip", x = "Transit System", y = "Average Expense per Trip (USD)") +
+  theme_minimal()
+```
+
+## Task 6: Farebox Recovery Among Major Systems
+
+# 1. Find the transit system (agency and mode) with the most Trips (UPT) in 2022
+
+```{r}
+agency_with_most_trips <- USAGE_2022_ANNUAL |>
+  group_by(Agency, Mode) |>  
+  summarize(Trips = sum(Trips, na.rm = TRUE), .groups = 'drop') |>  
+  arrange(desc(Trips)) |>  
+  slice(1)
+
+# Display the result
+agency_name <- agency_with_most_trips$Agency
+mode_name <- agency_with_most_trips$Mode
+total_trips <- agency_with_most_trips$Trips
+glue::glue("The agency with the most trips in 2022 is {agency_name} using {mode_name} mode, with {format(total_trips, big.mark = ',', scientific = FALSE)} trips.")
+```
+
+# 2. Find the transit system with the highest farebox recovery ratio (Total Fares / Expenses)
+
+```{r}
+agency_and_mode_with_highest_farebox_recovery <- USAGE_AND_FINANCIALS |>
+  filter(Expenses > 0) |>  
+  mutate(Farebox_Recovery = `Total Fares` / Expenses) |>  
+  arrange(desc(Farebox_Recovery)) |>  
+  slice(1)
+
+agency_name <- agency_and_mode_with_highest_farebox_recovery$Agency
+mode_name <- agency_and_mode_with_highest_farebox_recovery$Mode
+farebox_recovery_ratio <- agency_and_mode_with_highest_farebox_recovery$Farebox_Recovery
+glue::glue("The highest farebox recovery ratio is {agency_name} with {mode_name} mode, at {round(farebox_recovery_ratio, 2)}.")
+```
+
+# 3. Find the transit system with the lowest expenses per trip (UPT)
+
+```{r}
+agency_with_lowest_expenses_per_trip <- USAGE_AND_FINANCIALS |>
+  filter(Trips > 0) |>  
+  mutate(Expenses_per_Trip = Expenses / Trips) |>  
+  arrange(Expenses_per_Trip) |>  
+  slice(1)
+
+agency_name <- agency_with_lowest_expenses_per_trip$Agency
+mode_name <- agency_with_lowest_expenses_per_trip$Mode
+expenses_per_trip <- agency_with_lowest_expenses_per_trip$Expenses_per_Trip
+glue::glue("The lowest expenses per trip are with {agency_name} using {mode_name} mode, with {round(expenses_per_trip, 2)} dollars per trip.")
+```
+
+# 4. Find the transit system with the highest total fares per trip (UPT)
+
+```{r}
+agency_with_highest_fares_per_trip <- USAGE_AND_FINANCIALS |>
+  filter(Trips > 0) |>  
+  mutate(Fares_per_Trip = `Total Fares` / Trips) |>  
+  arrange(desc(Fares_per_Trip)) |>  
+  slice(1)
+
+agency_name <- agency_with_highest_fares_per_trip$Agency
+mode_name <- agency_with_highest_fares_per_trip$Mode
+fares_per_trip <- agency_with_highest_fares_per_trip$Fares_per_Trip
+glue::glue("The highest total fares per trip are {agency_name} using {mode_name} mode, with {round(fares_per_trip, 2)} dollars per trip.")
+```
+
+# 5 Which transit system (agency and mode) has the lowest expenses per VRM?
+
+```{r}
+# Calculate expenses per VRM (Miles) and find the system with the lowest value
+lowest_expenses_per_vrm <- USAGE_AND_FINANCIALS |>
+  group_by(Agency, Mode) |>  # Group by Agency and Mode
+  summarize(Total_Expenses = sum(Expenses),  # Sum total expenses
+            Total_Miles = sum(Miles),  # Sum total miles (VRM)
+            Expenses_per_VRM = Total_Expenses / Total_Miles,  # Calculate expenses per VRM
+            .groups = 'drop') |>  # Ungroup after summarizing
+  filter(Total_Miles > 0) |>  # Ensure miles are greater than zero to avoid division by zero
+  arrange(Expenses_per_VRM) |>  # Sort by expenses per VRM in ascending order
+  slice(1)  # Select the system with the lowest expenses per VRM
+
+# Print the result
+print(lowest_expenses_per_vrm)
+```
+
+# 6 Which transit system (agency and mode) has the highest total fares per VRM?
+
+```{r}
+# Calculate total fares per VRM (Miles) and find the system with the highest value
+total_fares_per_miles <- USAGE_AND_FINANCIALS |>
+  group_by(Agency, Mode) |>  # Group by Agency and Mode
+  summarize(Total_Fares = sum(`Total Fares`),  # Sum total fares
+            Total_Miles = sum(Miles),  # Sum total miles (VRM)
+            Fares_per_VRM = Total_Fares / Total_Miles,  # Calculate fares per VRM
+            .groups = 'drop') |>  # Ungroup after summarizing
+  filter(Total_Miles > 0) |>  # Ensure miles are greater than zero to avoid division by zero
+  arrange(desc(Fares_per_VRM)) |>  # Sort by fares per VRM in descending order
+  slice(1)  # Select the system with the highest fares per VRM
+
+# Load glue for formatting the output
+if (!require("glue")) install.packages("glue")
+library(glue)
+
+# Extract values for formatted output
+agency_name <- total_fares_per_miles$Agency
+mode_name <- total_fares_per_miles$Mode
+fares_per_vrm <- total_fares_per_miles$Fares_per_VRM
+
+# Use glue to print the result in a nicely formatted string
+glue("The agency with the highest total fares per VRM is {agency_name} using {mode_name} mode, with {round(fares_per_vrm, 2)} dollars per mile (VRM).")
+```

@@ -1,0 +1,2002 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Hugo Andrade">
+
+<title>Transit Data Analysis – STA 9750 2024 Submission Material</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+
+<link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+
+<script src="site_libs/datatables-binding-0.33/datatables.js"></script>
+
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+
+<link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+
+<link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
+
+<script src="site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+
+<link href="site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+
+<script src="site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+
+
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">STA 9750 2024 Submission Material</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Transit Data Analysis</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Hugo Andrade </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="transit-data-analysis-project" class="level1">
+<h1>Transit Data Analysis Project</h1>
+<p>This document contains code to load, process, and analyze transit data.</p>
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<p>Let’s begin by clearing the environment and setting the working directory.</p>
+</section>
+</section>
+<section id="lets-start-with-creating-the-2022_fare_revenue.xls-file" class="level1">
+<h1>Let’s start with creating the 2022_fare_revenue.xls file</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Suppress package loading messages</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>({</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="sc">!</span><span class="fu">require</span>(<span class="st">"tidyverse"</span>)) <span class="fu">install.packages</span>(<span class="st">"tidyverse"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's start by downloading the 2022 fare revenue file if it does not exist</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">file.exists</span>(<span class="st">"2022_fare_revenue.xlsx"</span>)){</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Download the file to the working directory</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">download.file</span>(<span class="st">"http://www.transit.dot.gov/sites/fta.dot.gov/files/2024-04/2022%20Fare%20Revenue.xlsx"</span>, </span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                <span class="at">destfile =</span> <span class="st">"2022_fare_revenue.xlsx"</span>, </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                <span class="at">quiet =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                <span class="at">method =</span> <span class="st">"wget"</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="var-create-variable-fares" class="level1">
+<h1>1 Var Create Variable Fares</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>({</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="sc">!</span><span class="fu">require</span>(<span class="st">"readxl"</span>)) <span class="fu">install.packages</span>(<span class="st">"readxl"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(readxl)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Create Variable FARES from the fare revenue data</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>FARES <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_xlsx</span>(<span class="st">"2022_fare_revenue.xlsx"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">State/Parent NTD ID</span><span class="st">`</span>, </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span><span class="st">`</span><span class="at">Reporter Type</span><span class="st">`</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span><span class="st">`</span><span class="at">Reporting Module</span><span class="st">`</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span><span class="st">`</span><span class="at">TOS</span><span class="st">`</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span><span class="st">`</span><span class="at">Passenger Paid Fares</span><span class="st">`</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span><span class="st">`</span><span class="at">Organization Paid Fares</span><span class="st">`</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="st">`</span><span class="at">Expense Type</span><span class="st">`</span> <span class="sc">==</span> <span class="st">"Funds Earned During Period"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">Expense Type</span><span class="st">`</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="st">`</span><span class="at">NTD ID</span><span class="st">`</span>, <span class="st">`</span><span class="at">Agency Name</span><span class="st">`</span>, <span class="st">`</span><span class="at">Mode</span><span class="st">`</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="st">`</span><span class="at">Total Fares</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sum</span>(<span class="st">`</span><span class="at">Total Fares</span><span class="st">`</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'NTD ID', 'Agency Name'. You can override
+using the `.groups` argument.</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preview the first few rows of the FARES variable</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(FARES)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 4
+  `NTD ID` `Agency Name`                           Mode  `Total Fares`
+     &lt;dbl&gt; &lt;chr&gt;                                   &lt;chr&gt;         &lt;dbl&gt;
+1        1 King County Department of Metro Transit CB          5216912
+2        1 King County Department of Metro Transit DR           832327
+3        1 King County Department of Metro Transit FB          1715265
+4        1 King County Department of Metro Transit LR         29386480
+5        1 King County Department of Metro Transit MB         56846337
+6        1 King County Department of Metro Transit SR           588495</code></pre>
+</div>
+</div>
+<p>Next, Create File 2022_expenses.csv</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if the 2022_expenses.csv file exists, if not, download it</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">file.exists</span>(<span class="st">"2022_expenses.csv"</span>)){</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Download the 2022 expenses data</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">download.file</span>(<span class="st">"https://data.transportation.gov/api/views/dkxx-zjd6/rows.csv?date=20231102&amp;accessType=DOWNLOAD&amp;bom=true&amp;format=true"</span>, </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">destfile =</span> <span class="st">"2022_expenses.csv"</span>, </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">quiet =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">method =</span> <span class="st">"wget"</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the 2022_expenses.csv data</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>EXPENSES <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">"2022_expenses.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 3744 Columns: 29
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (10): Agency, City, State, NTD ID, Organization Type, Reporter Type, UZA...
+dbl  (2): Report Year, UACE Code
+num (10): Primary UZA Population, Agency VOMS, Mode VOMS, Vehicle Operations...
+lgl  (7): Vehicle Operations Questionable, Vehicle Maintenance Questionable,...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preview the first few rows of the EXPENSES data</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(EXPENSES)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 29
+  Agency  City  State `NTD ID` `Organization Type` `Reporter Type` `Report Year`
+  &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;    &lt;chr&gt;               &lt;chr&gt;                   &lt;dbl&gt;
+1 Port o… Pago… AS    91004    State Government U… Rural Reporter           2022
+2 MTA Ne… Broo… NY    20008    Subsidiary Unit of… Full Reporter            2022
+3 MTA Ne… Broo… NY    20008    Subsidiary Unit of… Full Reporter            2022
+4 Lower … Port… WA    00401    Tribe               Reduced Report…          2022
+5 Phelps… Hold… NE    70182    City, County or Lo… Rural Reporter           2022
+6 City o… Ojai  CA    91058    City, County or Lo… Rural Reporter           2022
+# ℹ 22 more variables: `UACE Code` &lt;dbl&gt;, `UZA Name` &lt;chr&gt;,
+#   `Primary UZA Population` &lt;dbl&gt;, `Agency VOMS` &lt;dbl&gt;, Mode &lt;chr&gt;,
+#   `Mode Name` &lt;chr&gt;, TOS &lt;chr&gt;, `Mode VOMS` &lt;dbl&gt;,
+#   `Vehicle Operations` &lt;dbl&gt;, `Vehicle Operations Questionable` &lt;lgl&gt;,
+#   `Vehicle Maintenance` &lt;dbl&gt;, `Vehicle Maintenance Questionable` &lt;lgl&gt;,
+#   `Facility Maintenance` &lt;dbl&gt;, `Facility Maintenance Questionable` &lt;lgl&gt;,
+#   `General Administration` &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+</section>
+<section id="create-the-expenses-variable-by-reading-the-2022_expenses.csv-and-processing-it" class="level1">
+<h1>Create the EXPENSES variable by reading the 2022_expenses.csv and processing it</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>EXPENSES <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">"2022_expenses.csv"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="st">`</span><span class="at">NTD ID</span><span class="st">`</span>, </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Agency</span><span class="st">`</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Total</span><span class="st">`</span>, </span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>         <span class="st">`</span><span class="at">Mode</span><span class="st">`</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">NTD ID</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">as.integer</span>(<span class="st">`</span><span class="at">NTD ID</span><span class="st">`</span>)) <span class="sc">|&gt;</span>  <span class="co"># Ensure NTD ID is integer</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Expenses =</span> Total) <span class="sc">|&gt;</span>  <span class="co"># Rename the Total column to Expenses</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="st">`</span><span class="at">NTD ID</span><span class="st">`</span>, <span class="st">`</span><span class="at">Mode</span><span class="st">`</span>) <span class="sc">|&gt;</span>  <span class="co"># Group by NTD ID and Mode</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Expenses =</span> <span class="fu">sum</span>(Expenses)) <span class="sc">|&gt;</span>  <span class="co"># Summarize the total expenses</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 3744 Columns: 29
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (10): Agency, City, State, NTD ID, Organization Type, Reporter Type, UZA...
+dbl  (2): Report Year, UACE Code
+num (10): Primary UZA Population, Agency VOMS, Mode VOMS, Vehicle Operations...
+lgl  (7): Vehicle Operations Questionable, Vehicle Maintenance Questionable,...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+`summarise()` has grouped output by 'NTD ID'. You can override using the `.groups` argument.</code></pre>
+</div>
+</div>
+</section>
+<section id="join-the-fares-and-expenses-datasets-to-create-the-financials-dataset" class="level1">
+<h1>Join the FARES and EXPENSES datasets to create the FINANCIALS dataset</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>FINANCIALS <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(FARES, EXPENSES, <span class="fu">join_by</span>(<span class="st">`</span><span class="at">NTD ID</span><span class="st">`</span>, <span class="st">`</span><span class="at">Mode</span><span class="st">`</span>))</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Preview the resulting FINANCIALS dataset</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(FINANCIALS)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+  `NTD ID` `Agency Name`                           Mode  `Total Fares`  Expenses
+     &lt;dbl&gt; &lt;chr&gt;                                   &lt;chr&gt;         &lt;dbl&gt;     &lt;dbl&gt;
+1        1 King County Department of Metro Transit CB          5216912         0
+2        1 King County Department of Metro Transit DR           832327  60540676
+3        1 King County Department of Metro Transit FB          1715265   8899659
+4        1 King County Department of Metro Transit LR         29386480         0
+5        1 King County Department of Metro Transit MB         56846337 671653000
+6        1 King County Department of Metro Transit SR           588495  12511637</code></pre>
+</div>
+</div>
+</section>
+<section id="create-the-monthly-transit-numbers-file-ridership.xlsx" class="level1">
+<h1>Create the Monthly Transit Numbers file: ridership.xlsx</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if ridership.xlsx file exists, if not, download it</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">file.exists</span>(<span class="st">"ridership.xlsx"</span>)){</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">download.file</span>(<span class="st">"https://www.transit.dot.gov/sites/fta.dot.gov/files/2024-09/July%202024%20Complete%20Monthly%20Ridership%20%28with%20adjustments%20and%20estimates%29_240903.xlsx"</span>, </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">destfile =</span> <span class="st">"ridership.xlsx"</span>, </span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">quiet =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">method =</span> <span class="st">"wget"</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="create-the-trips-variable-by-reading-the-upt-sheet" class="level1">
+<h1>Create the TRIPS variable by reading the UPT sheet</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>TRIPS <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_xlsx</span>(<span class="st">"ridership.xlsx"</span>, <span class="at">sheet =</span> <span class="st">"UPT"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="st">`</span><span class="at">Mode/Type of Service Status</span><span class="st">`</span> <span class="sc">==</span> <span class="st">"Active"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">Legacy NTD ID</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">Reporter Type</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">Mode/Type of Service Status</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">UACE CD</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">TOS</span><span class="st">`</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span><span class="fu">c</span>(<span class="st">`</span><span class="at">NTD ID</span><span class="st">`</span><span class="sc">:</span><span class="st">`</span><span class="at">3 Mode</span><span class="st">`</span>), <span class="at">names_to =</span> <span class="st">"month"</span>, <span class="at">values_to =</span> <span class="st">"UPT"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">month =</span> <span class="fu">my</span>(month))  <span class="co"># Parse _m_onth _y_ear date specs</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="create-the-miles-variable-by-reading-the-vrm-sheet" class="level1">
+<h1>Create the MILES variable by reading the VRM sheet</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>MILES <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_xlsx</span>(<span class="st">"ridership.xlsx"</span>, <span class="at">sheet =</span> <span class="st">"VRM"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="st">`</span><span class="at">Mode/Type of Service Status</span><span class="st">`</span> <span class="sc">==</span> <span class="st">"Active"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">Legacy NTD ID</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">Reporter Type</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">Mode/Type of Service Status</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">UACE CD</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">TOS</span><span class="st">`</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span><span class="fu">c</span>(<span class="st">`</span><span class="at">NTD ID</span><span class="st">`</span><span class="sc">:</span><span class="st">`</span><span class="at">3 Mode</span><span class="st">`</span>), <span class="at">names_to =</span> <span class="st">"month"</span>, <span class="at">values_to =</span> <span class="st">"VRM"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="st">`</span><span class="at">NTD ID</span><span class="st">`</span>, <span class="st">`</span><span class="at">Agency</span><span class="st">`</span>, <span class="st">`</span><span class="at">UZA Name</span><span class="st">`</span>, <span class="st">`</span><span class="at">Mode</span><span class="st">`</span>, <span class="st">`</span><span class="at">3 Mode</span><span class="st">`</span>, month) <span class="sc">|&gt;</span> </span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">VRM =</span> <span class="fu">sum</span>(VRM)) <span class="sc">|&gt;</span> </span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">month =</span> <span class="fu">my</span>(month))  <span class="co"># Parse _m_onth _y_ear date specs</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'NTD ID', 'Agency', 'UZA Name', 'Mode', '3
+Mode'. You can override using the `.groups` argument.</code></pre>
+</div>
+</div>
+</section>
+<section id="create-the-usage-variable-by-merging-trips-and-miles" class="level1">
+<h1>Create the USAGE variable by merging TRIPS and MILES</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>USAGE <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(TRIPS, MILES) <span class="sc">|&gt;</span> </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">NTD ID</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">as.integer</span>(<span class="st">`</span><span class="at">NTD ID</span><span class="st">`</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(`NTD ID`, Agency, `UZA Name`, Mode, `3 Mode`,
+month)`</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Display a summary of USAGE</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(USAGE)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 8
+  `NTD ID` Agency      `UZA Name`        Mode  `3 Mode` month         UPT    VRM
+     &lt;int&gt; &lt;chr&gt;       &lt;chr&gt;             &lt;chr&gt; &lt;chr&gt;    &lt;date&gt;      &lt;dbl&gt;  &lt;dbl&gt;
+1        1 King County Seattle--Tacoma,… DR    Bus      2002-01-01 135144 746158
+2        1 King County Seattle--Tacoma,… DR    Bus      2002-02-01 127378 656324
+3        1 King County Seattle--Tacoma,… DR    Bus      2002-03-01 136030 726578
+4        1 King County Seattle--Tacoma,… DR    Bus      2002-04-01 142204 736975
+5        1 King County Seattle--Tacoma,… DR    Bus      2002-05-01 144697 746158
+6        1 King County Seattle--Tacoma,… DR    Bus      2002-06-01 131833 696633</code></pre>
+</div>
+</div>
+<p>To begin, we load the necessary packages, ensuring DT is available for interactive table creation. A sample of the USAGE table (first 1000 rows) is displayed to understand the data. Next, we rename the UZA Name column to metro_area across the datasets. Finally, we remove the unnecessary 3 Mode column to clean up the data for further analysis.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the required packages</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">require</span>(<span class="st">"DT"</span>)) <span class="fu">install.packages</span>(<span class="st">"DT"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: DT</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DT)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Display a sample of the USAGE table (first 1000 rows)</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sample_n</span>(USAGE, <span class="dv">10</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">month =</span> <span class="fu">as.character</span>(month)) <span class="sc">|&gt;</span> </span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  DT<span class="sc">::</span><span class="fu">datatable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-afa7223f7fe0413cf085" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-afa7223f7fe0413cf085">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10"],[60091,3,50113,40228,41,10064,50005,60072,50016,20113],["Hill Country Transit District","Pierce County Transportation Benefit Area Authority","Pace, the Suburban Bus Division of the Regional Transportation Authority","Mecklenburg County","Alaska Railroad Corporation","Greater Attleboro-Taunton Regional Transit Authority","City of Madison","Ozark Regional Transit","Central Ohio Transit Authority","Regional Transit Service"],["Killeen, TX","Seattle--Tacoma, WA","Chicago, IL--IN","Charlotte, NC--SC","Anchorage, AK","Providence, RI--MA","Madison, WI","Fayetteville--Springdale--Rogers, AR--MO","Columbus, OH","Rochester, NY"],["DR","MB","VP","DR","AR","MB","MB","DR","DR","MB"],["Bus","Bus","Bus","Bus","Rail","Bus","Bus","Bus","Bus","Bus"],["2023-01-01","2017-06-01","2011-03-01","2021-05-01","2016-07-01","2013-09-01","2018-09-01","2002-09-01","2020-01-01","2003-01-01"],[10644,734767,161002,2163,53817,74851,1208904,8832,24162,1284524],[62691,421883,833263,201896,245939,122442,393747,54240,293665,584282]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>NTD ID<\/th>\n      <th>Agency<\/th>\n      <th>UZA Name<\/th>\n      <th>Mode<\/th>\n      <th>3 Mode<\/th>\n      <th>month<\/th>\n      <th>UPT<\/th>\n      <th>VRM<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,7,8]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"NTD ID","targets":1},{"name":"Agency","targets":2},{"name":"UZA Name","targets":3},{"name":"Mode","targets":4},{"name":"3 Mode","targets":5},{"name":"month","targets":6},{"name":"UPT","targets":7},{"name":"VRM","targets":8}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Task 1: Rename UZA Name to metro_area</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>MILES <span class="ot">&lt;-</span> MILES <span class="sc">|&gt;</span> <span class="fu">rename</span>(<span class="at">metro_area =</span> <span class="st">`</span><span class="at">UZA Name</span><span class="st">`</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>TRIPS <span class="ot">&lt;-</span> TRIPS <span class="sc">|&gt;</span> <span class="fu">rename</span>(<span class="at">metro_area =</span> <span class="st">`</span><span class="at">UZA Name</span><span class="st">`</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>USAGE <span class="ot">&lt;-</span> USAGE <span class="sc">|&gt;</span> <span class="fu">rename</span>(<span class="at">metro_area =</span> <span class="st">`</span><span class="at">UZA Name</span><span class="st">`</span>)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>USAGE <span class="ot">&lt;-</span> USAGE <span class="sc">|&gt;</span> <span class="fu">rename</span>(<span class="at">Trips =</span> UPT, <span class="at">Miles =</span> VRM)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="co"># View the first few rows of the MILES, TRIPS, and USAGE datasets</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(MILES)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 7
+  `NTD ID` Agency      metro_area          Mode  `3 Mode` month         VRM
+  &lt;chr&gt;    &lt;chr&gt;       &lt;chr&gt;               &lt;chr&gt; &lt;chr&gt;    &lt;date&gt;      &lt;dbl&gt;
+1 00001    King County Seattle--Tacoma, WA DR    Bus      2002-01-01 746158
+2 00001    King County Seattle--Tacoma, WA DR    Bus      2003-01-01 761210
+3 00001    King County Seattle--Tacoma, WA DR    Bus      2004-01-01 747628
+4 00001    King County Seattle--Tacoma, WA DR    Bus      2005-01-01 774351
+5 00001    King County Seattle--Tacoma, WA DR    Bus      2006-01-01 798647
+6 00001    King County Seattle--Tacoma, WA DR    Bus      2007-01-01 789831</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(TRIPS)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 7
+  `NTD ID` Agency      metro_area          Mode  `3 Mode` month         UPT
+  &lt;chr&gt;    &lt;chr&gt;       &lt;chr&gt;               &lt;chr&gt; &lt;chr&gt;    &lt;date&gt;      &lt;dbl&gt;
+1 00001    King County Seattle--Tacoma, WA DR    Bus      2002-01-01 135144
+2 00001    King County Seattle--Tacoma, WA DR    Bus      2002-02-01 127378
+3 00001    King County Seattle--Tacoma, WA DR    Bus      2002-03-01 136030
+4 00001    King County Seattle--Tacoma, WA DR    Bus      2002-04-01 142204
+5 00001    King County Seattle--Tacoma, WA DR    Bus      2002-05-01 144697
+6 00001    King County Seattle--Tacoma, WA DR    Bus      2002-06-01 131833</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(USAGE)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 8
+  `NTD ID` Agency      metro_area        Mode  `3 Mode` month       Trips  Miles
+     &lt;int&gt; &lt;chr&gt;       &lt;chr&gt;             &lt;chr&gt; &lt;chr&gt;    &lt;date&gt;      &lt;dbl&gt;  &lt;dbl&gt;
+1        1 King County Seattle--Tacoma,… DR    Bus      2002-01-01 135144 746158
+2        1 King County Seattle--Tacoma,… DR    Bus      2002-02-01 127378 656324
+3        1 King County Seattle--Tacoma,… DR    Bus      2002-03-01 136030 726578
+4        1 King County Seattle--Tacoma,… DR    Bus      2002-04-01 142204 736975
+5        1 King County Seattle--Tacoma,… DR    Bus      2002-05-01 144697 746158
+6        1 King County Seattle--Tacoma,… DR    Bus      2002-06-01 131833 696633</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove the '3 Mode' column from the datasets</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>MILES <span class="ot">&lt;-</span> MILES <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">3 Mode</span><span class="st">`</span>)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>TRIPS <span class="ot">&lt;-</span> TRIPS <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">3 Mode</span><span class="st">`</span>)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>USAGE <span class="ot">&lt;-</span> USAGE <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">3 Mode</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Secound Table: Now that your data is clean, you may want to create an attractive summary table of your cleaned up USAGE table using the following snippet:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">require</span>(<span class="st">"DT"</span>)) <span class="fu">install.packages</span>(<span class="st">"DT"</span>)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DT)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sample_n</span>(USAGE, <span class="dv">10</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">month=</span><span class="fu">as.character</span>(month)) <span class="sc">|&gt;</span> </span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  DT<span class="sc">::</span><span class="fu">datatable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-8f3587e93876d53302af" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-8f3587e93876d53302af">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10"],[40180,40037,20008,58,50166,50052,30019,10064,90022,70012],["University of Georgia","Board of County Commissioners, Palm Beach County","MTA New York City Transit","City of Portland","Clermont County, Ohio","South Bend Public Transportation Corporation","Southeastern Pennsylvania Transportation Authority","Greater Attleboro-Taunton Regional Transit Authority","City of Norwalk","City of Sioux City"],["Athens-Clarke County, GA","Miami--Fort Lauderdale, FL","New York--Jersey City--Newark, NY--NJ","Portland, OR--WA","Cincinnati, OH--KY","South Bend, IN--MI","Philadelphia, PA--NJ--DE--MD","Providence, RI--MA","Los Angeles--Long Beach--Anaheim, CA","Sioux City, IA--NE--SD"],["MB","MB","HR","SR","DR","MB","SR","MB","MB","DR"],["2024-06-01","2020-11-01","2009-08-01","2017-07-01","2009-04-01","2016-05-01","2015-04-01","2009-03-01","2008-11-01","2007-08-01"],[35053,428495,194917778,413922,4981,133338,2241356,49114,228905,3109],[28024,486970,29628469,36898,96784,106732,293459,112563,107215,8037]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>NTD ID<\/th>\n      <th>Agency<\/th>\n      <th>metro_area<\/th>\n      <th>Mode<\/th>\n      <th>month<\/th>\n      <th>Trips<\/th>\n      <th>Miles<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,6,7]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"NTD ID","targets":1},{"name":"Agency","targets":2},{"name":"metro_area","targets":3},{"name":"Mode","targets":4},{"name":"month","targets":5},{"name":"Trips","targets":6},{"name":"Miles","targets":7}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p>To create the third table, we group the data by NTD ID, Agency, Metro Area, and Mode, then summarize the total UPT and VRM for 2022 using the group_by and summarize functions. The year function is used to filter the data for the year 2022. The resulting table is displayed using both DT and gt for interactive and formatted outputs</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load required libraries</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DT)</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Filter, group, and summarize the data for 2022, including NTD ID</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>USAGE_2022_ANNUAL <span class="ot">&lt;-</span> USAGE <span class="sc">|&gt;</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">year</span>(month) <span class="sc">==</span> <span class="dv">2022</span>) <span class="sc">|&gt;</span>  <span class="co"># Filter for the year 2022</span></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="st">`</span><span class="at">NTD ID</span><span class="st">`</span>, Agency, metro_area, Mode) <span class="sc">|&gt;</span>  <span class="co"># Group by NTD ID, Agency, metro_area, and Mode</span></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Trips =</span> <span class="fu">sum</span>(Trips),  <span class="co"># Sum the Trips</span></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">Miles =</span> <span class="fu">sum</span>(Miles)) <span class="sc">|&gt;</span>  <span class="co"># Sum the Miles</span></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span>  <span class="co"># Ungroup the data</span></span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>)  <span class="co"># Select only the top 10 rows</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'NTD ID', 'Agency', 'metro_area'. You can
+override using the `.groups` argument.</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: Display using DT (interactive table, but USAGE_2022_ANNUAL remains unchanged)</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(USAGE_2022_ANNUAL)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-825517eb3fde8991952d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-825517eb3fde8991952d">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10"],[1,1,1,1,1,1,2,2,2,3],["King County","King County","King County","King County","King County","King County","Spokane Transit Authority","Spokane Transit Authority","Spokane Transit Authority","Pierce County Transportation Benefit Area Authority"],["Seattle--Tacoma, WA","Seattle--Tacoma, WA","Seattle--Tacoma, WA","Seattle--Tacoma, WA","Seattle--Tacoma, WA","Seattle--Tacoma, WA","Spokane, WA","Spokane, WA","Spokane, WA","Seattle--Tacoma, WA"],["DR","FB","MB","SR","TB","VP","DR","MB","VP","DR"],[663009,400407,53983641,1117605,9575043,702709,310316,6595319,90576,215109],[12860448,51236,61632644,180369,2635705,4413910,4037502,6485325,905990,3435356]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>NTD ID<\/th>\n      <th>Agency<\/th>\n      <th>metro_area<\/th>\n      <th>Mode<\/th>\n      <th>Trips<\/th>\n      <th>Miles<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,5,6]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"NTD ID","targets":1},{"name":"Agency","targets":2},{"name":"metro_area","targets":3},{"name":"Mode","targets":4},{"name":"Trips","targets":5},{"name":"Miles","targets":6}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: Display using gt (formatted table for reporting)</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>USAGE_2022_ANNUAL <span class="sc">|&gt;</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">|&gt;</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_header</span>(</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Annual Transit Usage Summary for 2022 (Top 10 Rows)"</span>,</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Total Trips and Miles by Agency and Mode"</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">c</span>(Trips, Miles),</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">decimals =</span> <span class="dv">0</span>  <span class="co"># Show no decimals</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cols_label</span>(</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">NTD ID</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"NTD ID"</span>,  <span class="co"># Ensure NTD ID is included</span></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">Agency =</span> <span class="st">"Transit Agency"</span>,</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">metro_area =</span> <span class="st">"Metro Area"</span>,</span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">Mode =</span> <span class="st">"Mode"</span>,</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">Trips =</span> <span class="st">"Total Trips (2022)"</span>,</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">Miles =</span> <span class="st">"Total Miles (2022)"</span></span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="rqfiumehou" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#rqfiumehou table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#rqfiumehou thead, #rqfiumehou tbody, #rqfiumehou tfoot, #rqfiumehou tr, #rqfiumehou td, #rqfiumehou th {
+  border-style: none;
+}
+
+#rqfiumehou p {
+  margin: 0;
+  padding: 0;
+}
+
+#rqfiumehou .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#rqfiumehou .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#rqfiumehou .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#rqfiumehou .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#rqfiumehou .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#rqfiumehou .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#rqfiumehou .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#rqfiumehou .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#rqfiumehou .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#rqfiumehou .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#rqfiumehou .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#rqfiumehou .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#rqfiumehou .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#rqfiumehou .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#rqfiumehou .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#rqfiumehou .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#rqfiumehou .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#rqfiumehou .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#rqfiumehou .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#rqfiumehou .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#rqfiumehou .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#rqfiumehou .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#rqfiumehou .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#rqfiumehou .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#rqfiumehou .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#rqfiumehou .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#rqfiumehou .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#rqfiumehou .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#rqfiumehou .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#rqfiumehou .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#rqfiumehou .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#rqfiumehou .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#rqfiumehou .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#rqfiumehou .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#rqfiumehou .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#rqfiumehou .gt_left {
+  text-align: left;
+}
+
+#rqfiumehou .gt_center {
+  text-align: center;
+}
+
+#rqfiumehou .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#rqfiumehou .gt_font_normal {
+  font-weight: normal;
+}
+
+#rqfiumehou .gt_font_bold {
+  font-weight: bold;
+}
+
+#rqfiumehou .gt_font_italic {
+  font-style: italic;
+}
+
+#rqfiumehou .gt_super {
+  font-size: 65%;
+}
+
+#rqfiumehou .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#rqfiumehou .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#rqfiumehou .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#rqfiumehou .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#rqfiumehou .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#rqfiumehou .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#rqfiumehou .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#rqfiumehou .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#rqfiumehou div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_heading">
+<th colspan="6" class="gt_heading gt_title gt_font_normal">Annual Transit Usage Summary for 2022 (Top 10 Rows)</th>
+</tr>
+<tr class="odd gt_heading">
+<th colspan="6" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border">Total Trips and Miles by Agency and Mode</th>
+</tr>
+<tr class="header gt_col_headings">
+<th id="NTD ID" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">NTD ID</th>
+<th id="Transit Agency" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Transit Agency</th>
+<th id="Metro Area" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Metro Area</th>
+<th id="Mode" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Mode</th>
+<th id="Total Trips (2022)" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Total Trips (2022)</th>
+<th id="Total Miles (2022)" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Total Miles (2022)</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="NTD ID">1</td>
+<td class="gt_row gt_left" headers="Agency">King County</td>
+<td class="gt_row gt_left" headers="metro_area">Seattle--Tacoma, WA</td>
+<td class="gt_row gt_left" headers="Mode">DR</td>
+<td class="gt_row gt_right" headers="Trips">663,009</td>
+<td class="gt_row gt_right" headers="Miles">12,860,448</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="NTD ID">1</td>
+<td class="gt_row gt_left" headers="Agency">King County</td>
+<td class="gt_row gt_left" headers="metro_area">Seattle--Tacoma, WA</td>
+<td class="gt_row gt_left" headers="Mode">FB</td>
+<td class="gt_row gt_right" headers="Trips">400,407</td>
+<td class="gt_row gt_right" headers="Miles">51,236</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="NTD ID">1</td>
+<td class="gt_row gt_left" headers="Agency">King County</td>
+<td class="gt_row gt_left" headers="metro_area">Seattle--Tacoma, WA</td>
+<td class="gt_row gt_left" headers="Mode">MB</td>
+<td class="gt_row gt_right" headers="Trips">53,983,641</td>
+<td class="gt_row gt_right" headers="Miles">61,632,644</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="NTD ID">1</td>
+<td class="gt_row gt_left" headers="Agency">King County</td>
+<td class="gt_row gt_left" headers="metro_area">Seattle--Tacoma, WA</td>
+<td class="gt_row gt_left" headers="Mode">SR</td>
+<td class="gt_row gt_right" headers="Trips">1,117,605</td>
+<td class="gt_row gt_right" headers="Miles">180,369</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="NTD ID">1</td>
+<td class="gt_row gt_left" headers="Agency">King County</td>
+<td class="gt_row gt_left" headers="metro_area">Seattle--Tacoma, WA</td>
+<td class="gt_row gt_left" headers="Mode">TB</td>
+<td class="gt_row gt_right" headers="Trips">9,575,043</td>
+<td class="gt_row gt_right" headers="Miles">2,635,705</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="NTD ID">1</td>
+<td class="gt_row gt_left" headers="Agency">King County</td>
+<td class="gt_row gt_left" headers="metro_area">Seattle--Tacoma, WA</td>
+<td class="gt_row gt_left" headers="Mode">VP</td>
+<td class="gt_row gt_right" headers="Trips">702,709</td>
+<td class="gt_row gt_right" headers="Miles">4,413,910</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="NTD ID">2</td>
+<td class="gt_row gt_left" headers="Agency">Spokane Transit Authority</td>
+<td class="gt_row gt_left" headers="metro_area">Spokane, WA</td>
+<td class="gt_row gt_left" headers="Mode">DR</td>
+<td class="gt_row gt_right" headers="Trips">310,316</td>
+<td class="gt_row gt_right" headers="Miles">4,037,502</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="NTD ID">2</td>
+<td class="gt_row gt_left" headers="Agency">Spokane Transit Authority</td>
+<td class="gt_row gt_left" headers="metro_area">Spokane, WA</td>
+<td class="gt_row gt_left" headers="Mode">MB</td>
+<td class="gt_row gt_right" headers="Trips">6,595,319</td>
+<td class="gt_row gt_right" headers="Miles">6,485,325</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="NTD ID">2</td>
+<td class="gt_row gt_left" headers="Agency">Spokane Transit Authority</td>
+<td class="gt_row gt_left" headers="metro_area">Spokane, WA</td>
+<td class="gt_row gt_left" headers="Mode">VP</td>
+<td class="gt_row gt_right" headers="Trips">90,576</td>
+<td class="gt_row gt_right" headers="Miles">905,990</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="NTD ID">3</td>
+<td class="gt_row gt_left" headers="Agency">Pierce County Transportation Benefit Area Authority</td>
+<td class="gt_row gt_left" headers="metro_area">Seattle--Tacoma, WA</td>
+<td class="gt_row gt_left" headers="Mode">DR</td>
+<td class="gt_row gt_right" headers="Trips">215,109</td>
+<td class="gt_row gt_right" headers="Miles">3,435,356</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="fourth-table" class="level1">
+<h1>FOURTH TABLE</h1>
+</section>
+<section id="once-you-have-created-the-usage_2022_annual-table-merge-it-with-financials-data" class="level1">
+<h1>Once you have created the USAGE_2022_ANNUAL table, merge it with FINANCIALS data</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>USAGE_AND_FINANCIALS <span class="ot">&lt;-</span> <span class="fu">left_join</span>(USAGE_2022_ANNUAL, </span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>                                  FINANCIALS, </span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>                                  <span class="fu">join_by</span>(<span class="st">`</span><span class="at">NTD ID</span><span class="st">`</span>, Mode)) <span class="sc">|&gt;</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="fifth-table" class="level1">
+<h1>FIFTH TABLE</h1>
+</section>
+<section id="clean-the-table-by-removing-the-ntd-id-column" class="level1">
+<h1>Clean the table by removing the ‘NTD ID’ column</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>USAGE <span class="ot">&lt;-</span> USAGE <span class="sc">|&gt;</span> </span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">NTD ID</span><span class="st">`</span>)  <span class="co"># Unselect the NTD ID column</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Install and load DT package if necessary</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">require</span>(<span class="st">"DT"</span>)) <span class="fu">install.packages</span>(<span class="st">"DT"</span>)</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DT)</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the first 1000 rows of the cleaned USAGE dataset as a datatable</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>DT<span class="sc">::</span><span class="fu">datatable</span>(USAGE <span class="sc">|&gt;</span> <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-262a5dc117c54d9c778f" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-262a5dc117c54d9c778f">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10"],["King County","King County","King County","King County","King County","King County","King County","King County","King County","King County"],["Seattle--Tacoma, WA","Seattle--Tacoma, WA","Seattle--Tacoma, WA","Seattle--Tacoma, WA","Seattle--Tacoma, WA","Seattle--Tacoma, WA","Seattle--Tacoma, WA","Seattle--Tacoma, WA","Seattle--Tacoma, WA","Seattle--Tacoma, WA"],["DR","DR","DR","DR","DR","DR","DR","DR","DR","DR"],["2002-01-01","2002-02-01","2002-03-01","2002-04-01","2002-05-01","2002-06-01","2002-07-01","2002-08-01","2002-09-01","2002-10-01"],[135144,127378,136030,142204,144697,131833,137547,136915,132111,150074],[746158,656324,726578,736975,746158,696633,746158,747339,695451,766920]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Agency<\/th>\n      <th>metro_area<\/th>\n      <th>Mode<\/th>\n      <th>month<\/th>\n      <th>Trips<\/th>\n      <th>Miles<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[5,6]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Agency","targets":1},{"name":"metro_area","targets":2},{"name":"Mode","targets":3},{"name":"month","targets":4},{"name":"Trips","targets":5},{"name":"Miles","targets":6}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+<section id="task-3-answering-instructor-specified-questions-with-dplyr" class="level1">
+<h1>TASK 3: ANSWERING INSTRUCTOR SPECIFIED QUESTIONS WITH DPLYR</h1>
+</section>
+<section id="what-transit-agency-had-the-most-total-vrm-vehicle-revenue-miles-in-our-data-set" class="level1">
+<h1>1. What transit agency had the most total (VRM Vehicle Revenue Miles) in our data set?</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>top_agency <span class="ot">&lt;-</span> USAGE <span class="sc">|&gt;</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Agency) <span class="sc">|&gt;</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Total_Miles =</span> <span class="fu">sum</span>(Miles)) <span class="sc">|&gt;</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Total_Miles)) <span class="sc">|&gt;</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span>)</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>agency_name <span class="ot">&lt;-</span> top_agency<span class="sc">$</span>Agency</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>total_miles <span class="ot">&lt;-</span> top_agency<span class="sc">$</span>Total_Miles</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"Name of the Agency: {agency_name}</span><span class="sc">\n</span><span class="st">Total Miles: {format(total_miles, big.mark = ',', scientific = FALSE)} miles"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Name of the Agency: MTA New York City Transit
+Total Miles: 10,832,855,350 miles</code></pre>
+</div>
+</div>
+</section>
+<section id="what-transit-mode-had-the-most-total-vrm-renamed-to-miles-in-our-data-set" class="level1">
+<h1>2. What transit mode had the most total VRM renamed to Miles in our data set?</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>top_mode <span class="ot">&lt;-</span> USAGE <span class="sc">|&gt;</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Mode) <span class="sc">|&gt;</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Total_Miles =</span> <span class="fu">sum</span>(Miles)) <span class="sc">|&gt;</span></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Total_Miles)) <span class="sc">|&gt;</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span>)</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>mode_name <span class="ot">&lt;-</span> top_mode<span class="sc">$</span>Mode</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>total_miles <span class="ot">&lt;-</span> top_mode<span class="sc">$</span>Total_Miles</span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"Top Mode of Transit: {mode_name}</span><span class="sc">\n</span><span class="st">Total Miles: {format(total_miles, big.mark = ',', scientific = FALSE)} miles"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Top Mode of Transit: MB
+Total Miles: 49,444,494,088 miles</code></pre>
+</div>
+</div>
+</section>
+<section id="how-many-trips-were-taken-on-the-nyc-subway-heavy-rail-in-may-2024" class="level1">
+<h1>3. How many trips were taken on the NYC Subway (Heavy Rail) in May 2024?</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>nyc_subway_trips_may_2024 <span class="ot">&lt;-</span> USAGE <span class="sc">|&gt;</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Mode <span class="sc">==</span> <span class="st">"Heavy Rail"</span>, Agency <span class="sc">==</span> <span class="st">"MTA New York City Transit"</span>, month <span class="sc">==</span> <span class="fu">as.Date</span>(<span class="st">"2024-05-01"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Total_Trips =</span> <span class="fu">sum</span>(Trips))</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>total_trips <span class="ot">&lt;-</span> nyc_subway_trips_may_2024<span class="sc">$</span>Total_Trips</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"Agency: MTA New York City Transit</span><span class="sc">\n</span><span class="st">Total Trips in May 2024: {format(total_trips, big.mark = ',', scientific = FALSE)} trips"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Agency: MTA New York City Transit
+Total Trips in May 2024: 0 trips</code></pre>
+</div>
+</div>
+</section>
+<section id="summarize-total-trips-for-april-2019-and-april-2020" class="level1">
+<h1>4. Summarize total trips for April 2019 and April 2020</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>trips_april_2019_2020 <span class="ot">&lt;-</span> USAGE <span class="sc">|&gt;</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(month <span class="sc">%in%</span> <span class="fu">as.Date</span>(<span class="fu">c</span>(<span class="st">"2019-04-01"</span>, <span class="st">"2020-04-01"</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(month) <span class="sc">|&gt;</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Total_Trips =</span> <span class="fu">sum</span>(Trips))</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>april_2019_trips <span class="ot">&lt;-</span> trips_april_2019_2020<span class="sc">$</span>Total_Trips[trips_april_2019_2020<span class="sc">$</span>month <span class="sc">==</span> <span class="fu">as.Date</span>(<span class="st">"2019-04-01"</span>)]</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>april_2020_trips <span class="ot">&lt;-</span> trips_april_2019_2020<span class="sc">$</span>Total_Trips[trips_april_2019_2020<span class="sc">$</span>month <span class="sc">==</span> <span class="fu">as.Date</span>(<span class="st">"2020-04-01"</span>)]</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"Total Trips in April 2019: {format(april_2019_trips, big.mark = ',', scientific = FALSE)} trips</span><span class="sc">\n</span><span class="st">Total Trips in April 2020: {format(april_2020_trips, big.mark = ',', scientific = FALSE)} trips"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Total Trips in April 2019: 830,945,731 trips
+Total Trips in April 2020: 158,331,253 trips</code></pre>
+</div>
+</div>
+</section>
+<section id="how-much-did-nyc-subway-ridership-fall-between-april-2019-and-april-2020" class="level1">
+<h1>5. How much did NYC subway ridership fall between April 2019 and April 2020?</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>nyc_subway_april_2019_2020 <span class="ot">&lt;-</span> USAGE <span class="sc">|&gt;</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Mode <span class="sc">==</span> <span class="st">"Heavy Rail"</span>, Agency <span class="sc">==</span> <span class="st">"MTA New York City Transit"</span>, month <span class="sc">%in%</span> <span class="fu">as.Date</span>(<span class="fu">c</span>(<span class="st">"2019-04-01"</span>, <span class="st">"2020-04-01"</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(month) <span class="sc">|&gt;</span></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Total_Trips =</span> <span class="fu">sum</span>(Trips))</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>april_2019_trips <span class="ot">&lt;-</span> nyc_subway_april_2019_2020<span class="sc">$</span>Total_Trips[nyc_subway_april_2019_2020<span class="sc">$</span>month <span class="sc">==</span> <span class="fu">as.Date</span>(<span class="st">"2019-04-01"</span>)]</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>april_2020_trips <span class="ot">&lt;-</span> nyc_subway_april_2019_2020<span class="sc">$</span>Total_Trips[nyc_subway_april_2019_2020<span class="sc">$</span>month <span class="sc">==</span> <span class="fu">as.Date</span>(<span class="st">"2020-04-01"</span>)]</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>fall_in_trips <span class="ot">&lt;-</span> april_2019_trips <span class="sc">-</span> april_2020_trips</span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>percentage_fall <span class="ot">&lt;-</span> (fall_in_trips <span class="sc">/</span> april_2019_trips) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"Fall in NYC Subway Ridership from April 2019 to April 2020: {format(fall_in_trips, big.mark = ',', scientific = FALSE)} trips ({round(percentage_fall, 2)}%)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="task-5-table-summarization" class="level1">
+<h1>TASK 5: TABLE SUMMARIZATION</h1>
+</section>
+<section id="create-a-new-table-summarizing-annual-totals-for-2022" class="level1">
+<h1>Create a new table summarizing annual totals for 2022</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>annual_usage_2022 <span class="ot">&lt;-</span> USAGE <span class="sc">|&gt;</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> lubridate<span class="sc">::</span><span class="fu">year</span>(month)) <span class="sc">|&gt;</span>   <span class="co"># Extract year from month</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2022</span>) <span class="sc">|&gt;</span>  <span class="co"># Filter for 2022</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Agency, Mode) <span class="sc">|&gt;</span>  <span class="co"># Group by Agency and Mode</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Total_Trips =</span> <span class="fu">sum</span>(Trips), <span class="at">Total_Miles =</span> <span class="fu">sum</span>(Miles)) <span class="sc">|&gt;</span>  <span class="co"># Sum Trips and Miles</span></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'Agency'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Display result</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(annual_usage_2022)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,138 × 4
+   Agency                                Mode  Total_Trips Total_Miles
+   &lt;chr&gt;                                 &lt;chr&gt;       &lt;dbl&gt;       &lt;dbl&gt;
+ 1 Academy Lines, Inc.                   CB         940697     2701376
+ 2 Access Services                       DR        3189810    59457346
+ 3 Ada County Highway District           VP         129453     1393703
+ 4 Adirondack Transit Lines, Inc.        CB         298376     1292283
+ 5 Alameda-Contra Costa Transit District CB         384442      442777
+ 6 Alameda-Contra Costa Transit District DR         370294     3774811
+ 7 Alameda-Contra Costa Transit District MB       27791478    32885088
+ 8 Alameda-Contra Costa Transit District RB        3756519      646683
+ 9 Alamo Area Council of Governments     DR         114591     1303153
+10 Alamo Area Council of Governments     MB          10498       46991
+# ℹ 1,128 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="task-4-explore-and-analyze" class="level1">
+<h1>Task 4: Explore and Analyze</h1>
+</section>
+<section id="fact-1-top-10-transit-systems-by-total-fares" class="level1">
+<h1>Fact 1: Top 10 Transit Systems by Total Fares</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a summary of the top 10 transit systems by total fares</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>top_10_fares <span class="ot">&lt;-</span> USAGE_AND_FINANCIALS <span class="sc">|&gt;</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Agency, Mode) <span class="sc">|&gt;</span> </span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Total_Fares =</span> <span class="fu">sum</span>(<span class="st">`</span><span class="at">Total Fares</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">'drop'</span>) <span class="sc">|&gt;</span></span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Total_Fares)) <span class="sc">|&gt;</span></span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>)  <span class="co"># Select the top 10</span></span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a bar chart</span></span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(top_10_fares, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(<span class="fu">paste</span>(Agency, Mode, <span class="at">sep =</span> <span class="st">" - "</span>), <span class="sc">-</span>Total_Fares), <span class="at">y =</span> Total_Fares)) <span class="sc">+</span></span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span>  <span class="co"># Flip the chart to make it more readable</span></span>
+<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Top 10 Transit Systems by Total Fares"</span>, <span class="at">x =</span> <span class="st">"Transit System"</span>, <span class="at">y =</span> <span class="st">"Total Fares"</span>) <span class="sc">+</span></span>
+<span id="cb52-13"><a href="#cb52-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp01_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="fact-2-top-10-transit-systems-by-vehicle-revenue-miles-vrm" class="level1">
+<h1>Fact 2: Top 10 Transit Systems by Vehicle Revenue Miles (VRM)</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a summary of the top 10 transit systems by Miles (VRM)</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>top_10_vrm <span class="ot">&lt;-</span> USAGE_AND_FINANCIALS <span class="sc">|&gt;</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Agency, Mode) <span class="sc">|&gt;</span> </span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Total_VRM =</span> <span class="fu">sum</span>(Miles, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">'drop'</span>) <span class="sc">|&gt;</span>  <span class="co"># Sum total miles (VRM)</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Total_VRM)) <span class="sc">|&gt;</span>  <span class="co"># Sort by total VRM in descending order</span></span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>)  <span class="co"># Select the top 10</span></span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the top 10 transit systems by VRM (Miles)</span></span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(top_10_vrm, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(<span class="fu">paste</span>(Agency, Mode, <span class="at">sep =</span> <span class="st">" - "</span>), <span class="sc">-</span>Total_VRM), <span class="at">y =</span> Total_VRM)) <span class="sc">+</span></span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"orange"</span>) <span class="sc">+</span></span>
+<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span>  <span class="co"># Flip the chart for better readability</span></span>
+<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Top 10 Transit Systems by Vehicle Revenue Miles (VRM)"</span>, <span class="at">x =</span> <span class="st">"Transit System"</span>, <span class="at">y =</span> <span class="st">"Total Miles (VRM)"</span>) <span class="sc">+</span></span>
+<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp01_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="fact-3-average-expenses-per-trip-for-top-10-transit-systems" class="level1">
+<h1>Fact 3: Average Expenses per Trip for Top 10 Transit Systems</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a summary of the top 10 transit systems by average expenses per trip</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>top_10_expenses_per_trip <span class="ot">&lt;-</span> USAGE_AND_FINANCIALS <span class="sc">|&gt;</span></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Trips <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">|&gt;</span>  <span class="co"># Ensure no division by zero</span></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Agency, Mode) <span class="sc">|&gt;</span> </span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Average_Expense_per_Trip =</span> <span class="fu">mean</span>(Expenses <span class="sc">/</span> Trips, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">'drop'</span>) <span class="sc">|&gt;</span></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Average_Expense_per_Trip)) <span class="sc">|&gt;</span>  <span class="co"># Sort by highest average expense per trip</span></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>)  <span class="co"># Select the top 10</span></span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a bar chart</span></span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(top_10_expenses_per_trip, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(<span class="fu">paste</span>(Agency, Mode, <span class="at">sep =</span> <span class="st">" - "</span>), <span class="sc">-</span>Average_Expense_per_Trip), <span class="at">y =</span> Average_Expense_per_Trip)) <span class="sc">+</span></span>
+<span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"green"</span>) <span class="sc">+</span></span>
+<span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span>  <span class="co"># Flip the chart to make it more readable</span></span>
+<span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Top 10 Transit Systems by Average Expense per Trip"</span>, <span class="at">x =</span> <span class="st">"Transit System"</span>, <span class="at">y =</span> <span class="st">"Average Expense per Trip (USD)"</span>) <span class="sc">+</span></span>
+<span id="cb54-14"><a href="#cb54-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp01_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="task-6-farebox-recovery-among-major-systems" class="level2">
+<h2 class="anchored" data-anchor-id="task-6-farebox-recovery-among-major-systems">Task 6: Farebox Recovery Among Major Systems</h2>
+</section>
+</section>
+<section id="find-the-transit-system-agency-and-mode-with-the-most-trips-upt-in-2022" class="level1">
+<h1>1. Find the transit system (agency and mode) with the most Trips (UPT) in 2022</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>agency_with_most_trips <span class="ot">&lt;-</span> USAGE_2022_ANNUAL <span class="sc">|&gt;</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Agency, Mode) <span class="sc">|&gt;</span>  </span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Trips =</span> <span class="fu">sum</span>(Trips, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">'drop'</span>) <span class="sc">|&gt;</span>  </span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Trips)) <span class="sc">|&gt;</span>  </span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span>)</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the result</span></span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>agency_name <span class="ot">&lt;-</span> agency_with_most_trips<span class="sc">$</span>Agency</span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>mode_name <span class="ot">&lt;-</span> agency_with_most_trips<span class="sc">$</span>Mode</span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a>total_trips <span class="ot">&lt;-</span> agency_with_most_trips<span class="sc">$</span>Trips</span>
+<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a>glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"The agency with the most trips in 2022 is {agency_name} using {mode_name} mode, with {format(total_trips, big.mark = ',', scientific = FALSE)} trips."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>The agency with the most trips in 2022 is King County using MB mode, with 53,983,641 trips.</code></pre>
+</div>
+</div>
+</section>
+<section id="find-the-transit-system-with-the-highest-farebox-recovery-ratio-total-fares-expenses" class="level1">
+<h1>2. Find the transit system with the highest farebox recovery ratio (Total Fares / Expenses)</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>agency_and_mode_with_highest_farebox_recovery <span class="ot">&lt;-</span> USAGE_AND_FINANCIALS <span class="sc">|&gt;</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Expenses <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">|&gt;</span>  </span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Farebox_Recovery =</span> <span class="st">`</span><span class="at">Total Fares</span><span class="st">`</span> <span class="sc">/</span> Expenses) <span class="sc">|&gt;</span>  </span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Farebox_Recovery)) <span class="sc">|&gt;</span>  </span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span>)</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>agency_name <span class="ot">&lt;-</span> agency_and_mode_with_highest_farebox_recovery<span class="sc">$</span>Agency</span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>mode_name <span class="ot">&lt;-</span> agency_and_mode_with_highest_farebox_recovery<span class="sc">$</span>Mode</span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>farebox_recovery_ratio <span class="ot">&lt;-</span> agency_and_mode_with_highest_farebox_recovery<span class="sc">$</span>Farebox_Recovery</span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"The highest farebox recovery ratio is {agency_name} with {mode_name} mode, at {round(farebox_recovery_ratio, 2)}."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>The highest farebox recovery ratio is King County with VP mode, at 0.62.</code></pre>
+</div>
+</div>
+</section>
+<section id="find-the-transit-system-with-the-lowest-expenses-per-trip-upt" class="level1">
+<h1>3. Find the transit system with the lowest expenses per trip (UPT)</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>agency_with_lowest_expenses_per_trip <span class="ot">&lt;-</span> USAGE_AND_FINANCIALS <span class="sc">|&gt;</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Trips <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">|&gt;</span>  </span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Expenses_per_Trip =</span> Expenses <span class="sc">/</span> Trips) <span class="sc">|&gt;</span>  </span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Expenses_per_Trip) <span class="sc">|&gt;</span>  </span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span>)</span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>agency_name <span class="ot">&lt;-</span> agency_with_lowest_expenses_per_trip<span class="sc">$</span>Agency</span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>mode_name <span class="ot">&lt;-</span> agency_with_lowest_expenses_per_trip<span class="sc">$</span>Mode</span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>expenses_per_trip <span class="ot">&lt;-</span> agency_with_lowest_expenses_per_trip<span class="sc">$</span>Expenses_per_Trip</span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"The lowest expenses per trip are with {agency_name} using {mode_name} mode, with {round(expenses_per_trip, 2)} dollars per trip."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>The lowest expenses per trip are with Spokane Transit Authority using VP mode, with 8.21 dollars per trip.</code></pre>
+</div>
+</div>
+</section>
+<section id="find-the-transit-system-with-the-highest-total-fares-per-trip-upt" class="level1">
+<h1>4. Find the transit system with the highest total fares per trip (UPT)</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>agency_with_highest_fares_per_trip <span class="ot">&lt;-</span> USAGE_AND_FINANCIALS <span class="sc">|&gt;</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Trips <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">|&gt;</span>  </span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Fares_per_Trip =</span> <span class="st">`</span><span class="at">Total Fares</span><span class="st">`</span> <span class="sc">/</span> Trips) <span class="sc">|&gt;</span>  </span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Fares_per_Trip)) <span class="sc">|&gt;</span>  </span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span>)</span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>agency_name <span class="ot">&lt;-</span> agency_with_highest_fares_per_trip<span class="sc">$</span>Agency</span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>mode_name <span class="ot">&lt;-</span> agency_with_highest_fares_per_trip<span class="sc">$</span>Mode</span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>fares_per_trip <span class="ot">&lt;-</span> agency_with_highest_fares_per_trip<span class="sc">$</span>Fares_per_Trip</span>
+<span id="cb61-10"><a href="#cb61-10" aria-hidden="true" tabindex="-1"></a>glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"The highest total fares per trip are {agency_name} using {mode_name} mode, with {round(fares_per_trip, 2)} dollars per trip."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>The highest total fares per trip are King County using VP mode, with 7.8 dollars per trip.</code></pre>
+</div>
+</div>
+</section>
+<section id="which-transit-system-agency-and-mode-has-the-lowest-expenses-per-vrm" class="level1">
+<h1>5 Which transit system (agency and mode) has the lowest expenses per VRM?</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate expenses per VRM (Miles) and find the system with the lowest value</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>lowest_expenses_per_vrm <span class="ot">&lt;-</span> USAGE_AND_FINANCIALS <span class="sc">|&gt;</span></span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Agency, Mode) <span class="sc">|&gt;</span>  <span class="co"># Group by Agency and Mode</span></span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Total_Expenses =</span> <span class="fu">sum</span>(Expenses),  <span class="co"># Sum total expenses</span></span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">Total_Miles =</span> <span class="fu">sum</span>(Miles),  <span class="co"># Sum total miles (VRM)</span></span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">Expenses_per_VRM =</span> Total_Expenses <span class="sc">/</span> Total_Miles,  <span class="co"># Calculate expenses per VRM</span></span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">.groups =</span> <span class="st">'drop'</span>) <span class="sc">|&gt;</span>  <span class="co"># Ungroup after summarizing</span></span>
+<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Total_Miles <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">|&gt;</span>  <span class="co"># Ensure miles are greater than zero to avoid division by zero</span></span>
+<span id="cb63-9"><a href="#cb63-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Expenses_per_VRM) <span class="sc">|&gt;</span>  <span class="co"># Sort by expenses per VRM in ascending order</span></span>
+<span id="cb63-10"><a href="#cb63-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span>)  <span class="co"># Select the system with the lowest expenses per VRM</span></span>
+<span id="cb63-11"><a href="#cb63-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-12"><a href="#cb63-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the result</span></span>
+<span id="cb63-13"><a href="#cb63-13" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(lowest_expenses_per_vrm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 5
+  Agency                    Mode  Total_Expenses Total_Miles Expenses_per_VRM
+  &lt;chr&gt;                     &lt;chr&gt;          &lt;dbl&gt;       &lt;dbl&gt;            &lt;dbl&gt;
+1 Spokane Transit Authority VP            743903      905990            0.821</code></pre>
+</div>
+</div>
+</section>
+<section id="which-transit-system-agency-and-mode-has-the-highest-total-fares-per-vrm" class="level1">
+<h1>6 Which transit system (agency and mode) has the highest total fares per VRM?</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate total fares per VRM (Miles) and find the system with the highest value</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>total_fares_per_miles <span class="ot">&lt;-</span> USAGE_AND_FINANCIALS <span class="sc">|&gt;</span></span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Agency, Mode) <span class="sc">|&gt;</span>  <span class="co"># Group by Agency and Mode</span></span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Total_Fares =</span> <span class="fu">sum</span>(<span class="st">`</span><span class="at">Total Fares</span><span class="st">`</span>),  <span class="co"># Sum total fares</span></span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">Total_Miles =</span> <span class="fu">sum</span>(Miles),  <span class="co"># Sum total miles (VRM)</span></span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">Fares_per_VRM =</span> Total_Fares <span class="sc">/</span> Total_Miles,  <span class="co"># Calculate fares per VRM</span></span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">.groups =</span> <span class="st">'drop'</span>) <span class="sc">|&gt;</span>  <span class="co"># Ungroup after summarizing</span></span>
+<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Total_Miles <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">|&gt;</span>  <span class="co"># Ensure miles are greater than zero to avoid division by zero</span></span>
+<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Fares_per_VRM)) <span class="sc">|&gt;</span>  <span class="co"># Sort by fares per VRM in descending order</span></span>
+<span id="cb65-10"><a href="#cb65-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span>)  <span class="co"># Select the system with the highest fares per VRM</span></span>
+<span id="cb65-11"><a href="#cb65-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-12"><a href="#cb65-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Load glue for formatting the output</span></span>
+<span id="cb65-13"><a href="#cb65-13" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">"glue"</span>)) <span class="fu">install.packages</span>(<span class="st">"glue"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: glue</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glue)</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract values for formatted output</span></span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>agency_name <span class="ot">&lt;-</span> total_fares_per_miles<span class="sc">$</span>Agency</span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a>mode_name <span class="ot">&lt;-</span> total_fares_per_miles<span class="sc">$</span>Mode</span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a>fares_per_vrm <span class="ot">&lt;-</span> total_fares_per_miles<span class="sc">$</span>Fares_per_VRM</span>
+<span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-8"><a href="#cb67-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Use glue to print the result in a nicely formatted string</span></span>
+<span id="cb67-9"><a href="#cb67-9" aria-hidden="true" tabindex="-1"></a><span class="fu">glue</span>(<span class="st">"The agency with the highest total fares per VRM is {agency_name} using {mode_name} mode, with {round(fares_per_vrm, 2)} dollars per mile (VRM)."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>The agency with the highest total fares per VRM is King County using FB mode, with 33.48 dollars per mile (VRM).</code></pre>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/betelstar\.github\.io\/STA9750-2024-FALL\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
