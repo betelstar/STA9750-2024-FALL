@@ -1,0 +1,904 @@
+---
+title: "{{< var course.short >}} Mini-Project #02: The Business of Show Business"
+format:
+  html:
+    code-link: true
+---
+
+```{r}
+# to clear variables: rm(list = ls())
+
+# Install and load necessary packages
+required_packages <- c("stringr", "ggplot2", "readr", "dplyr", "scales")
+
+# Install missing packages
+for (pkg in required_packages) {
+  if (!require(pkg, character.only = TRUE)) {
+    install.packages(pkg, dependencies = TRUE)
+    library(pkg, character.only = TRUE)
+  }
+}
+
+# Now that packages are installed, you can start your analysis
+
+#install.packages("stringr", dependencies = TRUE)
+
+#library(stringr)
+#tr_count("test", "t")  # Simple test
+
+# Install and load necessary packages
+#packages <- c("stringr", "dplyr", "ggplot2", "scales")
+
+# Loop through each package and install if missing
+#for (pkg in packages) {
+#  if (!require(pkg, character.only = TRUE)) {
+#    install.packages(pkg, dependencies = TRUE)
+#    library(pkg, character.only = TRUE)
+#  }
+#}
+
+
+library(ggplot2)
+library(dplyr)
+
+
+
+# Install and load ggplot2 package if not already installed
+if (!requireNamespace("ggplot2", quietly = TRUE)) {
+  install.packages("ggplot2")
+}
+library(ggplot2)
+
+# Example with built-in dataset 'mtcars'
+#data <- mtcars
+#plot <- ggplot2::ggplot(data, ggplot2::aes(x = wt, y = mpg)) +
+#        ggplot2::geom_point()
+
+#plot
+
+
+# Check if the stringr package is installed, if not, install it
+if (!require(stringr)) {
+  install.packages("stringr")
+  library(stringr)
+} else {
+  library(stringr)
+}
+
+#install.packages("tidyr")
+library(tidyr)
+
+# Example usage
+#result <- stringr::str_count("The quick brown fox", "o")
+```
+
+## Mini-Project #02
+
+### Data
+
+For this project, we will use data from the Internet Movie Database (IMDb). Specifically, we will use the tables from [the IMDb
+non-commercial release](https://datasets.imdbws.com/). These files
+are made freely available by IMDb for non-commercial use. 
+
+The following code will automatically download and load these files
+into `R`: 
+
+```{r}
+# Reset everything
+# rm(list = ls())
+
+
+
+#| label: 'imdb_name_basics'
+#| message: false 
+#| warning: false
+#| cache: true
+get_imdb_file <- function(fname){
+    BASE_URL <- "https://datasets.imdbws.com/"
+    fname_ext <- paste0(fname, ".tsv.gz")
+    if(!file.exists(fname_ext)){
+        FILE_URL <- paste0(BASE_URL, fname_ext)
+        download.file(FILE_URL, 
+                      destfile = fname_ext)
+    }
+    as.data.frame(readr::read_tsv(fname_ext, lazy=FALSE))
+}
+
+NAME_BASICS      <- get_imdb_file("name.basics")
+```
+
+```{r}
+#| label: 'imdb_title_basics'
+#| message: false 
+#| warning: false
+#| cache: true
+TITLE_BASICS     <- get_imdb_file("title.basics")
+```
+
+```{r}
+#| label: 'imdb_title_episode'
+#| message: false 
+#| warning: false
+#| cache: true
+TITLE_EPISODES   <- get_imdb_file("title.episode")
+```
+
+```{r}
+#| label: 'imdb_title_ratings'
+#| message: false 
+#| warning: false
+#| cache: true
+TITLE_RATINGS    <- get_imdb_file("title.ratings")
+```
+
+```{r}
+#| label: 'imdb_title_crew'
+#| message: false 
+#| warning: false
+#| cache: true
+TITLE_CREW       <- get_imdb_file("title.crew")
+```
+
+```{r}
+#| label: 'imdb_title_principals'
+#| eval: false
+#| message: false 
+#| warning: false
+#| cache: false
+TITLE_PRINCIPALS <- get_imdb_file("title.principals")
+``` 
+
+Note that these are **large** files and it will take some time for
+them to download the first time. Because these files are so large,
+it will also take a little while to read them. If you want to speed
+up this stage, you can
+[cache](https://quarto.org/docs/computations/caching.html#knitr-cache) 
+the code chunk that reads the files. This will 'save' the result of the chunk
+and only require it to be re-executed when it is changed. 
+
+### Data Sub-Sampling
+
+This data is large enough that we're going to need to immediately 
+start down-selecting to get to a data set that we can analyze fluidly. For
+our `NAME_BASICS` table, we'll restrict our attention to people with at 
+least two "known for" credits.[^1]
+
+```{r}
+#| label: 'name_basics_filter'
+#| cache: true
+NAME_BASICS <- NAME_BASICS |> 
+    filter(str_count(knownForTitles, ",") > 1)
+```
+
+IMDb has a _long_ tail of obscure movies: 
+
+```{r}
+#| label: 'title_ratings_tail'
+TITLE_RATINGS |>
+    ggplot(aes(x=numVotes)) + 
+    geom_histogram(bins=30) +
+    xlab("Number of IMDB Ratings") + 
+    ylab("Number of Titles") + 
+    ggtitle("Majority of IMDB Titles Have Less than 100 Ratings") + 
+    theme_bw() + 
+    scale_x_log10(label=scales::comma) + 
+
+    scale_y_continuous(label=scales::comma)
+```
+
+To keep our computers from working too hard, let's throw out any title
+with less than 100 ratings. It's not too hard to see that this drops
+about 75% of the entire data set: 
+
+```{r}
+#| label: 'title_ratings_quantile'
+TITLE_RATINGS |>
+    pull(numVotes) |>
+    quantile()
+```
+
+Applying this drop, we significantly reduce the size of our data set:
+
+```{r}
+#| label: 'title_ratings_filter'
+#| cache: true
+TITLE_RATINGS <- TITLE_RATINGS |>
+    filter(numVotes >= 100)
+```
+
+We want to perform the same filtering on our other `TITLE_*` tables.
+This is a rare use for the [`semi_join`](https://dplyr.tidyverse.org/reference/filter-joins.html).
+Recall that a `semi_join` returns only values which have a match,but
+doesn't actually add columns. 
+
+```{r}
+#| cache: true
+#| label: 'title_other_filter'
+#| message: false
+TITLE_BASICS <- TITLE_BASICS |>
+    semi_join(TITLE_RATINGS, 
+              join_by(tconst == tconst))
+
+TITLE_CREW <- TITLE_CREW |>
+    semi_join(TITLE_RATINGS, 
+              join_by(tconst == tconst))
+
+TITLE_EPISODES_1 <- TITLE_EPISODES |>
+    semi_join(TITLE_RATINGS, 
+              join_by(tconst == tconst))
+TITLE_EPISODES_2 <- TITLE_EPISODES |>
+    semi_join(TITLE_RATINGS, 
+              join_by(parentTconst == tconst))
+
+TITLE_EPISODES <- bind_rows(TITLE_EPISODES_1,
+                            TITLE_EPISODES_2) |>
+    distinct()
+
+TITLE_PRINCIPALS <- TITLE_PRINCIPALS |>
+    semi_join(TITLE_RATINGS, join_by(tconst == tconst))
+
+
+rm(TITLE_EPISODES_1)
+rm(TITLE_EPISODES_2)
+```
+
+At this point, we've filtered down our data _significantly_ and are ready
+to begin analysis in earnest. Note that our sub-sampling may induce some
+'dangling' references: some of the people dropped from the `NAME_BASICS`
+table may only appear in one famous movie, and we've likely lost their
+info. 
+
+::: {.callout-warning}
+#### Processing Large Data
+
+Even with this processing, this a non-trivial amount of data, requiring
+approximately 2 GB of memory. If your computer is significantly
+struggling to perform this pre-processing, the instructor may be able to
+provide smaller data files upon request. (Even on my quite modern laptop,
+the initial processing phase takes a few minutes: by 'significant struggling', I'm referring to processing taking upwards of half an hour
+or exhausting all available memory.) Please contact the instructor
+and TA through the course discussion board to discuss this possibility.
+
+Processing large data sets is a skill, however, so we're starting with
+the large data set to help you practice it.
+:::
+
+::: {.callout-important title="Pre-Processed Data" collapse=true}
+Exports of the pre-processed data can be found on [the course GitHub
+repo](https://github.com/michaelweylandt/STA9750/tree/main/miniprojects/mini02_preprocessed/).
+If your computer is struggling to handle the full data set, you may
+choose to use these instead. The `readr::read_csv` files handles zip
+compression transparently, but you will need to modify `get_imdb_file` above
+to: 
+
+1) Point to my GitHub instead of the IMDB archive
+2) Use `.csv.zip` files instead of `.tsv.gz`
+
+Note also that, to get the compressed files small enough to store on GitHub,
+I had to apply more filtering than the code above uses. Make sure to note
+if you are using this extra-filtered extract so that a reader knows why
+you might be getting different answers.
+:::
+
+### Initial Exploration
+
+At this point, let's start examining our data more closely. Use the
+`glimpse` function to examine each table, taking care to note the _type_
+or _mode_ of each column. For this data set, most columns appear to be
+read in as _character_ (string) vectors, even when they should be
+numeric. This can occur when "null" values are represented in some
+non-standard way. For instance, in these files, we see that missing
+values are represented as `\\N`. `R` does not know that these are `NA`
+values and so retains them as strings.[^2]
+
+To fix this, we need to use: 
+
+1. the `mutate` command, since we're changing the type of a column
+2. the `as.numeric` command to change the type of the column.
+
+We can clean the `NAMES_BASIC` command as follows: 
+
+```{r, warning=FALSE}
+NAME_BASICS <- NAME_BASICS |>
+    mutate(birthYear = as.numeric(birthYear),
+           deathYear = as.numeric(deathYear))
+```
+
+::: {.callout-tip}
+#### Task 1: Column Type Correction
+
+Correct the column types of the `TITLE` tables using a combination
+of `mutate` and the coercion functions `as.numeric` and `as.logical`.
+:::
+
+Another non-tidy aspect of this data is that it combines multiple pieces
+of information in a single cell separated by commas. We already saw a bit
+of this in the `NAME_BASICS` table, where both the `primaryProfession` and
+`knownForTitles` columns combine multiple values. 
+
+```{r}
+glimpse(NAME_BASICS)
+```
+
+We can use the `separate_longer_delim` function to break these into multiple
+rows: for example
+
+```{r}
+#| label: 'seaprate_longer_delim_example'
+#| cache: true
+NAME_BASICS |> separate_longer_delim(knownForTitles, ",") |> slice_head(n=10)
+```
+
+To preserve flexibility, let's not fully separate `NAME_BASICS` just yet, but
+you will need to use `separate_longer_delim` to answer various questions. 
+
+Using your knowledge of `dplyr` functionality, answer the following questions
+
+
+::: {.callout-tip}
+#### Task 2: Instructor-Provided Questions
+
+1. How many movies are in our data set? How many TV series? How many TV episodes?
+
+```{r}
+movies_series_episodes_counts <- filter(count(TITLE_BASICS, titleType), 
+                 titleType == "movie" | titleType == "tvSeries" | titleType == "tvEpisode")
+
+movies_series_episodes_counts
+```
+
+2. Who is the oldest living person in our data set? 
+
+```{r}
+NAME_BASICS |>
+  filter(is.na(deathYear)) |>
+  slice_min(birthYear)
+```
+
+3. There is one TV Episode in this data set with a perfect 10/10 rating and 200,000 IMDb ratings. What is it? What series does it belong to?
+
+```{r}
+perfect_episode <- TITLE_RATINGS |>
+  filter(averageRating == 10, numVotes >= 200000) |>  # At least 200,000 votes
+  inner_join(TITLE_BASICS, by = "tconst") |>  # Join to get title information
+  inner_join(TITLE_EPISODES, by = "tconst") |>  # Episode information
+  select(primaryTitle, originalTitle, titleType, numVotes) |>  
+  slice_head(n = 10) 
+
+perfect_episode
+
+
+```
+
+
+4. What four projects is the actor Mark Hamill most known for? 
+
+```{r}
+
+
+# Get the four projects Mark Hamill is most known for
+mark_hamill_projects = NAME_BASICS |>
+  filter(primaryName == "Mark Hamill") |>
+  separate_rows(knownForTitles, sep = ",") |>
+  inner_join(TITLE_BASICS, by = c("knownForTitles" = "tconst")) |>
+  inner_join(TITLE_RATINGS, by = c("knownForTitles" = "tconst")) |>
+  select(primaryName, primaryTitle, titleType, averageRating, numVotes) |>
+  slice(1:4)  # Limit to the first 4 projects
+
+mark_hamill_projects
+# Get the four projects Milla Jovovich is most known for
+#milla_jovovich_projects = NAME_BASICS |>
+#  filter(primaryName == "Milla Jovovich") |>
+#  separate_rows(knownForTitles, sep = ",") |>
+#  inner_join(TITLE_BASICS, by = c("knownForTitles" = "tconst")) |>
+#  inner_join(TITLE_RATINGS, by = c("knownForTitles" = "tconst")) |>
+#  select(primaryName, primaryTitle, titleType, averageRating, numVotes) |>
+#  slice(1:4)  # Limit to the first 4 projects
+
+# Combine the two into a single table
+#combined_projects = bind_rows(mark_hamill_projects, milla_jovovich_projects)
+
+# Display the combined result
+#combined_projects
+
+
+```
+
+
+5. What TV series, with more than 12 episodes, has the highest _average_
+   rating? 
+
+
+# Find the highest average rating among these series
+
+```{r}
+# Count episodes per series
+episode_counts <- TITLE_EPISODES |>
+  count(parentTconst) |> 
+  filter(n > 12)
+
+# Find the highest average rating among these series
+best_series <- TITLE_RATINGS |> 
+  inner_join(episode_counts, by = c("tconst" = "parentTconst")) |> 
+  arrange(desc(averageRating)) |> 
+  inner_join(TITLE_BASICS, by = "tconst") |> 
+  slice(1) |> 
+  select(primaryTitle, averageRating)
+
+best_series
+
+```
+
+
+
+6. The TV series *Happy Days* (1974-1984) gives us the common idiom ["jump the
+   shark"](https://en.wikipedia.org/wiki/Jumping_the_shark). The phrase comes
+   from a controversial fifth season episode (aired in 1977) in which a lead
+   character literally jumped over a shark on water skis. Idiomatically, it
+   is used to refer to the moment when a once-great show becomes ridiculous and
+   rapidly looses quality. 
+   
+   Is it true that episodes from later seasons of *Happy Days* have lower
+   average ratings than the early seasons?
+ 
+```{r}
+
+# Step 1: Find the IMDb ID for Happy Days
+happy_days <- TITLE_BASICS |>
+  filter(primaryTitle == "Happy Days" & titleType == "tvSeries")
+happy_days_id <- happy_days$tconst
+
+# Step 2: Get all episodes of Happy Days and their ratings
+happy_days_episodes <- TITLE_EPISODES |>
+  filter(parentTconst == happy_days_id) |>
+  inner_join(TITLE_RATINGS, by = "tconst") |>
+  mutate(seasonNumber = as.numeric(seasonNumber)) |>  # Convert seasonNumber to numeric
+  select(seasonNumber, averageRating)
+
+# Step 3: Calculate and print average rating by season, sorted by seasonNumber
+average_ratings_by_season <- happy_days_episodes |>
+  group_by(seasonNumber) |>
+  summarize(avg_rating = mean(averageRating, na.rm = TRUE)) |>
+  arrange(seasonNumber)  # Sort by season number in ascending order
+
+# Print the results
+print(average_ratings_by_season)
+
+```
+   
+
+*Hint:* It may be useful to create a "map" of which columns map to which tables
+before attempting these questions. While these can be [quite
+formal](https://duckduckgo.com/?q=sql+schema+map&iax=images&ia=images), even 
+some basic sketches on a scratch piece of paper are often quite clarifying.
+:::
+
+### Quantifying Success
+
+Our goal is to proposal successful new movies. To do so, we need
+a way of measuring the success of a movie given only IMDb ratings.[^3] While
+there's no "magic number" for success, it is logical to assume that a
+successful project will have both a high average IMDb rating, indicating
+quality, and a large number of ratings, indicating broad awareness in the
+public. 
+
+::: {.callout-tip}
+#### Task 3: Custom Success Metric
+
+Design a 'success' measure for IMDb entries, reflecting both quality and
+broad popular awareness. Implement your success metric using a `mutate`
+operator to add a new column to the `TITLE_RATINGS` table. 
+
+Validate your success metric as follows: 
+
+1. Choose the top 5-10 movies on your metric and confirm that they were
+   indeed box office successes.
+   
+```{r}
+top_movies <- TITLE_RATINGS |>
+  mutate(success = averageRating * log(numVotes)) |>
+  inner_join(TITLE_BASICS, by = "tconst") |>
+  filter(titleType == "movie") |>
+  top_n(10, success) |>
+  select(primaryTitle, success)
+
+top_movies
+
+```
+2. Choose 3-5 movies with large numbers of IMDb votes that score poorly
+   on your success metric and confirm that they are indeed of low quality.
+   
+```{r}
+
+TITLE_RATINGS <- TITLE_RATINGS |> filter(numVotes > 0)
+
+joined_data <- TITLE_RATINGS |>
+  inner_join(TITLE_BASICS, by = "tconst") |>
+  filter(titleType == "movie") |>
+  mutate(success = averageRating * log(numVotes))
+
+# Define threshold for "high votes" and select bottom movies by success
+low_quality_movies <- joined_data |>
+  filter(numVotes > 100000) |>  # Define a high vote count threshold
+  arrange(success) |>           # Arrange by the success metric (ascending)
+  slice_head(n = 5) |>
+  select(primaryTitle, numVotes, averageRating, success)
+
+# Check the result
+print(low_quality_movies)
+
+
+
+```   
+   
+3. Choose a prestige actor or director and confirm that they have many projects
+   with high scores on your success metric.
+
+```{r}
+
+# Step 1: Get Milla Jovovich's ID
+milla <- NAME_BASICS |>
+  filter(primaryName == "Milla Jovovich")
+
+# Step 2: Get all titles associated with Milla Jovovich (her nconst)
+milla_titles <- TITLE_PRINCIPALS |>
+  filter(nconst == milla$nconst) |>
+  select(tconst)
+
+# Step 3: Join Milla's titles with movie ratings and info, and calculate success
+milla_movies <- milla_titles |>
+  inner_join(TITLE_RATINGS, by = "tconst") |>
+  inner_join(TITLE_BASICS, by = "tconst") |>
+  filter(titleType == "movie") |>
+  mutate(success = averageRating * log(numVotes)) |>
+  select(primaryTitle, averageRating, numVotes, success) |>
+  arrange(desc(success))  # Sort by success
+
+# Step 4: Show the top 5 successful movies with numVotes and averageRating
+top_milla_movies <- milla_movies |> slice_head(n = 5)
+print(top_milla_movies)
+
+
+```
+
+4. Perform at least one other form of 'spot check' validation. 
+
+```{r}
+# Example of spot checking well-known successful movies
+spot_check <- TITLE_RATINGS |>
+  inner_join(TITLE_BASICS, by = "tconst") |>  # Join to access primaryTitle
+  filter(primaryTitle %in% c("The Shawshank Redemption", 
+                             "The Godfather", 
+                             "The Dark Knight")) |>
+  select(primaryTitle, averageRating, numVotes)
+
+print(spot_check)
+
+```
+
+5. Come up with a numerical threshold for a project to be a 'success'; that is,
+   determine a value $v$ such that movies above $v$ are all "solid" or better.
+
+```{r}
+# Join with TITLE_BASICS and filter for highly rated movies in one step
+solid_movies <- TITLE_RATINGS |>
+  inner_join(TITLE_BASICS, by = "tconst") |>
+  filter(averageRating >= 7.5, numVotes >= 1000) |>  # Example thresholds for solid movies
+  select(primaryTitle, averageRating, numVotes) |>
+  slice_head(n = 20)  # Get the top 20
+
+# Display the solid movies
+print(solid_movies)
+
+
+```
+
+
+
+:::
+
+You will use your success metric and threshold to complete the rest of this
+Mini-Project. You may, if you wish, restrict your attention to movies for the
+remainder of your analysis, though a good development executive should also
+consider making TV series. 
+
+### Examining Success by Genre and Decade
+
+Now that you have a working proxy for success, it's time to look at trends in
+success over time. Answer the following questions. Your responses should
+include at least 2 graphics.
+
+::: {.callout-tip}
+#### Task 4: Trends in Success Over Time
+Using questions like the following, identify a good "genre" for your next 
+film. You do not need to answer these questions precisely, but these are
+may help guide your thinking. 
+
+1. What was the genre with the most "successes" in each decade? 
+
+```{r}
+# Step 1: Filter for movies from 1980 onwards, calculate success, and assign decades
+# Step 1: Filter for movies from 1980 onwards, calculate success, and assign decades
+movies_by_genre_decade <- TITLE_RATINGS |>
+  inner_join(TITLE_BASICS, by = "tconst") |>
+  filter(titleType == "movie", as.numeric(startYear) >= 1950) |>  # Movies from 1980 onwards
+  mutate(success = averageRating * log(numVotes),                 # Calculate success metric
+         startYear = as.numeric(startYear),                       # Ensure numeric startYear
+         decade = 10 * (startYear %/% 10)) |>                    # Group by decade
+  separate_rows(genres, sep = ",") |>                             # Split multiple genres
+  group_by(decade, genres) |>                                     # Group by decade and genre
+  summarize(success_count = n(), .groups = 'drop') |>             # Count successes per genre
+  arrange(decade, desc(success_count))                            # Sort by decade and success count
+
+# Step 2: Find the genre with the most successes for each decade
+top_genre_by_decade <- movies_by_genre_decade |>
+  group_by(decade) |>                              # Group by decade
+  slice_max(success_count, n = 1)                  # Get the top genre per decade
+
+# Show the result
+print(top_genre_by_decade)
+
+
+
+
+
+
+
+```
+
+2. What genre consistently has the most "successes"? What genre used to reliably produced "successes" and has fallen out of favor? 
+
+```{r}
+
+# Step 1: Filter for movies from 1980 onwards, calculate success, and group by year
+movies_by_genre_year <- TITLE_RATINGS |>
+  inner_join(TITLE_BASICS, by = "tconst") |>
+  filter(titleType == "movie", as.numeric(startYear) >= 1980) |>  # Movies from 1980
+  mutate(success = averageRating * log(numVotes),                 # Calculate success metric
+         startYear = as.numeric(startYear)) |>                    # Ensure numeric startYear
+  separate_rows(genres, sep = ",") |>                             # Split multiple genres
+  group_by(startYear, genres) |>                                  # Group by year and genre
+  summarize(success_count = n(), .groups = 'drop')                # Count successes per genre per year
+
+# Step 2: Find the genre with the most successes for each year
+top_genre_by_year <- movies_by_genre_year |>
+  group_by(startYear) |>                              # Group by year
+  slice_max(success_count, n = 1)                     # Get the top genre per year
+
+# Step 3: Sort by most recent year first
+top_genre_by_year <- top_genre_by_year |>
+  arrange(desc(startYear))  # Sort by descending year
+
+# Show the result
+print(top_genre_by_year)
+
+
+
+
+```
+
+3. What genre has produced the most "successes" since 2010? Does it have the
+   highest success _rate_ or does it only have a large number of successes
+   because there are many productions in that genre? 
+   
+```{r}
+
+# Step 1: Filter for movies since 2010 and calculate success
+movies_since_2010 <- TITLE_RATINGS |>
+  inner_join(TITLE_BASICS, by = "tconst") |>
+  filter(titleType == "movie", as.numeric(startYear) >= 2010) |>  # Movies from 2010 onwards
+  mutate(success = averageRating * log(numVotes)) |>              # Calculate success metric
+  separate_rows(genres, sep = ",")                                # Split multiple genres
+
+# Step 2: Calculate both average success and total count for each genre
+genre_stats <- movies_since_2010 |>
+  group_by(genres) |>
+  summarize(
+    avg_success = mean(success, na.rm = TRUE),  # Calculate average success per genre
+    total_count = n(),                          # Total number of movies in the genre
+    .groups = 'drop'
+  )
+
+# Step 3.1: Organize by total count (descending)
+cat("\n--- Organized by Total Count (Descending) ---\n")
+genre_stats_by_count <- genre_stats |>
+  arrange(desc(total_count))  # Sort by total count in descending order
+print(genre_stats_by_count)
+
+# Step 3.2: Organize by average success (descending)
+cat("\n--- Organized by Average Success (Descending) ---\n")
+genre_stats_by_success <- genre_stats |>
+  arrange(desc(avg_success))  # Sort by average success in descending order
+print(genre_stats_by_success)
+
+
+
+
+```
+
+4. What genre has become more popular in recent years? 
+
+```{r}
+
+library(ggplot2)
+
+# Step 1: Filter for movies from the last 10 years and calculate success
+movies_last_10_years <- TITLE_RATINGS |>
+  inner_join(TITLE_BASICS, by = "tconst") |>
+  filter(titleType == "movie", as.numeric(startYear) >= 2014) |>  # Movies from 2014 onwards
+  mutate(startYear = as.numeric(startYear)) |>                    # Ensure numeric startYear
+  separate_rows(genres, sep = ",")                                # Split multiple genres
+
+# Step 2: Count number of movies per genre per year
+movies_by_year_genre <- movies_last_10_years |>
+  group_by(startYear, genres) |>
+  summarize(total_movies = n(), .groups = 'drop')                 # Count total movies per genre per year
+
+# Step 3: Find the top 10 genres with the most movies over the last 10 years
+top_10_genres <- movies_by_year_genre |>
+  group_by(genres) |>
+  summarize(total_movies = sum(total_movies)) |>
+  arrange(desc(total_movies)) |>
+  slice_head(n = 10) |>                                           # Select top 10 genres
+  pull(genres)                                                    # Get the top 10 genre names
+
+# Step 4: Filter the data for only the top 10 genres
+movies_top_10_genres <- movies_by_year_genre |>
+  filter(genres %in% top_10_genres)
+
+# Step 5: Plot the chart showing genre trends over the last 10 years
+ggplot(movies_top_10_genres, aes(x = startYear, y = total_movies, color = genres, group = genres)) +
+  geom_line(size = 1.2) +                                         # Plot lines for each genre
+  labs(title = "Top 10 Genres by Movie Count (2014-2024)",
+       x = "Year", y = "Number of Movies",
+       color = "Genre") +
+  theme_minimal() +                                                # Use minimal theme for cleaner plot
+  theme(legend.position = "bottom")                                # Position the legend at the bottom
+
+
+```
+
+Based on your findings, select a genre for your next project. Note that you may
+wish to avoid an "oversatured" genre; you just need to make the argument that
+your proposal is a _good_ investment, not necessarily the most _studio-produced
+focus-grouped committee-designed generic satisfying_ choice, so feel free to
+lean in to your own artistic preferences, as long as you can make an argument
+for them.
+
+### Successful Personnel in the Genre
+
+Now that you have selected a target genre, identify two actors and one director
+who will anchor your project. You want to identify key personnel who have
+worked in the genre before, with at least modest success, and who have at least
+one major success to their credit.
+
+As you develop your team, you may want to consider the
+following possibilities: 
+
+- An older established actor and an up-and-coming actor
+- An actor/director pair who have been successful together
+- An actor/director pair who are both highly successful but have never worked
+  together
+- A pair of established actors who have had success in many genres
+
+As you select your key personnel, consider what IMDb says they are known for;
+this will be useful in developing your marketing materials. 
+
+::: {.callout-tip}
+#### Task 5: Key Personnel
+
+Identify (at least) two actors and one director who you will target as
+the key talent for your movie. Write a short "pitch" as to why they are
+likely to be successful. You should support your pitch with at least one
+graphic and one table.
+:::
+
+### Nostalgia and Remakes
+
+Now that you have found a target genre and key talent for your project, you
+need a story. Like any good development executive, your first instinct should
+be to produce a remake of a classic film in the genre. 
+
+::: {.callout-tip}
+#### Task 6: Finding a Classic Movie to Remake
+
+Find a classic movie to remake with your key talent. The original should have
+a large number of IMDb ratings, a high average rating, and not have been remade
+in the past 25 years.[^4] 
+
+Once you have found your classic movie to remake, confirm whether key actors,
+directors, or writers from the original are still alive. If so, you need to 
+contact your legal department to ensure they can secure the rights to the 
+project. You may also want to include the classic actors as "fan service."
+:::
+
+## Putting It Together
+
+::: {.callout-tip}
+#### Task 7: Write and Deliver Your Pitch
+
+Now that you have completed your analysis, write an "elevator pitch" of 
+approximately 200-250 words for your proposed Hollywood project. This is the
+pitch you will bring to the studio head (your boss); if the studio head likes
+your pitch, you will be given a small sum of money to start securing the story
+rights and locking down tentative deals with key talent. 
+
+Your pitch needs to synthesize the analysis above into two to three quick
+and compelling points. (*E.g.*, "The market for animated young adult horror
+musicals has grown 200% in the past decade" or "Over 90% of Director D's movies
+are successes.") You need to present the strongest argument for each element
+of your pitch, including genre, director, actors, and story. 
+
+If your boss approves the pitch, you will need to have a brief trailer ready
+for the next quarterly earnings call. The marketing department has asked that
+you prepare a classic 90's style teaser for them. Adapt the following
+cliched formula for your pitch. 
+
+> From director D, the visionary mind between N1; and
+> From actor A, beloved star of N2; and
+> From actor A2, Hollywood icon of genre G,
+> Comes the timeless tail N3
+> A story of TOPIC, TOPIC, and TOPIC
+> Coming soon to a theater near you. 
+
+If you're creatively-minded, you could have some fun here using
+Generative tools to draft a script or mock up a movie poster for your
+pitch.
+
+:::
+
+## General Remarks
+
+As you approach this project, recall there are no right or wrong answers. You
+are exploring data looking for _exciting_ and _actionable_ findings. You have
+several key decisions to make and you can support them with data, but the
+decisions are ultimately yours. This project is an exercise both in
+the "nuts-and-bolts" of analyzing a large data set and in using data to inform
+and refine what is ultimately still a "gut feeling" qualitative business
+decision. 
+
+As you iterate on this project, you will see that seemingly small different
+choices can produce very different results. That's ok! As data analysts, we
+are constantly faced with small and essentially arbitrary decisions. An 
+important "meta-skill" is knowing which of these decisions radically
+change our findings and which are meaningless. (An arbitrary decision
+with no impact on the bottom line is harmless; an arbitrary decision
+that could entirely change the plan for the next ten years is a problem.)
+Our responsibility is to _clearly_ communicate these choices to our partners
+and clients: then we can receive their feedback on which way they would like
+to proceed. 
+
+Working in tools like `Quarto` and `R` helps here: if
+we provide clean and reproducible code, it should be easy to modify to see
+how our final conclusions are changed. Graphics also play an essential role
+in this form of clear communication: a 'point estimate' like "Action A is
+the best" is far less interpretable than a chart showing the predicted outcomes
+of several different actions. 
+
+As you approach this project, focus on justifying and communicating the choices
+you make. Structure your argument to communicate both key findings and uncertainties around them. Think about how you can use both document structure
+(headings vs subsections) and graphics to communicate with both clarity and nuance. 
+
+Good luck!
+
+------------------------------------------------------------------------
+
+This work ©2024 by [Michael Weylandt](https://michael-weylandt.com) is licensed under a [Creative Commons BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en) license. ![](http://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-sa.png){width="10%"}
+
+[^1]: It's not entirely transparent who IMDb decides what projects an actor
+or director is "known for". Still, it's a reasonable filter that leaves us
+with more than enough to work with for this project. 
+
+[^2]: Recall that _strings_ can contain essentially any data type and so
+are a safe fall-back. For instance, a column containing `1` and `a` can
+be losslessly represented by the string vector `c("1", "a")` but coercion
+to the numeric vector `c(1, NA)` is lossy. `R` tries very hard not to
+destroy any information and so it doesn't perform this conversion for us
+unless we explicitly request it.
+
+[^3]: Sadly, I couldn't find permissively licensed movie box office data. If
+you are aware of some, please let me know!
+
+[^4]: In order to see that a movie has not been recently remade, it is
+sufficient to confirm that no movie has been made with the same name in the 
+past 25 years. 
