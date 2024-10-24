@@ -1,5 +1,5 @@
 ---
-title: "{{< var course.short >}} Mini-Project #02: The Business of Show Business"
+title: "Mini-Project #02: The Business of Show Business"
 format:
   html:
     code-link: true
@@ -1189,24 +1189,3 @@ But their mission doesn’t stop with Crimea. As they gain momentum, they push f
 Their powerful partnership, thrilling action, and emotional journey to liberate Ukraine and beyond will create a movie that captures audiences and leaves a lasting impact.
 
 
-------------------------------------------------------------------------
-
-This work ©2024 by [Michael Weylandt](https://michael-weylandt.com) is licensed under a [Creative Commons BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en) license. ![](http://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-sa.png){width="10%"}
-
-[^1]: It's not entirely transparent who IMDb decides what projects an actor
-or director is "known for". Still, it's a reasonable filter that leaves us
-with more than enough to work with for this project. 
-
-[^2]: Recall that _strings_ can contain essentially any data type and so
-are a safe fall-back. For instance, a column containing `1` and `a` can
-be losslessly represented by the string vector `c("1", "a")` but coercion
-to the numeric vector `c(1, NA)` is lossy. `R` tries very hard not to
-destroy any information and so it doesn't perform this conversion for us
-unless we explicitly request it.
-
-[^3]: Sadly, I couldn't find permissively licensed movie box office data. If
-you are aware of some, please let me know!
-
-[^4]: In order to see that a movie has not been recently remade, it is
-sufficient to confirm that no movie has been made with the same name in the 
-past 25 years. 

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>STA 9750 2024 Submission Material - ?var:course.short Mini-Project #02: The Business of Show Business</title>
+<title>STA 9750 2024 Submission Material - Mini-Project #02: The Business of Show Business</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -160,7 +160,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><strong>?var:course.short</strong> Mini-Project #02: The Business of Show Business</h1>
+<h1 class="title">Mini-Project #02: The Business of Show Business</h1>
 </div>
 
 
@@ -366,7 +366,7 @@ chr (6): nconst, primaryName, birthYear, deathYear, primaryProfession, known...
 </section>
 <section id="data-sub-sampling" class="level3">
 <h3 class="anchored" data-anchor-id="data-sub-sampling">Data Sub-Sampling</h3>
-<p>This data is large enough that we’re going to need to immediately start down-selecting to get to a data set that we can analyze fluidly. For our <code>NAME_BASICS</code> table, we’ll restrict our attention to people with at least two “known for” credits.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>This data is large enough that we’re going to need to immediately start down-selecting to get to a data set that we can analyze fluidly. For our <code>NAME_BASICS</code> table, we’ll restrict our attention to people with at least two “known for” credits.[^1]</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Show Code</summary>
@@ -488,7 +488,7 @@ Pre-Processed Data
 </section>
 <section id="initial-exploration" class="level3">
 <h3 class="anchored" data-anchor-id="initial-exploration">Initial Exploration</h3>
-<p>At this point, let’s start examining our data more closely. Use the <code>glimpse</code> function to examine each table, taking care to note the <em>type</em> or <em>mode</em> of each column. For this data set, most columns appear to be read in as <em>character</em> (string) vectors, even when they should be numeric. This can occur when “null” values are represented in some non-standard way. For instance, in these files, we see that missing values are represented as <code>\\N</code>. <code>R</code> does not know that these are <code>NA</code> values and so retains them as strings.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p>At this point, let’s start examining our data more closely. Use the <code>glimpse</code> function to examine each table, taking care to note the <em>type</em> or <em>mode</em> of each column. For this data set, most columns appear to be read in as <em>character</em> (string) vectors, even when they should be numeric. This can occur when “null” values are represented in some non-standard way. For instance, in these files, we see that missing values are represented as <code>\\N</code>. <code>R</code> does not know that these are <code>NA</code> values and so retains them as strings.[^2]</p>
 <p>To fix this, we need to use:</p>
 <ol type="1">
 <li>the <code>mutate</code> command, since we’re changing the type of a column</li>
@@ -820,7 +820,7 @@ Disabled features: fontconfig, x11</code></pre>
 </section>
 <section id="quantifying-success" class="level3">
 <h3 class="anchored" data-anchor-id="quantifying-success">Quantifying Success</h3>
-<p>Our goal is to proposal successful new movies. To do so, we need a way of measuring the success of a movie given only IMDb ratings.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> While there’s no “magic number” for success, it is logical to assume that a successful project will have both a high average IMDb rating, indicating quality, and a large number of ratings, indicating broad awareness in the public.</p>
+<p>Our goal is to proposal successful new movies. To do so, we need a way of measuring the success of a movie given only IMDb ratings.[^3] While there’s no “magic number” for success, it is logical to assume that a successful project will have both a high average IMDb rating, indicating quality, and a large number of ratings, indicating broad awareness in the public.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1600,21 +1600,11 @@ Caused by warning:
 <li><strong>Milla Jovovich</strong>, a Ukrainian-born actress, brings authenticity and power to the role of Elena, a super-powered heroine whose abilities are like “Resident Evil on steroids.”</li>
 </ul>
 <p>Their powerful partnership, thrilling action, and emotional journey to liberate Ukraine and beyond will create a movie that captures audiences and leaves a lasting impact.</p>
-<hr>
-<p>This work ©2024 by <a href="https://michael-weylandt.com">Michael Weylandt</a> is licensed under a <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en">Creative Commons BY-NC-SA 4.0</a> license. <img src="http://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-sa.png" class="img-fluid" style="width:10.0%"></p>
 
 
 </section>
 
-
-<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
-
-<ol>
-<li id="fn1"><p>It’s not entirely transparent who IMDb decides what projects an actor or director is “known for”. Still, it’s a reasonable filter that leaves us with more than enough to work with for this project.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>Recall that <em>strings</em> can contain essentially any data type and so are a safe fall-back. For instance, a column containing <code>1</code> and <code>a</code> can be losslessly represented by the string vector <code>c("1", "a")</code> but coercion to the numeric vector <code>c(1, NA)</code> is lossy. <code>R</code> tries very hard not to destroy any information and so it doesn’t perform this conversion for us unless we explicitly request it.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>Sadly, I couldn’t find permissively licensed movie box office data. If you are aware of some, please let me know!<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
-</section></div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
