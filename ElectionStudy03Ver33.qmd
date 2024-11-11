@@ -1,0 +1,1436 @@
+---
+title: "Analysis of House and Presidential Election Data"
+author: "Hugo Andrade"
+date: "2024-11-03"
+format: html
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+### Step 1: Data Preparation Script
+
+#Run this script in R to clean, transform, and save the data for the .qmd file to use.
+
+```{r}
+# Load required libraries
+# Load the necessary package
+library(tidyverse)
+# or load tidyr directly if you don't want the entire tidyverse
+library(tidyr)
+
+
+library(dplyr)
+library(readr)
+
+# Paths for input and output files
+house_data_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/1976-2022-house.csv"
+presidential_data_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/1976-2020-president.csv"
+output_house_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/cleaned_house_vote_data.csv"
+output_presidential_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/cleaned_presidential_vote_data.csv"
+
+# Load the datasets
+vote_data <- read_csv(house_data_path)
+presidential_data <- read_csv(presidential_data_path)
+
+# Clean and Transform House Vote Data
+vote_data_clean <- vote_data %>%
+  select(year, state, state_po, district, candidate, party, candidatevotes, totalvotes) %>%
+  rename(
+    state_abbreviation = state_po,
+    candidate_name = candidate,
+    vote_count = candidatevotes,
+    total_vote_count = totalvotes
+  ) %>%
+  mutate(
+    year = as.integer(year),
+    district = as.integer(district),
+    vote_count = as.numeric(vote_count),
+    total_vote_count = as.numeric(total_vote_count)
+  ) %>%
+  drop_na()
+
+# Clean and Transform Presidential Data
+presidential_data_clean <- presidential_data %>%
+  select(year, state, state_po, candidate, party_simplified, candidatevotes, totalvotes) %>%
+  rename(
+    state_abbreviation = state_po,
+    candidate_name = candidate,
+    party = party_simplified,
+    vote_count = candidatevotes,
+    total_vote_count = totalvotes
+  ) %>%
+  mutate(
+    year = as.integer(year),
+    vote_count = as.numeric(vote_count),
+    total_vote_count = as.numeric(total_vote_count)
+  ) %>%
+  drop_na()
+
+
+# Save Cleaned Data for Use in Quarto Document
+write_csv(vote_data_clean, output_house_path)
+write_csv(presidential_data_clean, output_presidential_path)
+
+# Print confirmation messages
+cat("Cleaned House vote data saved to:", output_house_path, "\n")
+cat("Cleaned Presidential vote data saved to:", output_presidential_path, "\n")
+
+
+```
+
+This report explores trends in US House and Presidential elections, focusing on total votes by year and party, as well as unique insights from fusion voting and candidate performance.
+
+```{r}
+
+# Election Data Analysis
+## Setup
+# Load Libraries
+library(dplyr)
+library(ggplot2)
+library(readr)
+
+# Set file paths for cleaned data
+house_data_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/cleaned_house_vote_data.csv"
+presidential_data_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/cleaned_presidential_vote_data.csv"
+
+# Load Data
+house_data <- read_csv(house_data_path)
+presidential_data <- read_csv(presidential_data_path)
+```
+
+### Initial Exploration of Vote Count Data
+
+Question 1: Which states have gained and lost the most seats in the US House of Representatives between 1976 and 2022?
+
+```{r}
+
+# Calculate seat changes by state from 1976 to 2022
+house_seat_changes <- house_data %>%
+  filter(!is.na(district)) %>%
+  group_by(state, year) %>%
+  summarise(seat_count = n_distinct(district), .groups = 'drop') %>%
+  group_by(state) %>%
+  summarise(seats_gained_or_lost = max(seat_count) - min(seat_count), .groups = 'drop') %>%
+  arrange(desc(seats_gained_or_lost))
+
+# Display states with most gained and lost seats
+cat("States with the Most Gains and Losses in Seats (1976-2022):\n")
+print(house_seat_changes)
+
+# Analysis
+cat("\nAnalysis: The table above highlights states with the most significant changes
+in House seats between 1976 and 2022. States like Texas and Florida may show gains
+due to population increases, while states like New York and Pennsylvania might
+display losses as populations shifted to other regions. These trends reflect
+underlying demographic and economic shifts across the country.")
+
+
+```
+
+### Task 2: Impact of Fusion Voting in New York
+
+Question: Are there any elections where the fusion voting system in New York may have affected the outcome?
+
+```{r}
+# Analyze potential impact of fusion voting in New York
+ny_fusion_analysis <- house_data %>%
+  filter(state == "NEW YORK") %>%
+  group_by(year, district, candidate_name, party) %>%
+  summarise(total_votes = sum(vote_count), .groups = 'drop') %>%
+  mutate(main_party_votes = ifelse(party %in% c("DEMOCRAT", "REPUBLICAN"), total_votes, 0)) %>%
+  group_by(year, district) %>%
+  summarise(
+    actual_winner_votes = max(total_votes),
+    potential_winner_without_fusion = max(main_party_votes),
+    outcome_changed = actual_winner_votes != potential_winner_without_fusion,
+    .groups = 'drop'
+  ) %>%
+  filter(outcome_changed)
+
+# Display cases where the fusion system impacted the election outcome
+cat("Elections in New York where fusion voting may have impacted the outcome:\n")
+print(ny_fusion_analysis)
+
+# Analysis
+cat("\nAnalysis: The table shows instances where the fusion voting system in New York might
+have changed the election outcome. If 'outcome_changed' is TRUE, the result would likely
+differ without fusion voting. This indicates how fusion voting can influence elections by
+allowing candidates to aggregate votes across multiple party lines, potentially altering
+the competitive landscape.")
+
+
+```
+
+### Task 3: Comparison of Presidential vs. House Candidate Votes
+
+Question: Do presidential candidates tend to receive more or fewer votes than congressional candidates from their party in the same state?
+
+```{r}
+
+# Summarize total votes by year, state, and party for both datasets
+pres_votes_summary <- presidential_data %>%
+  group_by(year, state, party) %>%
+  summarise(pres_votes = sum(vote_count, na.rm = TRUE), .groups = 'drop')
+
+house_votes_summary <- house_data %>%
+  group_by(year, state, party) %>%
+  summarise(house_votes = sum(vote_count, na.rm = TRUE), .groups = 'drop')
+
+# Merge the summaries and calculate vote difference
+vote_comparison <- pres_votes_summary %>%
+  inner_join(house_votes_summary, by = c("year", "state", "party")) %>%
+  mutate(vote_difference = pres_votes - house_votes)
+
+# Display the summary
+cat("Vote Comparison Between Presidential and House Candidates:\n")
+print(vote_comparison)
+
+# Plot the difference in votes to see if there's a trend over time
+ggplot(vote_comparison, aes(x = year, y = vote_difference, color = party)) +
+  geom_line() +
+  facet_wrap(~state) +
+  labs(title = "Vote Difference Between Presidential and Congressional Candidates by Year and Party",
+       x = "Year", y = "Vote Difference (Presidential - House)") +
+  theme_minimal()
+
+# Analysis
+cat("\nAnalysis: The plot and table above show whether presidential candidates generally
+receive more votes than congressional candidates within each state and party. Positive
+values indicate years when presidential candidates were more popular than House candidates, 
+while negative values suggest the opposite. This trend reveals whether presidential races
+bring out more voters or reflect greater voter enthusiasm compared to congressional races.")
+
+```
+
+```{r}
+
+# Identify the states with the largest absolute vote differences
+top_states <- vote_comparison %>%
+  arrange(desc(abs(vote_difference))) %>%
+  head(10) %>%  # Adjust this number to include more or fewer states
+  select(state) %>%
+  distinct()
+
+# Filter vote comparison data for these top states
+vote_comparison_top <- vote_comparison %>%
+  filter(state %in% top_states$state)
+
+# Plot the difference in votes for top states
+ggplot(vote_comparison_top, aes(x = year, y = vote_difference, color = party)) +
+  geom_line() +
+  facet_wrap(~state, scales = "free_y") +
+  labs(title = "Vote Difference Between Presidential and Congressional Candidates by Year (Top States)",
+       x = "Year", y = "Vote Difference (Presidential - House)") +
+  theme_minimal()
+
+
+```
+
+### Task 4: Popularity Trends Over Time and Notable Outliers
+
+Question: Does this trend differ over time, across states, or across parties? Are any presidents particularly more or less popular than their co-partisans?
+
+```{r}
+
+# Ensure vote_comparison and vote_difference are defined correctly
+if ("vote_difference" %in% colnames(vote_comparison) && nrow(vote_comparison) > 0) {
+  
+  # Filter for notable outliers where the difference in votes is unusually large
+  notable_differences <- vote_comparison %>%
+    filter(abs(vote_difference) > quantile(abs(vote_difference), 0.95)) %>%
+    arrange(desc(abs(vote_difference)))
+
+  cat("Presidents who performed significantly better or worse than their co-partisans in Congress:\n")
+  print(notable_differences)
+  
+  # Analysis
+  cat("\nAnalysis: The table lists cases where a president was significantly more or less popular than
+  congressional candidates from the same party. Outliers indicate specific years or states where
+  presidential candidates either greatly exceeded or fell short of their co-partisans. This could
+  reflect unique candidate appeal, political circumstances, or party alignment issues within that election cycle.")
+  
+} else {
+  cat("Error: `vote_difference` column not found or `vote_comparison` dataset is empty.")
+}
+
+
+
+```
+
+```{r}
+# Load necessary libraries
+library(dplyr)
+library(readr)
+
+# Load the presidential data
+presidential_data <- read_csv("C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/cleaned_presidential_vote_data.csv")
+
+# Standardize party names to ensure consistency
+presidential_data <- presidential_data %>%
+  mutate(party = ifelse(tolower(party) == "democrat", "Democrat",
+                        ifelse(tolower(party) == "republican", "Republican", party)))
+
+# Step 1: Aggregate total votes per candidate per year
+total_votes_per_candidate <- presidential_data %>%
+  group_by(year, candidate_name, party) %>%
+  summarize(total_votes = sum(vote_count), .groups = "drop")
+
+# Variable 1: Winning president by popular vote
+winning_president_votes <- total_votes_per_candidate %>%
+  group_by(year) %>%
+  filter(total_votes == max(total_votes)) %>%
+  ungroup() %>%
+  select(year, winning_president = candidate_name, winning_party = party, winning_votes = total_votes)
+
+# Variable 2: Total Democratic popular votes by year with winning president information
+democrat_votes_by_year <- presidential_data %>%
+  filter(party == "Democrat") %>%
+  group_by(year) %>%
+  summarize(democrat_total_votes = sum(vote_count, na.rm = TRUE)) %>%
+  left_join(winning_president_votes, by = "year")
+
+# Variable 3: Total Republican popular votes by year with winning president information
+republican_votes_by_year <- presidential_data %>%
+  filter(party == "Republican") %>%
+  group_by(year) %>%
+  summarize(republican_total_votes = sum(vote_count, na.rm = TRUE)) %>%
+  left_join(winning_president_votes, by = "year")
+
+# The variables are now saved:
+# - winning_president_votes
+# - democrat_votes_by_year
+# - republican_votes_by_year
+
+
+
+
+```
+
+```{r}
+
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(readr)
+
+# Load the data
+presidential_data <- read_csv("C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/cleaned_presidential_vote_data.csv")
+
+# Standardize party names
+presidential_data <- presidential_data %>%
+  mutate(party = ifelse(tolower(party) == "democrat", "Democrat",
+                        ifelse(tolower(party) == "republican", "Republican", party)))
+
+# Step 1: Aggregate total votes per candidate per year
+total_votes_per_candidate <- presidential_data %>%
+  group_by(year, candidate_name, party) %>%
+  summarize(total_votes = sum(vote_count), .groups = "drop")
+
+# Step 2: Identify the winning candidate for each year based on popular vote
+winning_presidents <- total_votes_per_candidate %>%
+  group_by(year) %>%
+  filter(total_votes == max(total_votes)) %>%
+  ungroup()
+
+# Step 3: Calculate total votes by party for each year
+party_votes_by_year <- total_votes_per_candidate %>%
+  group_by(year, party) %>%
+  summarize(total_party_votes = sum(total_votes), .groups = "drop")
+
+# Separate data for Democrats and Republicans
+democrat_votes_by_year <- party_votes_by_year %>% filter(party == "Democrat")
+republican_votes_by_year <- party_votes_by_year %>% filter(party == "Republican")
+
+# Plot 1: Total Votes for Winning Presidential Candidates with rotated names
+winning_president_plot <- ggplot(winning_presidents, aes(x = year, y = total_votes, fill = party)) +
+  geom_bar(stat = "identity", color = "black") +
+  geom_text(aes(label = candidate_name), vjust = -0.5, color = "black", angle = 90, size = 3) +
+  scale_fill_manual(values = c("Democrat" = "blue", "Republican" = "red")) +
+  labs(title = "Total Votes for Winning Presidential Candidates (1976-2020)",
+       x = "Year", y = "Total Votes", fill = "Party") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+# Plot 2: Line chart for Democrat and Republican votes by year
+party_votes_plot <- ggplot() +
+  geom_line(data = democrat_votes_by_year, aes(x = year, y = total_party_votes, color = "Democrat Votes"), size = 1) +
+  geom_line(data = republican_votes_by_year, aes(x = year, y = total_party_votes, color = "Republican Votes"), size = 1) +
+  scale_color_manual(values = c("Democrat Votes" = "blue", "Republican Votes" = "red")) +
+  labs(title = "Total Votes by Year for Democratic and Republican Parties",
+       x = "Year", y = "Total Votes", color = "Party") +
+  theme_minimal()
+
+# Display the plots
+print(winning_president_plot)
+print(party_votes_plot)
+
+
+
+
+
+
+```
+
+```{r}
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(readr)
+
+# Load the presidential data
+presidential_data <- read_csv("C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/cleaned_presidential_vote_data.csv")
+
+# Standardize party names
+presidential_data <- presidential_data %>%
+  mutate(party = ifelse(tolower(party) == "democrat", "Democrat",
+                        ifelse(tolower(party) == "republican", "Republican", party)))
+
+# Step 1: Aggregate total votes per party per year (using 'vote_count' instead of 'delegate_votes')
+electoral_votes_by_party <- presidential_data %>%
+  group_by(year, party) %>%
+  summarize(total_votes = sum(vote_count, na.rm = TRUE), .groups = "drop")
+
+# Separate the data for Democrats and Republicans
+democrat_votes_by_year <- electoral_votes_by_party %>% filter(party == "Democrat")
+republican_votes_by_year <- electoral_votes_by_party %>% filter(party == "Republican")
+
+# Plot: Line chart for Democrat and Republican votes by year
+votes_plot <- ggplot() +
+  geom_line(data = democrat_votes_by_year, aes(x = year, y = total_votes, color = "Democrat"), size = 1) +
+  geom_line(data = republican_votes_by_year, aes(x = year, y = total_votes, color = "Republican"), size = 1) +
+  scale_color_manual(values = c("Democrat" = "blue", "Republican" = "red")) +
+  labs(title = "Total Votes by Year for Democratic and Republican Parties",
+       x = "Year", y = "Total Votes", color = "Party") +
+  theme_minimal()
+
+# Display the plot
+print(votes_plot)
+
+
+```
+
+```{r}
+
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(maps)
+library(sf)
+
+# Load US states map data
+states <- map_data("state")
+
+# Create a data frame for electoral votes
+electoral_votes <- data.frame(
+  region = tolower(c("Alabama", "Kentucky", "North Dakota", "Alaska", "Louisiana", "Ohio", 
+                     "Arizona", "Maine", "Oklahoma", "Arkansas", "Maryland", "Oregon", 
+                     "California", "Massachusetts", "Pennsylvania", "Colorado", "Michigan", 
+                     "Rhode Island", "Connecticut", "Minnesota", "South Carolina", "Delaware", 
+                     "Mississippi", "South Dakota", "District of Columbia", "Missouri", "Tennessee", 
+                     "Florida", "Montana", "Texas", "Georgia", "Nebraska", "Utah", "Hawaii", 
+                     "Nevada", "Vermont", "Idaho", "New Hampshire", "Virginia", "Illinois", 
+                     "New Jersey", "Washington", "Indiana", "New Mexico", "West Virginia", 
+                     "Iowa", "New York", "Wisconsin", "Kansas", "North Carolina", "Wyoming")),
+  votes = c(9, 8, 3, 3, 8, 17, 11, 4, 7, 6, 10, 8, 54, 11, 19, 10, 15, 4, 7, 10, 
+            9, 3, 6, 3, 3, 10, 11, 30, 4, 40, 16, 5, 6, 4, 6, 3, 4, 4, 13, 19, 
+            14, 12, 11, 5, 4, 6, 28, 10, 6, 16, 3)
+)
+
+# Merge electoral votes data with states map data
+states_electoral <- states %>%
+  left_join(electoral_votes, by = "region")
+
+# Plot the map
+ggplot(data = states_electoral, aes(long, lat, group = group, fill = votes)) +
+  geom_polygon(color = "white") +
+  coord_fixed(1.3) +
+  scale_fill_gradient(low = "#B3D3E5", high = "#1D4C95", na.value = "gray90") +
+  labs(
+    title = "Number of Electoral Votes by State",
+    subtitle = "Electoral votes for the 2024 election are allocated to states based on the 2020 Census.",
+    fill = "Votes"
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(size = 18, hjust = 0.5),
+    plot.subtitle = element_text(size = 12, hjust = 0.5),
+    legend.position = "right"
+  )
+
+```
+
+
+
+### Task 4: Automate Zip File Extraction
+
+#To automate the extraction of .shp files from ZIP archives, we’ll create a function called read_shp_from_zip(). This function will take in the name of a ZIP file, extract #the .shp file within it, and read it into R using read_sf() from the sf package.
+
+```{r}
+
+
+#list.files("C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/congress_shapefiles/congress_094/districtShapes")
+
+
+
+```
+
+### Code to Load and Combine Shapefiles from Subfolders
+
+## Step 1: Write a Function to Extract and Read Shapefiles from Zip Archives
+
+```{r}
+
+# Load necessary libraries
+library(sf)
+library(ggplot2)
+
+# Define the path to the specific shapefile
+shapefile_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/congress_shapefiles/congress_094/districtShapes/districts094.shp"
+
+# Read the shapefile
+shapefile_data_2000 <- read_sf(shapefile_path)
+
+# Check structure to confirm successful load
+print(summary(shapefile_data_2000))
+
+# Save the shapefile data to an RDS file for future use
+save_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/shapefile_data_2000.rds"
+saveRDS(shapefile_data_2000, file = save_path)
+
+# Plot the shapefile using ggplot2
+ggplot(shapefile_data_2000) +
+  geom_sf(aes(geometry = geometry), fill = "lightblue", color = "black") +
+  labs(title = "Congressional Districts for the 94th Congress (Year 2000)",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal()
+
+# Display the column names
+colnames(shapefile_data_2000)
+
+# Display the first few rows of the shapefile data
+head(shapefile_data_2000)
+
+# Display the structure of the shapefile data
+str(shapefile_data_2000)
+
+```
+
+```{r}
+# Load necessary libraries
+library(dplyr)
+
+# Define the file path to the election data CSV
+file_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/cleaned_house_vote_data.csv"
+
+# Read the election data from the CSV file
+election_data <- read.csv(file_path)
+
+# Filter the data for the year 2000
+election_data_2000 <- election_data %>%
+  filter(year == 2000)
+
+# Determine the winning party in each state by finding the highest vote count for each state
+state_winners <- election_data_2000 %>%
+  group_by(state) %>%
+  slice_max(order_by = vote_count, n = 1) %>%  # Replace candidatevotes with vote_count if that's the column name
+  ungroup() %>%
+  select(state, party)
+
+# Separate the states into two lists: one for Democrat wins and one for Republican wins
+democrat_states <- state_winners %>%
+  filter(party == "DEMOCRAT") %>%
+  pull(state)
+
+republican_states <- state_winners %>%
+  filter(party == "REPUBLICAN") %>%
+  pull(state)
+
+# Print the lists of states won by each party
+cat("States won by Democrats:\n")
+print(democrat_states)
+
+cat("\nStates won by Republicans:\n")
+print(republican_states)
+
+
+```
+
+```{r}
+
+# Load necessary libraries
+library(sf)
+library(ggplot2)
+library(dplyr)
+
+# Define paths
+shapefile_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/congress_shapefiles/congress_094/districtShapes/districts094.shp"
+
+# Load shapefile data
+shapefile_data_2000 <- read_sf(shapefile_path)
+
+# Lists of states by winning party from the 2000 election data
+democrat_states <- c("ARKANSAS", "CONNECTICUT", "HAWAII", "MAINE", "MASSACHUSETTS", "NEW MEXICO", 
+                     "NEW YORK", "NORTH CAROLINA", "NORTH DAKOTA", "RHODE ISLAND", "WASHINGTON", "WEST VIRGINIA")
+
+republican_states <- c("ALABAMA", "ALASKA", "ARIZONA", "CALIFORNIA", "COLORADO", "DELAWARE", 
+                       "FLORIDA", "GEORGIA", "IDAHO", "ILLINOIS", "INDIANA", "IOWA", "KANSAS", 
+                       "KENTUCKY", "LOUISIANA", "MARYLAND", "MICHIGAN", "MINNESOTA", "MISSISSIPPI", 
+                       "MISSOURI", "MONTANA", "NEBRASKA", "NEVADA", "NEW HAMPSHIRE", "NEW JERSEY", 
+                       "OHIO", "OKLAHOMA", "OREGON", "PENNSYLVANIA", "SOUTH CAROLINA", 
+                       "SOUTH DAKOTA", "TENNESSEE", "TEXAS", "UTAH", "VIRGINIA", "WISCONSIN", "WYOMING")
+
+# Add a new column to the shapefile data to store the party color based on the state
+shapefile_data_2000 <- shapefile_data_2000 %>%
+  mutate(party = case_when(
+    STATENAME == "TEXAS" ~ "REPUBLICAN",  # Explicitly mark Texas as Republican
+    STATENAME %in% democrat_states ~ "DEMOCRAT",
+    STATENAME %in% republican_states ~ "REPUBLICAN"
+  ))
+
+# Plot with color coding for winning parties, emphasizing Texas in red
+ggplot(shapefile_data_2000) +
+  geom_sf(aes(geometry = geometry, fill = party), color = "black") +
+  scale_fill_manual(values = c("DEMOCRAT" = "blue", "REPUBLICAN" = "red")) +
+  labs(title = "Congressional Districts by Winning Party for the 94th Congress (Year 2000)",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal()
+
+
+```
+
+```{r}
+
+# Load necessary libraries
+library(sf)
+library(ggplot2)
+library(dplyr)
+
+# Define paths
+shapefile_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/congress_shapefiles/congress_094/districtShapes/districts094.shp"
+
+# Load shapefile data
+shapefile_data_2000 <- read_sf(shapefile_path)
+
+# Lists of states by winning party from the 2000 election data
+democrat_states <- c("ARKANSAS", "CONNECTICUT", "HAWAII", "MAINE", "MASSACHUSETTS", "NEW MEXICO", 
+                     "NEW YORK", "NORTH CAROLINA", "NORTH DAKOTA", "RHODE ISLAND", "WASHINGTON", "WEST VIRGINIA")
+
+republican_states <- c("ALABAMA", "ALASKA", "ARIZONA", "CALIFORNIA", "COLORADO", "DELAWARE", 
+                       "FLORIDA", "GEORGIA", "IDAHO", "ILLINOIS", "INDIANA", "IOWA", "KANSAS", 
+                       "KENTUCKY", "LOUISIANA", "MARYLAND", "MICHIGAN", "MINNESOTA", "MISSISSIPPI", 
+                       "MISSOURI", "MONTANA", "NEBRASKA", "NEVADA", "NEW HAMPSHIRE", "NEW JERSEY", 
+                       "OHIO", "OKLAHOMA", "OREGON", "PENNSYLVANIA", "SOUTH CAROLINA", 
+                       "SOUTH DAKOTA", "TENNESSEE", "TEXAS", "UTAH", "VIRGINIA", "WISCONSIN", "WYOMING")
+
+# Add a new column to the shapefile data to store the party color based on the state
+shapefile_data_2000 <- shapefile_data_2000 %>%
+  mutate(party = case_when(
+    STATENAME %in% democrat_states ~ "DEMOCRAT",
+    STATENAME %in% republican_states ~ "REPUBLICAN",
+    TRUE ~ NA_character_  # Assign NA for states with no party assignment
+  ))
+
+# Plot with color coding for winning parties, leaving unassigned areas transparent
+ggplot(shapefile_data_2000) +
+  geom_sf(aes(geometry = geometry, fill = party), color = "black") +
+  scale_fill_manual(values = c("DEMOCRAT" = "blue", "REPUBLICAN" = "red"), na.value = "transparent") +
+  labs(title = "Congressional Districts by Winning Party for the 94th Congress (Year 2000)",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal()
+
+
+```
+
+```{r}
+
+# Load necessary libraries
+library(sf)
+library(ggplot2)
+library(dplyr)
+
+# Define paths
+shapefile_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/congress_shapefiles/congress_094/districtShapes/districts094.shp"
+
+# Load shapefile data
+shapefile_data_2000 <- read_sf(shapefile_path)
+
+# Ensure Alaska is set to blue (Democratic) for this visualization
+democrat_states <- c(democrat_states, "ALASKA")  # Add Alaska to Democrat states if not present
+
+# Add a new column to the shapefile data to store the party color based on the state
+shapefile_data_2000 <- shapefile_data_2000 %>%
+  mutate(party = case_when(
+    STATENAME %in% democrat_states ~ "DEMOCRAT",
+    STATENAME %in% republican_states ~ "REPUBLICAN",
+    TRUE ~ NA_character_  # Assign NA for states with no party assignment
+  ))
+
+# Plot with color coding for winning parties, ensuring Alaska is blue
+ggplot(shapefile_data_2000) +
+  geom_sf(aes(geometry = geometry, fill = party), color = "black") +
+  scale_fill_manual(values = c("DEMOCRAT" = "blue", "REPUBLICAN" = "red"), na.value = "transparent") +
+  labs(title = "Congressional Districts by Winning Party for the 94th Congress (Year 2000)",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal()
+
+
+```
+
+```{r}
+
+
+# Load necessary libraries
+library(sf)
+library(ggplot2)
+library(dplyr)
+
+# Define paths
+shapefile_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/congress_shapefiles/congress_094/districtShapes/districts094.shp"
+
+# Load shapefile data
+shapefile_data_2000 <- read_sf(shapefile_path)
+
+# Lists of states by winning party from the 2000 election data
+democrat_states <- c("ARKANSAS", "CONNECTICUT", "HAWAII", "MAINE", "MASSACHUSETTS", "NEW MEXICO", 
+                     "NEW YORK", "NORTH CAROLINA", "NORTH DAKOTA", "RHODE ISLAND", "WASHINGTON", "WEST VIRGINIA")
+
+republican_states <- c("ALABAMA", "ALASKA", "ARIZONA", "CALIFORNIA", "COLORADO", "DELAWARE", 
+                       "FLORIDA", "GEORGIA", "IDAHO", "ILLINOIS", "INDIANA", "IOWA", "KANSAS", 
+                       "KENTUCKY", "LOUISIANA", "MARYLAND", "MICHIGAN", "MINNESOTA", "MISSISSIPPI", 
+                       "MISSOURI", "MONTANA", "NEBRASKA", "NEVADA", "NEW HAMPSHIRE", "NEW JERSEY", 
+                       "OHIO", "OKLAHOMA", "OREGON", "PENNSYLVANIA", "SOUTH CAROLINA", 
+                       "SOUTH DAKOTA", "TENNESSEE", "TEXAS", "UTAH", "VIRGINIA", "WISCONSIN", "WYOMING")
+
+# Add a new column to the shapefile data to store the party color based on the state
+shapefile_data_2000 <- shapefile_data_2000 %>%
+  mutate(party = case_when(
+    STATENAME %in% democrat_states ~ "DEMOCRAT",
+    STATENAME %in% republican_states ~ "REPUBLICAN",
+    TRUE ~ NA_character_  # Assign NA for states with no party assignment
+  ))
+
+# Plot with color coding for winning parties
+ggplot(shapefile_data_2000) +
+  geom_sf(aes(fill = party), color = "black") +
+  scale_fill_manual(values = c("DEMOCRAT" = "blue", "REPUBLICAN" = "red"), na.value = "transparent") +
+  labs(title = "Congressional Districts by Winning Party for the 94th Congress (Year 2000)",
+       x = "Longitude", y = "Latitude") +
+  theme_minimal()
+```
+
+```{r}
+
+# Load necessary libraries
+library(dplyr)
+
+# Remove geometry temporarily and count districts by state
+district_counts_by_state <- shapefile_data_2000 %>%
+  st_set_geometry(NULL) %>%  # Remove geometry temporarily
+  group_by(STATENAME) %>%
+  summarize(num_districts = n_distinct(DISTRICT)) %>%
+  arrange(desc(num_districts))
+
+# Print the results
+cat("Number of Districts by State:\n")
+print(district_counts_by_state)
+
+
+```
+
+```{r}
+# Install and load necessary libraries
+if (!requireNamespace("sf", quietly = TRUE)) install.packages("sf")
+if (!requireNamespace("ggplot2", quietly = TRUE)) install.packages("ggplot2")
+
+library(sf)
+library(ggplot2)
+
+# Define the path to the shapefile (update with your specific file path)
+shapefile_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/congress_shapefiles/congress_094/districtShapes/districts094.shp"
+
+# Load the shapefile data as an sf object
+districts <- read_sf(shapefile_path)
+
+# Check the structure of the shapefile data to confirm it's loaded correctly
+print(summary(districts))
+
+# Add a color column to color California districts blue, others red
+districts$color <- ifelse(districts$STATENAME == "California", "blue", "red")
+
+# Plot the map with colors for each district
+ggplot(data = districts) + 
+  geom_sf(aes(fill = color)) +
+  scale_fill_identity() +
+  theme_minimal() +
+  labs(title = "State Districts (California in Blue, Others in Red)")
+
+```
+
+```{r}
+
+# Load necessary libraries
+library(dplyr)
+
+# Define the file path to the election data CSV
+file_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/cleaned_house_vote_data.csv"
+
+# Read the election data
+vote_data <- read.csv(file_path)
+
+# Filter the data for the year 2000
+vote_data_2000 <- vote_data %>%
+  filter(year == 2000)
+
+# Summarize total votes by state and party
+state_party_votes <- vote_data_2000 %>%
+  group_by(state, party) %>%
+  summarize(total_votes = sum(vote_count, na.rm = TRUE)) %>%
+  ungroup()
+
+# Determine the winning party for each state
+state_winner <- state_party_votes %>%
+  group_by(state) %>%
+  slice_max(order_by = total_votes, n = 1) %>%
+  ungroup() %>%
+  mutate(winning_party = if_else(party == "DEMOCRAT", "Blue", "Red")) %>%
+  select(state, winning_party)
+
+# Create variables to store the Red and Blue states
+blue_states <- state_winner %>%
+  filter(winning_party == "Blue") %>%
+  pull(state)
+
+red_states <- state_winner %>%
+  filter(winning_party == "Red") %>%
+  pull(state)
+
+# Print the results
+cat("Winning Party by State for the Year 2000:\n")
+print(state_winner)
+
+cat("\nBlue States (Democrat Wins):\n")
+print(blue_states)
+
+cat("\nRed States (Republican Wins):\n")
+print(red_states)
+
+
+```
+
+```{r}
+
+# Define the path to the shapefile
+shapefile_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/congress_shapefiles/congress_094/districtShapes/districts094.shp"
+
+# Load the shapefile for congressional districts
+districts <- read_sf(shapefile_path)
+
+# Assume blue_states and red_states are already defined
+# For example:
+# blue_states <- c("California", "New York", "Washington")  
+# red_states <- c("Texas", "Florida", "Alabama")            
+
+# Add a color column based on whether the district is in a blue or red state
+districts$color <- ifelse(districts$STATENAME %in% democrat_states, "blue",
+                          ifelse(districts$STATENAME %in% republican_states, "red", NA))
+
+# Plot the map with colors for each district
+ggplot(data = districts) + 
+  geom_sf(aes(fill = color)) +
+  scale_fill_identity() +
+  theme_minimal() +
+  labs(title = "State Districts by Party (Blue and Red States)")
+
+
+
+
+```
+
+```{r}
+
+
+# Load necessary libraries
+library(sf)
+library(ggplot2)
+library(dplyr)
+
+# Define the path to the shapefile
+shapefile_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/congress_shapefiles/congress_094/districtShapes/districts094.shp"
+
+# Load the shapefile for congressional districts
+districts <- read_sf(shapefile_path)
+
+# Define mutually exclusive lists for blue and red states
+
+blue_party_states <- c("California", "New York", "Washington", "Oregon", "Maryland", 
+                       "Connecticut", "Delaware", "Hawaii", "Illinois", "Maine", 
+                       "Massachusetts", "Michigan", "Minnesota", "Nevada", 
+                       "New Jersey", "New Mexico", "Rhode Island", "Vermont", 
+                       "Virginia", "Wisconsin", "Colorado","Pennsylvania", "New Hampshire" )
+
+red_party_states <- c("Texas", "Florida", "Georgia", "Arizona", "Ohio", 
+                      "Alabama", "Alaska", "Arkansas", "Idaho", "Indiana", 
+                      "Iowa", "Kansas", "Kentucky", "Louisiana", "Mississippi", 
+                      "Missouri", "Montana", "Nebraska", "North Carolina", 
+                      "North Dakota", "Oklahoma", "South Carolina", "South Dakota", 
+                      "Tennessee", "Utah", "West Virginia", "Wyoming")
+
+
+# Add a color column based on whether the district is in a blue or red state
+districts$color <- ifelse(districts$STATENAME %in% blue_party_states, "blue",
+                          ifelse(districts$STATENAME %in% red_party_states, "red", NA))
+
+# Plot the map with colors for each district
+ggplot(data = districts) + 
+  geom_sf(aes(fill = color), color = NA) +  # Remove border lines by setting color to NA
+  scale_fill_identity() +
+  theme_minimal() +
+  labs(title = "State Districts by Party (Blue and Red States)")
+
+# Check for any districts without a color
+districts_missing_color <- districts %>% filter(is.na(color))
+print(districts_missing_color)
+
+
+```
+
+```{r}
+
+# Load necessary libraries
+library(sf)
+library(ggplot2)
+library(dplyr)
+
+# Define the path to the shapefile
+shapefile_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/congress_shapefiles/congress_094/districtShapes/districts094.shp"
+
+# Load the shapefile for congressional districts
+districts <- read_sf(shapefile_path)
+
+# Define regions
+northeast_states <- c("Connecticut", "Maine", "Massachusetts", "New Hampshire", "Rhode Island", 
+                      "Vermont", "New Jersey", "New York", "Pennsylvania")
+
+southeast_states <- c("Alabama", "Arkansas", "Delaware", "Florida", "Georgia", "Kentucky", 
+                      "Louisiana", "Maryland", "Mississippi", "North Carolina", "South Carolina", 
+                      "Tennessee", "Virginia", "West Virginia")
+
+central_states <- c("Illinois", "Indiana", "Iowa", "Kansas", "Michigan", "Minnesota", "Missouri", 
+                    "Nebraska", "North Dakota", "Ohio", "Oklahoma", "South Dakota", "Wisconsin")
+
+southwest_states <- c("Arizona", "New Mexico", "Texas", "Nevada")
+
+northwest_states <- c("Alaska", "Idaho", "Montana", "Oregon", "Washington", "Wyoming", "Utah", 
+                      "Colorado")
+
+# Define blue and red states for 2020
+blue_party_states_2020 <- c("California", "New York", "Washington", "Oregon", "Maryland", 
+                            "Connecticut", "Delaware", "Hawaii", "Illinois", "Maine", 
+                            "Massachusetts", "Michigan", "Minnesota", "Nevada", 
+                            "New Jersey", "New Mexico", "Rhode Island", "Vermont", 
+                            "Virginia", "Wisconsin", "Colorado", "Pennsylvania", "New Hampshire")
+
+red_party_states_2020 <- c("Texas", "Florida", "Georgia", "Arizona", "Ohio", 
+                           "Alabama", "Alaska", "Arkansas", "Idaho", "Indiana", 
+                           "Iowa", "Kansas", "Kentucky", "Louisiana", "Mississippi", 
+                           "Missouri", "Montana", "Nebraska", "North Carolina", 
+                           "North Dakota", "Oklahoma", "South Carolina", "South Dakota", 
+                           "Tennessee", "Utah", "West Virginia", "Wyoming")
+
+# Add a color column based on whether the district is in a blue or red state for 2020
+districts$color <- ifelse(districts$STATENAME %in% blue_party_states_2020, "blue",
+                          ifelse(districts$STATENAME %in% red_party_states_2020, "red", NA))
+
+# Define function to plot and analyze regions
+plot_region <- function(region_states, region_name) {
+  # Filter districts for the specific region
+  region_districts <- districts %>% filter(STATENAME %in% region_states)
+  
+  # Count blue and red districts
+  blue_count <- sum(region_districts$color == "blue", na.rm = TRUE)
+  red_count <- sum(region_districts$color == "red", na.rm = TRUE)
+  
+  # Determine majority color
+  majority <- if (blue_count > red_count) "Blue" else "Red"
+  
+  # Plot the map for the region
+  ggplot(data = region_districts) + 
+    geom_sf(aes(fill = color), color = NA) +
+    scale_fill_identity() +
+    theme_minimal() +
+    labs(title = paste(region_name, "Region - Majority:", majority),
+         subtitle = paste("Blue:", blue_count, "Red:", red_count))
+}
+
+# Plot each region and comment on majority
+northeast_plot <- plot_region(northeast_states, "Northeast")
+southeast_plot <- plot_region(southeast_states, "Southeast")
+central_plot <- plot_region(central_states, "Central")
+southwest_plot <- plot_region(southwest_states, "Southwest")
+northwest_plot <- plot_region(northwest_states, "Northwest")
+
+# Print each plot (for display in interactive environments)
+print(northeast_plot)
+print(southeast_plot)
+print(central_plot)
+print(southwest_plot)
+print(northwest_plot)
+
+
+```
+
+```{r}
+
+# Load necessary libraries
+library(sf)
+library(ggplot2)
+library(dplyr)
+
+# Define the path to the shapefile for districts
+shapefile_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/congress_shapefiles/congress_094/districtShapes/districts094.shp"
+
+# Load the shapefile for congressional districts
+districts <- read_sf(shapefile_path)
+
+# Define 2020 blue and red states
+blue_party_states_2020 <- c("California", "New York", "Washington", "Oregon", "Maryland", 
+                            "Connecticut", "Delaware", "Hawaii", "Illinois", "Maine", 
+                            "Massachusetts", "Michigan", "Minnesota", "Nevada", 
+                            "New Jersey", "New Mexico", "Rhode Island", "Vermont", 
+                            "Virginia", "Wisconsin", "Colorado", "Pennsylvania", "New Hampshire")
+
+red_party_states_2020 <- c("Texas", "Florida", "Georgia", "Arizona", "Ohio", 
+                           "Alabama", "Alaska", "Arkansas", "Idaho", "Indiana", 
+                           "Iowa", "Kansas", "Kentucky", "Louisiana", "Mississippi", 
+                           "Missouri", "Montana", "Nebraska", "North Carolina", 
+                           "North Dakota", "Oklahoma", "South Carolina", "South Dakota", 
+                           "Tennessee", "Utah", "West Virginia", "Wyoming")
+
+# Add a color column to the districts based on the 2020 winning party
+districts$color <- ifelse(districts$STATENAME %in% blue_party_states_2020, "blue",
+                          ifelse(districts$STATENAME %in% red_party_states_2020, "red", NA))
+
+# Step 1: Aggregate districts into single state polygons
+states <- districts %>%
+  group_by(STATENAME) %>%
+  summarize(geometry = st_union(geometry), .groups = "drop")
+
+# Define regions
+northeast <- c("Maine", "New Hampshire", "Vermont", "Massachusetts", "Rhode Island", 
+               "Connecticut", "New York", "New Jersey", "Pennsylvania")
+southeast <- c("Delaware", "Maryland", "Virginia", "West Virginia", "Kentucky", 
+               "Tennessee", "North Carolina", "South Carolina", "Georgia", "Florida", "Alabama", "Mississippi")
+midwest <- c("Ohio", "Indiana", "Illinois", "Michigan", "Wisconsin", 
+             "Minnesota", "Iowa", "Missouri", "North Dakota", "South Dakota", "Nebraska", "Kansas")
+southwest <- c("Texas", "Oklahoma", "New Mexico", "Arizona")
+west <- c("Colorado", "Wyoming", "Montana", "Idaho", "Washington", "Oregon", "California", "Nevada", "Utah", "Alaska", "Hawaii")
+
+# Function to plot a region
+plot_region <- function(region_states, title) {
+  region_states_data <- states %>% filter(STATENAME %in% region_states)
+  
+  ggplot() + 
+    geom_sf(data = districts %>% filter(STATENAME %in% region_states), aes(fill = color), color = NA) +
+    geom_sf(data = region_states_data, fill = NA, color = "#333333", size = 0.7) +
+    scale_fill_identity() +
+    theme_minimal() +
+    labs(title = title)
+}
+
+# Plot each region
+plot_northeast <- plot_region(northeast, "Northeast Region - Party Distribution")
+plot_southeast <- plot_region(southeast, "Southeast Region - Party Distribution")
+plot_midwest <- plot_region(midwest, "Midwest Region - Party Distribution")
+plot_southwest <- plot_region(southwest, "Southwest Region - Party Distribution")
+plot_west <- plot_region(west, "Western Region - Party Distribution")
+
+# Display the plots
+plot_northeast
+plot_southeast
+plot_midwest
+plot_southwest
+plot_west
+
+
+```
+
+```{r}
+
+
+
+
+
+```
+
+```{r}
+
+# Install necessary packages if not already installed
+if (!requireNamespace("sf", quietly = TRUE)) install.packages("sf")
+if (!requireNamespace("ggplot2", quietly = TRUE)) install.packages("ggplot2")
+if (!requireNamespace("dplyr", quietly = TRUE)) install.packages("dplyr")
+
+# Load necessary libraries
+library(sf)
+library(ggplot2)
+library(dplyr)
+
+# Define the path to the shapefile (replace with your actual path)
+shapefile_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/congress_shapefiles/congress_094/districtShapes/districts094.shp"
+
+# Load the shapefile
+districts <- read_sf(shapefile_path)
+
+# Create a data frame for electoral votes
+electoral_votes <- data.frame(
+  STATENAME = c("Alabama", "Kentucky", "North Dakota", "Alaska", "Louisiana", "Ohio", 
+                "Arizona", "Maine", "Oklahoma", "Arkansas", "Maryland", "Oregon", 
+                "California", "Massachusetts", "Pennsylvania", "Colorado", "Michigan", 
+                "Rhode Island", "Connecticut", "Minnesota", "South Carolina", "Delaware", 
+                "Mississippi", "South Dakota", "District of Columbia", "Missouri", "Tennessee", 
+                "Florida", "Montana", "Texas", "Georgia", "Nebraska", "Utah", "Hawaii", 
+                "Nevada", "Vermont", "Idaho", "New Hampshire", "Virginia", "Illinois", 
+                "New Jersey", "Washington", "Indiana", "New Mexico", "West Virginia", 
+                "Iowa", "New York", "Wisconsin", "Kansas", "North Carolina", "Wyoming"),
+  votes = c(9, 8, 3, 3, 8, 17, 11, 4, 7, 6, 10, 8, 54, 11, 19, 10, 15, 4, 7, 10, 
+            9, 3, 6, 3, 3, 10, 11, 30, 4, 40, 16, 5, 6, 4, 6, 3, 4, 4, 13, 19, 
+            14, 12, 11, 5, 4, 6, 28, 10, 6, 16, 3)
+)
+
+# Ensure `STATENAME` in the shapefile is in the same format as the electoral_votes data
+districts$STATENAME <- as.character(districts$STATENAME)
+
+# Aggregate districts into single state polygons
+states <- districts %>%
+  group_by(STATENAME) %>%
+  summarize(geometry = st_union(geometry), .groups = "drop")
+
+# Merge electoral votes data with the state geometry data
+states <- states %>%
+  left_join(electoral_votes, by = "STATENAME")
+
+# Custom color palette
+custom_palette <- c("#FFF9C4", "#FFE082", "#FFCA28", "#FFB300", "#FF8F00", "#F57C00", "#E65100")
+
+# Plot the US map with electoral votes by state
+# Alaska and Hawaii positioning is adjusted manually
+ggplot() +
+  geom_sf(data = states, aes(fill = votes), color = "grey30", size = 0.2) +
+  # Separate Alaska and Hawaii with custom transformations
+  geom_sf(data = states %>% filter(STATENAME == "Alaska"),
+          aes(fill = votes), color = "grey30", size = 0.2) +
+  coord_sf(crs = st_crs(5070), xlim = c(-170, -130), ylim = c(50, 72)) + # Move Alaska
+  geom_sf(data = states %>% filter(STATENAME == "Hawaii"),
+          aes(fill = votes), color = "grey30", size = 0.2) +
+  coord_sf(crs = st_crs(5070), xlim = c(-160, -154), ylim = c(18, 23)) + # Move Hawaii
+  scale_fill_gradientn(colors = custom_palette, na.value = "gray90", name = "Votes") +
+  labs(
+    title = "Number of Electoral Votes by State",
+    subtitle = "Electoral votes for the 2024 election are allocated to states based on the 2020 Census."
+  ) +
+  theme_minimal(base_size = 18) +  # Increase base size for larger plot
+  theme(
+    plot.title = element_text(size = 24, hjust = 0.5),
+    plot.subtitle = element_text(size = 14, hjust = 0.5),
+    legend.position = "right"
+  ) +
+  theme(legend.title = element_text(size = 14), legend.text = element_text(size = 12)) +
+  coord_sf(crs = st_crs(5070), expand = FALSE)  # Adjust projection to show the continental US
+
+
+```
+
+
+
+
+
+
+
+
+```{r}
+
+# Load necessary libraries
+presidential_data <- read.csv("C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/1976-2020-president.csv")
+
+# Install usmap package if not already installed
+if (!requireNamespace("usmap", quietly = TRUE)) install.packages("usmap")
+
+# Load usmap
+library(usmap)
+
+plot_usmap(regions = "states") 
+
+head(presidential_data)
+
+```
+
+
+```{r}
+
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(usmap)
+library(maps)
+
+# Load your data (update with the actual path if needed)
+presidential_data <- read.csv("C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/1976-2020-president.csv")
+
+# Filter data for the year 2020
+presidential_data_2020 <- presidential_data %>%
+  filter(year == 2020)
+
+# Identify the winning party in each state by the highest percentage of votes
+max_percent_rows <- presidential_data_2020 %>%
+  group_by(state) %>%
+  filter(candidatevotes == max(candidatevotes)) %>%
+  ungroup()
+
+# Extract states won by Democrats
+Blue_states <- max_percent_rows %>%
+  filter(party_simplified == "DEMOCRAT") %>%
+  pull(state) %>%
+  tolower()  # Convert state names to lowercase to match `map_data`
+
+# Prepare the map data for ggplot
+map_data <- map_data("state")
+map_data$fill <- ifelse(map_data$region %in% Blue_states, "blue", "red")  # Color Democrats blue, others red
+
+# Plot the map
+ggplot() +
+  geom_map(data = map_data, map = map_data,
+           aes(x = long, y = lat, map_id = region, fill = fill),
+           color = "white", size = 0.25) +
+  scale_fill_identity() +
+  labs(title = "US Presidential Election Results by State - 2020",
+       subtitle = "Blue: Democrat, Red: Republican") +
+  theme_void() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16),
+    plot.subtitle = element_text(hjust = 0.5, size = 12)
+  )
+
+
+
+```
+
+
+
+```{r}
+
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(maps)
+
+# Load your presidential election data (adjust the path as needed)
+presidential_data <- read.csv("C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/1976-2020-president.csv")
+
+# Filter data for the year 2020
+presidential_data_2020 <- presidential_data %>%
+  filter(year == 2020)
+
+# Calculate the percentage of votes each candidate received in each state
+presidential_data_2020 <- presidential_data_2020 %>%
+  group_by(state) %>%
+  mutate(Percent = (candidatevotes / totalvotes) * 100)
+
+# Identify the winning party in each state by the highest percentage of votes
+max_percent_rows <- presidential_data_2020 %>%
+  group_by(state) %>%
+  filter(Percent == max(Percent)) %>%
+  ungroup()
+
+# Extract states won by Democrats and Republicans
+Blue_states <- max_percent_rows %>%
+  filter(party_simplified == "DEMOCRAT") %>%
+  pull(state) %>%
+  tolower()
+
+Red_states <- max_percent_rows %>%
+  filter(party_simplified == "REPUBLICAN") %>%
+  pull(state) %>%
+  tolower()
+
+# Prepare states and their percentages for mapping
+states_and_percentages <- data.frame(
+  region = tolower(max_percent_rows$state),
+  percent = max_percent_rows$Percent
+)
+
+# Create map data with fill color based on the party and transparency based on percentage
+map_data <- map_data("state")
+map_data$fill <- ifelse(map_data$region %in% Blue_states, "blue",
+                        ifelse(map_data$region %in% Red_states, "red", "purple"))
+
+# Join vote percentage data with map data
+map_data <- left_join(map_data, states_and_percentages, by = "region")
+
+# Plot the map
+ggplot() +
+  geom_map(data = map_data, map = map_data,
+           aes(x = long, y = lat, map_id = region, fill = fill, alpha = percent),
+           color = "white", size = 0.25) +
+  scale_fill_manual(values = c("blue" = "blue", "red" = "red", "purple" = "purple"),
+                    labels = c("Democrat", "Republican", "Other"),
+                    drop = FALSE) +
+  labs(title = "How States Voted in the 2020 Presidential Election") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.background = element_rect(fill = "white", color = "white"),
+        panel.background = element_rect(fill = "white"),
+        axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        legend.position = "none") +
+  guides(fill = guide_legend(title = "Party"))
+
+
+
+```
+
+
+```{r}
+# Install necessary packages if not already installed
+if (!requireNamespace("sf", quietly = TRUE)) install.packages("sf")
+if (!requireNamespace("ggplot2", quietly = TRUE)) install.packages("ggplot2")
+if (!requireNamespace("dplyr", quietly = TRUE)) install.packages("dplyr")
+
+# Load necessary libraries
+library(sf)
+library(ggplot2)
+library(dplyr)
+
+# Define the path to the shapefile (replace with your actual path)
+shapefile_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/congress_shapefiles/congress_094/districtShapes/districts094.shp"
+
+# Load the shapefile
+districts <- read_sf(shapefile_path)
+
+# Create a data frame for electoral votes
+electoral_votes <- data.frame(
+  STATENAME = c("Alabama", "Kentucky", "North Dakota", "Alaska", "Louisiana", "Ohio", 
+                "Arizona", "Maine", "Oklahoma", "Arkansas", "Maryland", "Oregon", 
+                "California", "Massachusetts", "Pennsylvania", "Colorado", "Michigan", 
+                "Rhode Island", "Connecticut", "Minnesota", "South Carolina", "Delaware", 
+                "Mississippi", "South Dakota", "District of Columbia", "Missouri", "Tennessee", 
+                "Florida", "Montana", "Texas", "Georgia", "Nebraska", "Utah", "Hawaii", 
+                "Nevada", "Vermont", "Idaho", "New Hampshire", "Virginia", "Illinois", 
+                "New Jersey", "Washington", "Indiana", "New Mexico", "West Virginia", 
+                "Iowa", "New York", "Wisconsin", "Kansas", "North Carolina", "Wyoming"),
+  votes = c(9, 8, 3, 3, 8, 17, 11, 4, 7, 6, 10, 8, 54, 11, 19, 10, 15, 4, 7, 10, 
+            9, 3, 6, 3, 3, 10, 11, 30, 4, 40, 16, 5, 6, 4, 6, 3, 4, 4, 13, 19, 
+            14, 12, 11, 5, 4, 6, 28, 10, 6, 16, 3)
+)
+
+# Ensure `STATENAME` in the shapefile is in the same format as the electoral_votes data
+districts$STATENAME <- as.character(districts$STATENAME)
+
+# Aggregate districts into single state polygons
+states <- districts %>%
+  group_by(STATENAME) %>%
+  summarize(geometry = st_union(geometry), .groups = "drop")
+
+# Merge electoral votes data with the state geometry data
+states <- states %>%
+  left_join(electoral_votes, by = "STATENAME")
+
+# Custom color palette for electoral votes
+custom_palette <- c("#FFF9C4", "#FFE082", "#FFCA28", "#FFB300", "#FF8F00", "#F57C00", "#E65100")
+
+# Separate data for Alaska and Hawaii for manual repositioning
+continental_states <- states %>% filter(!STATENAME %in% c("Alaska", "Hawaii"))
+alaska <- states %>% filter(STATENAME == "Alaska") %>% st_transform(crs = st_crs(5070))
+hawaii <- states %>% filter(STATENAME == "Hawaii") %>% st_transform(crs = st_crs(5070))
+
+# Plot the US map with electoral votes by state, adjusting Alaska and Hawaii
+ggplot() +
+  geom_sf(data = continental_states, aes(fill = votes), color = "grey30", size = 0.2) +
+  # Alaska repositioned in a separate viewport
+  geom_sf(data = alaska, aes(fill = votes), color = "grey30", size = 0.2) +
+  coord_sf(xlim = c(-2400000, -1200000), ylim = c(2100000, 3500000), datum = NA) +
+  # Hawaii repositioned in a separate viewport
+  geom_sf(data = hawaii, aes(fill = votes), color = "grey30", size = 0.2) +
+  coord_sf(xlim = c(5000000, 5500000), ylim = c(1000000, 1600000), datum = NA) +
+  scale_fill_gradientn(colors = custom_palette, na.value = "gray90", name = "Votes") +
+  labs(
+    title = "Number of Electoral Votes by State",
+    subtitle = "Electoral votes for the 2024 election are allocated to states based on the 2020 Census."
+  ) +
+  theme_minimal(base_size = 18) +  # Increase base size for larger plot
+  theme(
+    plot.title = element_text(size = 24, hjust = 0.5),
+    plot.subtitle = element_text(size = 14, hjust = 0.5),
+    legend.position = "right"
+  ) +
+  theme(legend.title = element_text(size = 14), legend.text = element_text(size = 12)) +
+  coord_sf(crs = st_crs(5070), expand = FALSE)  # Adjust projection to show the continental US
+
+
+
+```
+
+
+
+```{r}
+#| eval: false
+# Install necessary packages if not already installed
+if (!requireNamespace("choroplethr", quietly = TRUE)) install.packages("choroplethr")
+if (!requireNamespace("gganimate", quietly = TRUE)) install.packages("gganimate")
+if (!requireNamespace("gifski", quietly = TRUE)) install.packages("gifski")
+library(choroplethr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(gganimate)
+library(maps)
+
+# Load election data
+data("df_president_ts", package = "choroplethr")
+
+# Prepare election data for animation
+us <- map_data("state")
+
+dev.off()
+
+# Filter for specific election years
+election_years <- c(2000, 2004, 2008, 2012, 2016, 2020)
+
+# Prepare and clean the elections data to ensure one row per state and year
+elections <- df_president_ts %>%
+  gather(year, winner, `1789`:`2012`) %>%
+  filter(as.numeric(year) %in% election_years) %>%  # Filter for specific election years
+  mutate(year = as.integer(year)) %>%
+  group_by(year, region) %>%
+  slice(1) %>%  # Keep only the first entry per state and year if duplicates exist
+  ungroup() %>%
+  mutate(party = case_when(
+    winner %in% c("SR", "I", "AI", "PR") ~ "Third Party",
+    winner == "D" ~ "Democrat",
+    winner == "R" ~ "Republican",
+    TRUE ~ NA_character_
+  )) %>%
+  right_join(us, by = c("region" = "region"))
+
+# Create the animated plot
+p <- ggplot(data = elections, aes(x = long, y = lat, group = group, fill = party)) +
+  geom_polygon(color = "#f5f5f2") +
+  coord_map("albers", lat0 = 30, lat1 = 40) + 
+  scale_fill_manual(values = c("Democrat" = "#4169E1", "Republican" = "#B91C1C", "Third Party" = "#FFA500"), 
+                    na.value = "gray70", name = "Winning Party") +
+  labs(title = "US Presidential Election Results: {closest_state}", fill = "Winning Party") +
+  theme_void() +
+  theme(plot.title = element_text(hjust = 0.5, size = 18))
+
+# Animate with transition by year using discrete states
+p_animated <- p +
+  transition_states(year, transition_length = 2, state_length = 1) +
+  ease_aes('linear')
+
+# Render the animation
+animate(p_animated, fps = 1, nframes = length(election_years) * 5, width = 800, height = 600, renderer = gifski_renderer())
+
+
+
+```
+
