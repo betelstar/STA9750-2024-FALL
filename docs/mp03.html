@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.555">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>STA 9750 2024 Submission Material</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">STA 9750 2024 Submission Material</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+
+
+<p>project: type: html</p>
+<p>format: html: theme: cosmo # Set the theme to “cosmo” or any other desired theme toc: true # Enable table of contents if needed toc-depth: 2 # Set depth for the table of contents css: styles.css # Optional: add custom CSS if you have a separate stylesheet</p>
+<section id="step-1-data-preparation-script" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-data-preparation-script">Step 1: Data Preparation Script</h3>
+<p>#Run this script in R to clean, transform, and save the data for the .qmd file to use.</p>
+<p>This report explores trends in US House and Presidential elections, focusing on total votes by year and party, as well as unique insights from fusion voting and candidate performance.</p>
+</section>
+<section id="initial-exploration-of-vote-count-data" class="level3">
+<h3 class="anchored" data-anchor-id="initial-exploration-of-vote-count-data">Initial Exploration of Vote Count Data</h3>
+<p>Question 1: Which states have gained and lost the most seats in the US House of Representatives between 1976 and 2022?</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>States with the Most Gains and Losses in Seats (1976-2022):</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 51 × 2
+   state        seats_gained_or_lost
+   &lt;chr&gt;                       &lt;int&gt;
+ 1 TEXAS                          14
+ 2 FLORIDA                        13
+ 3 NEW YORK                       13
+ 4 CALIFORNIA                     10
+ 5 OHIO                            8
+ 6 PENNSYLVANIA                    8
+ 7 ILLINOIS                        7
+ 8 MICHIGAN                        6
+ 9 ARIZONA                         5
+10 GEORGIA                         4
+# ℹ 41 more rows</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Analysis: The table above highlights states with the most significant changes
+in House seats between 1976 and 2022. States like Texas and Florida may show gains
+due to population increases, while states like New York and Pennsylvania might
+display losses as populations shifted to other regions. These trends reflect
+underlying demographic and economic shifts across the country.</code></pre>
+</div>
+</div>
+</section>
+<section id="task-2-impact-of-fusion-voting-in-new-york" class="level3">
+<h3 class="anchored" data-anchor-id="task-2-impact-of-fusion-voting-in-new-york">Task 2: Impact of Fusion Voting in New York</h3>
+<p>Question: Are there any elections where the fusion voting system in New York may have affected the outcome?</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 8
+    year state    district candidate         main_party_votes total_fusion_votes
+   &lt;int&gt; &lt;chr&gt;       &lt;int&gt; &lt;chr&gt;                        &lt;int&gt;              &lt;int&gt;
+ 1  1984 NEW YORK       NA REAGAN, RONALD              288244            3664763
+ 2  1988 NEW YORK       NA BUSH, GEORGE H.W.           243457            3081871
+ 3  1976 NEW YORK       NA FORD, GERALD                274878            3100791
+ 4  2004 NEW YORK       NA BUSH, GEORGE W.             155574            2962567
+ 5  1980 NEW YORK       NA REAGAN, RONALD              256131            2893831
+ 6  2008 NEW YORK       NA MCCAIN, JOHN                170475            2752771
+ 7  2016 NEW YORK       NA TRUMP, DONALD J.            292392            2819534
+ 8  2000 NEW YORK       NA BUSH, GEORGE W.             144797            2403374
+ 9  2012 NEW YORK       NA ROMNEY, MITT                262035            2485432
+10  1992 NEW YORK       NA BUSH, GEORGE H.W.           177000            2346649
+# ℹ 2 more variables: fusion_vote_increase &lt;int&gt;,
+#   fusion_vote_increase_percentage &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="analysis-of-fusion-voting-impact-on-key-candidates" class="level2">
+<h2 class="anchored" data-anchor-id="analysis-of-fusion-voting-impact-on-key-candidates">Analysis of Fusion Voting Impact on Key Candidates</h2>
+<p>This analysis explores the top 10 candidates who benefited the most from fusion voting, based on the increase in their vote count. Fusion voting allows candidates to be listed on multiple party lines, potentially increasing their total votes by appealing to a broader set of voters.</p>
+<section id="key-findings" class="level3">
+<h3 class="anchored" data-anchor-id="key-findings">Key Findings</h3>
+<ol type="1">
+<li><p><strong>Top Beneficiary</strong>: Ronald Reagan, in his 1984 re-election campaign, received the highest increase in votes from fusion voting, with over 3.3 million additional votes. This substantial boost highlights Reagan’s cross-party appeal during his landslide victory.</p></li>
+<li><p><strong>Prominent Family Influence</strong>: Both George H.W. Bush (1988) and George W. Bush (2004) appear in the top four, reflecting the impact of fusion voting in supporting these Republican candidates. This added support likely contributed to their success in tightly contested races.</p></li>
+<li><p><strong>Historical Context</strong>: Gerald Ford (1976) and Robert Dole (1996) also benefited significantly from fusion voting. This strategic use of fusion voting allowed these candidates to gather cross-party support, showcasing its importance in past Republican campaigns.</p></li>
+<li><p><strong>Modern Influence - Donald Trump</strong>: Donald Trump ranks sixth, with a fusion voting increase of approximately 2.2 million votes in the 2016 election. Trump’s unique political appeal extended beyond traditional Republican lines, drawing support from additional party endorsements. This strategy reinforced his electoral base while reaching independent voters and those dissatisfied with traditional party structures.</p></li>
+<li><p><strong>Total Vote Impact</strong>: While most candidates gained millions of additional votes, the last two entries, Robert Dole and Chris Jacobs, benefited to a lesser extent, with increases under 200,000. This contrast underscores the varying degrees of fusion voting’s impact, depending on the candidate and election context.</p></li>
+<li><p><strong>Implications for Political Strategy</strong>: Fusion voting can be a powerful approach to appeal to diverse voter bases, especially in competitive elections. For candidates with strong, distinct personas like Trump, fusion voting provides a pathway to engage voters across the political spectrum.</p></li>
+</ol>
+</section>
+<section id="task-3-comparison-of-presidential-vs.-house-candidate-votes" class="level3">
+<h3 class="anchored" data-anchor-id="task-3-comparison-of-presidential-vs.-house-candidate-votes">Task 3: Comparison of Presidential vs.&nbsp;House Candidate Votes</h3>
+<p>Question: Do presidential candidates tend to receive more or fewer votes than congressional candidates from their party in the same state?</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 1
+  state     
+  &lt;chr&gt;     
+1 CALIFORNIA
+2 FLORIDA   
+3 LOUISIANA 
+4 NEW YORK  
+5 TEXAS     </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "CALIFORNIA" "FLORIDA"    "LOUISIANA"  "NEW YORK"   "TEXAS"     </code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Analysis for CALIFORNIA :
+- Presidential candidates tended to receive more votes than congressional candidates in certain years, particularly for the Democratic party.
+- Congressional candidates from the Democratic party sometimes outperformed presidential candidates in certain years.
+- The year-by-year trend highlights periods where voters preferred one level of representation over the other, possibly influenced by state and national issues at the time.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-6-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Analysis for FLORIDA :
+- Presidential candidates tended to receive more votes than congressional candidates in certain years, particularly for the Democratic party.
+- Congressional candidates from the Democratic party sometimes outperformed presidential candidates in certain years.
+- The year-by-year trend highlights periods where voters preferred one level of representation over the other, possibly influenced by state and national issues at the time.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-6-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Analysis for LOUISIANA :
+- Presidential candidates tended to receive more votes than congressional candidates in certain years, particularly for the Democratic party.
+- Congressional candidates from the Republican party sometimes outperformed presidential candidates in certain years.
+- The year-by-year trend highlights periods where voters preferred one level of representation over the other, possibly influenced by state and national issues at the time.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-6-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Analysis for NEW YORK :
+- Presidential candidates tended to receive more votes than congressional candidates in certain years, particularly for the Democratic party.
+- Congressional candidates from the Democratic party sometimes outperformed presidential candidates in certain years.
+- The year-by-year trend highlights periods where voters preferred one level of representation over the other, possibly influenced by state and national issues at the time.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-6-5.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Analysis for TEXAS :
+- Presidential candidates tended to receive more votes than congressional candidates in certain years, particularly for the Democratic party.
+- Congressional candidates from the Democratic party sometimes outperformed presidential candidates in certain years.
+- The year-by-year trend highlights periods where voters preferred one level of representation over the other, possibly influenced by state and national issues at the time.</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="california" class="level2">
+<h2 class="anchored" data-anchor-id="california">California</h2>
+</section>
+<section id="early-years" class="level1">
+<h1>Early Years:</h1>
+<p>In California, the Republican vote difference initially shows significant strength, with a clear lead over the Democrats. This suggests that Republican presidential candidates were drawing more votes compared to their congressional counterparts.</p>
+</section>
+<section id="mid-term-trends" class="level1">
+<h1>Mid-Term Trends:</h1>
+<p>Around the mid-term years, Democrats begin to close the gap, eventually surpassing Republicans. This period likely reflects growing Democratic engagement in California, especially in presidential elections. Recent Convergence: In later years, the vote difference narrows as Democratic presidential candidates maintain a slight advantage. This convergence suggests that Democratic dominance has stabilized in California, with more consistent voter turnout for both presidential and congressional races within the party.</p>
+</section>
+<section id="overall" class="level1">
+<h1>Overall:</h1>
+<p>California exhibits a shift from early Republican strength to sustained Democratic advantages in presidential elections, reflecting the state’s political evolution.</p>
+<section id="florida" class="level2">
+<h2 class="anchored" data-anchor-id="florida">Florida</h2>
+</section>
+</section>
+<section id="early-years-1" class="level1">
+<h1>Early Years:</h1>
+<p>Florida shows initial fluctuations, with Republicans often leading in vote difference, indicating that Republican presidential candidates had an edge over their congressional candidates in this period.</p>
+</section>
+<section id="mid-term-variability" class="level1">
+<h1>Mid-Term Variability:</h1>
+<p>There are notable swings in the mid-term years, with Democrats experiencing spikes that briefly outpace Republicans. These shifts align with competitive election cycles in Florida, where both parties heavily invest in mobilizing voters. Recent Trends: In recent years, the trend has leveled, with Republicans maintaining a slight but consistent lead. This pattern suggests that while Florida remains a swing state, recent presidential elections have slightly favored Republicans in terms of vote difference.</p>
+</section>
+<section id="in-summary" class="level1">
+<h1>In summary:</h1>
+<p>Florida’s trends reflect its status as a battleground state, with periodic swings between parties and a recent slight advantage for Republicans in presidential races compared to congressional contests.</p>
+<section id="task-4-popularity-trends-over-time-and-notable-outliers" class="level3">
+<h3 class="anchored" data-anchor-id="task-4-popularity-trends-over-time-and-notable-outliers">Task 4: Popularity Trends Over Time and Notable Outliers</h3>
+<p>Question: Does this trend differ over time, across states, or across parties? Are any presidents particularly more or less popular than their co-partisans?</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Presidents who performed significantly better or worse than their co-partisans in Congress:
+# A tibble: 60 × 6
+    year state      party      pres_votes house_votes vote_difference
+   &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;           &lt;dbl&gt;       &lt;dbl&gt;           &lt;dbl&gt;
+ 1  1984 FLORIDA    REPUBLICAN    2730350     1190779         1539571
+ 2  1984 TEXAS      REPUBLICAN    3433428     1981823         1451605
+ 3  2004 FLORIDA    DEMOCRAT      3583544     2212326         1371218
+ 4  1988 TEXAS      REPUBLICAN    3036829     1834135         1202694
+ 5  1984 CALIFORNIA REPUBLICAN    5467009     4423734         1043275
+ 6  1984 LOUISIANA  REPUBLICAN    1037299           2         1037297
+ 7  1988 FLORIDA    REPUBLICAN    2618885     1615569         1003316
+ 8  2000 FLORIDA    DEMOCRAT      2912253     1976189          936064
+ 9  1980 TEXAS      REPUBLICAN    2510705     1608636          902069
+10  2008 CALIFORNIA DEMOCRAT      8274473     7377725          896748
+# ℹ 50 more rows
+
+Analysis: The table lists cases where a president was significantly more or less popular than
+  congressional candidates from the same party. Outliers indicate specific years or states where
+  presidential candidates either greatly exceeded or fell short of their co-partisans. This could
+  reflect unique candidate appeal, political circumstances, or party alignment issues within that election cycle.</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="explanation" class="level2">
+<h2 class="anchored" data-anchor-id="explanation">Explanation</h2>
+<p>This map shows the number of electoral votes allocated to each U.S. state for the 2024 presidential election, based on the 2020 Census data. Darker shades indicate states with more electoral votes, reflecting higher populations. States like California, Texas, Florida, and New York have the most votes due to their large populations, making them particularly influential in the Electoral College. Smaller states have fewer electoral votes, represented by lighter shades, but all states contribute to the total needed to win the presidency.</p>
+<section id="task-4-automate-zip-file-extraction" class="level3">
+<h3 class="anchored" data-anchor-id="task-4-automate-zip-file-extraction">Task 4: Automate Zip File Extraction</h3>
+<p>#To automate the extraction of .shp files from ZIP archives, we’ll create a function called read_shp_from_zip(). This function will take in the name of a ZIP file, extract #the .shp file within it, and read it into R using read_sf() from the sf package.</p>
+</section>
+<section id="code-to-load-and-combine-shapefiles-from-subfolders" class="level3">
+<h3 class="anchored" data-anchor-id="code-to-load-and-combine-shapefiles-from-subfolders">Code to Load and Combine Shapefiles from Subfolders</h3>
+</section>
+</section>
+<section id="step-1-write-a-function-to-extract-and-read-shapefiles-from-zip-archives" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-write-a-function-to-extract-and-read-shapefiles-from-zip-archives">Step 1: Write a Function to Extract and Read Shapefiles from Zip Archives</h2>
+</section>
+<section id="outout-files-from-reading-the-.shp-file" class="level2">
+<h2 class="anchored" data-anchor-id="outout-files-from-reading-the-.shp-file">Outout files from reading the .shp file</h2>
+</section>
+<section id="we-created-a-map-of-the-us-with-all-the-districs" class="level2">
+<h2 class="anchored" data-anchor-id="we-created-a-map-of-the-us-with-all-the-districs">we created a map of the us with all the districs</h2>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>  STATENAME              ID              DISTRICT          STARTCONG        
+ Length:435         Length:435         Length:435         Length:435        
+ Class :character   Class :character   Class :character   Class :character  
+ Mode  :character   Mode  :character   Mode  :character   Mode  :character  
+   ENDCONG           DISTRICTSI           COUNTY              PAGE          
+ Length:435         Length:435         Length:435         Length:435        
+ Class :character   Class :character   Class :character   Class :character  
+ Mode  :character   Mode  :character   Mode  :character   Mode  :character  
+     LAW                NOTE             BESTDEC           FINALNOTE        
+ Length:435         Length:435         Length:435         Length:435        
+ Class :character   Class :character   Class :character   Class :character  
+ Mode  :character   Mode  :character   Mode  :character   Mode  :character  
+    RNOTE            LASTCHANGE        FROMCOUNTY               geometry  
+ Length:435         Length:435         Mode :logical   MULTIPOLYGON :435  
+ Class :character   Class :character   FALSE:381       epsg:4269    :  0  
+ Mode  :character   Mode  :character   TRUE :54        +proj=long...:  0  </code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "STATENAME"  "ID"         "DISTRICT"   "STARTCONG"  "ENDCONG"   
+ [6] "DISTRICTSI" "COUNTY"     "PAGE"       "LAW"        "NOTE"      
+[11] "BESTDEC"    "FINALNOTE"  "RNOTE"      "LASTCHANGE" "FROMCOUNTY"
+[16] "geometry"  </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 6 features and 15 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -118.5993 ymin: 30.62397 xmax: -73.7243 ymax: 43.09876
+Geodetic CRS:  NAD83
+# A tibble: 6 × 16
+  STATENAME ID    DISTRICT STARTCONG ENDCONG DISTRICTSI COUNTY PAGE  LAW   NOTE 
+  &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;    &lt;chr&gt;     &lt;chr&gt;   &lt;chr&gt;      &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
+1 Californ… 0060… 27       94        97      &lt;NA&gt;       &lt;NA&gt;   &lt;NA&gt;  &lt;NA&gt;  "{\"…
+2 Georgia   0130… 2        93        97      &lt;NA&gt;       &lt;NA&gt;   &lt;NA&gt;  &lt;NA&gt;  "{\"…
+3 New York  0360… 10       94        97      &lt;NA&gt;       &lt;NA&gt;   &lt;NA&gt;  &lt;NA&gt;  "{\"…
+4 New York  0360… 11       94        97      &lt;NA&gt;       &lt;NA&gt;   &lt;NA&gt;  &lt;NA&gt;  "{\"…
+5 New York  0360… 37       94        97      &lt;NA&gt;       &lt;NA&gt;   &lt;NA&gt;  &lt;NA&gt;  "{\"…
+6 New York  0360… 38       94        97      &lt;NA&gt;       &lt;NA&gt;   &lt;NA&gt;  &lt;NA&gt;  "{\"…
+# ℹ 6 more variables: BESTDEC &lt;chr&gt;, FINALNOTE &lt;chr&gt;, RNOTE &lt;chr&gt;,
+#   LASTCHANGE &lt;chr&gt;, FROMCOUNTY &lt;lgl&gt;, geometry &lt;MULTIPOLYGON [°]&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>sf [435 × 16] (S3: sf/tbl_df/tbl/data.frame)
+ $ STATENAME : chr [1:435] "California" "Georgia" "New York" "New York" ...
+ $ ID        : chr [1:435] "006094097027" "013093097002" "036094097010" "036094097011" ...
+ $ DISTRICT  : chr [1:435] "27" "2" "10" "11" ...
+ $ STARTCONG : chr [1:435] "94" "93" "94" "94" ...
+ $ ENDCONG   : chr [1:435] "97" "97" "97" "97" ...
+ $ DISTRICTSI: chr [1:435] NA NA NA NA ...
+ $ COUNTY    : chr [1:435] NA NA NA NA ...
+ $ PAGE      : chr [1:435] NA NA NA NA ...
+ $ LAW       : chr [1:435] NA NA NA NA ...
+ $ NOTE      : chr [1:435] "{\"Shape from shapes/Ftp_Upload/California_94-97cc/94-97cc_27cd_California.shp (17628 bytes, last modified on T"| __truncated__ "{\"Shape from shapes/Ftp_Upload/Georgia_93-97cc/93-97cc_2cd_Georgia.shp (87868 bytes, last modified on Thu Jul "| __truncated__ "{\"Shape from shapes/Ftp_Upload/NewYork_94-97cc/94-97cc_10cd_NewYork.shp (26408 bytes, last modified on Wed Dec"| __truncated__ "{\"Shape from shapes/Ftp_Upload/NewYork_94-97cc/94-97cc_11cd_NewYork.shp (33916 bytes, last modified on Tue Feb"| __truncated__ ...
+ $ BESTDEC   : chr [1:435] NA NA NA NA ...
+ $ FINALNOTE : chr [1:435] NA NA NA NA ...
+ $ RNOTE     : chr [1:435] NA NA NA NA ...
+ $ LASTCHANGE: chr [1:435] "2016-05-20 13:07:35.318982" "2016-05-20 13:07:46.863044" "2016-05-20 13:09:35.392414" "2016-05-20 13:09:35.409757" ...
+ $ FROMCOUNTY: logi [1:435] FALSE FALSE FALSE FALSE FALSE FALSE ...
+ $ geometry  :sfc_MULTIPOLYGON of length 435; first list element: List of 1
+  ..$ :List of 1
+  .. ..$ : num [1:1089, 1:2] -119 -119 -119 -119 -119 ...
+  ..- attr(*, "class")= chr [1:3] "XY" "MULTIPOLYGON" "sfg"
+ - attr(*, "sf_column")= chr "geometry"
+ - attr(*, "agr")= Factor w/ 3 levels "constant","aggregate",..: NA NA NA NA NA NA NA NA NA NA ...
+  ..- attr(*, "names")= chr [1:15] "STATENAME" "ID" "DISTRICT" "STARTCONG" ...</code></pre>
+</div>
+</div>
+</section>
+<section id="these-are-the-number-of-districts-by-state" class="level2">
+<h2 class="anchored" data-anchor-id="these-are-the-number-of-districts-by-state">These are the number of districts by state</h2>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Number of Districts by State:</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 50 × 2
+   STATENAME     num_districts
+   &lt;chr&gt;                 &lt;int&gt;
+ 1 California               43
+ 2 New York                 39
+ 3 Pennsylvania             25
+ 4 Illinois                 24
+ 5 Texas                    24
+ 6 Ohio                     23
+ 7 Michigan                 19
+ 8 Florida                  15
+ 9 New Jersey               15
+10 Massachusetts            12
+# ℹ 40 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="we-added-some-hypotecal-information-to-assign-colors-red-or-blue-to-the-map-by-state" class="level2">
+<h2 class="anchored" data-anchor-id="we-added-some-hypotecal-information-to-assign-colors-red-or-blue-to-the-map-by-state">we added some hypotecal information to assign colors (red or blue to the map by state)</h2>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>  STATENAME              ID              DISTRICT          STARTCONG        
+ Length:435         Length:435         Length:435         Length:435        
+ Class :character   Class :character   Class :character   Class :character  
+ Mode  :character   Mode  :character   Mode  :character   Mode  :character  
+   ENDCONG           DISTRICTSI           COUNTY              PAGE          
+ Length:435         Length:435         Length:435         Length:435        
+ Class :character   Class :character   Class :character   Class :character  
+ Mode  :character   Mode  :character   Mode  :character   Mode  :character  
+     LAW                NOTE             BESTDEC           FINALNOTE        
+ Length:435         Length:435         Length:435         Length:435        
+ Class :character   Class :character   Class :character   Class :character  
+ Mode  :character   Mode  :character   Mode  :character   Mode  :character  
+    RNOTE            LASTCHANGE        FROMCOUNTY               geometry  
+ Length:435         Length:435         Mode :logical   MULTIPOLYGON :435  
+ Class :character   Class :character   FALSE:381       epsg:4269    :  0  
+ Mode  :character   Mode  :character   TRUE :54        +proj=long...:  0  </code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="here-we-list-all-the-red-republican-and-blue-democrat-states" class="level2">
+<h2 class="anchored" data-anchor-id="here-we-list-all-the-red-republican-and-blue-democrat-states">here we list all the red (Republican) and blue (Democrat) states</h2>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Winning Party by State for the Year 2000:</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 50 × 2
+   state       winning_party
+   &lt;chr&gt;       &lt;chr&gt;        
+ 1 ALABAMA     Red          
+ 2 ALASKA      Red          
+ 3 ARIZONA     Red          
+ 4 ARKANSAS    Blue         
+ 5 CALIFORNIA  Blue         
+ 6 COLORADO    Red          
+ 7 CONNECTICUT Blue         
+ 8 DELAWARE    Red          
+ 9 FLORIDA     Red          
+10 GEORGIA     Red          
+# ℹ 40 more rows</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Blue States (Democrat Wins):</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "ARKANSAS"      "CALIFORNIA"    "CONNECTICUT"   "HAWAII"       
+ [5] "ILLINOIS"      "MAINE"         "MARYLAND"      "MASSACHUSETTS"
+ [9] "MICHIGAN"      "MISSISSIPPI"   "MISSOURI"      "NEW JERSEY"   
+[13] "NEW MEXICO"    "NEW YORK"      "NORTH DAKOTA"  "OREGON"       
+[17] "PENNSYLVANIA"  "RHODE ISLAND"  "WASHINGTON"    "WEST VIRGINIA"</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Red States (Republican Wins):</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "ALABAMA"        "ALASKA"         "ARIZONA"        "COLORADO"      
+ [5] "DELAWARE"       "FLORIDA"        "GEORGIA"        "IDAHO"         
+ [9] "INDIANA"        "IOWA"           "KANSAS"         "KENTUCKY"      
+[13] "LOUISIANA"      "MINNESOTA"      "MONTANA"        "NEBRASKA"      
+[17] "NEVADA"         "NEW HAMPSHIRE"  "NORTH CAROLINA" "OHIO"          
+[21] "OKLAHOMA"       "SOUTH CAROLINA" "SOUTH DAKOTA"   "TENNESSEE"     
+[25] "TEXAS"          "UTAH"           "VERMONT"        "VIRGINIA"      
+[29] "WISCONSIN"      "WYOMING"       </code></pre>
+</div>
+</div>
+</section>
+<section id="task-5-chloropleth-visualization-of-the-2000-presidential-election-electoral-college-results" class="level2">
+<h2 class="anchored" data-anchor-id="task-5-chloropleth-visualization-of-the-2000-presidential-election-electoral-college-results">Task 5: Chloropleth Visualization of the 2000 Presidential Election Electoral College Results</h2>
+</section>
+</section>
+<section id="here-we-removed-the-distric-border-lines-creating-a-visualization-by-state-and-political-party" class="level1">
+<h1>here we removed the distric border lines creating a visualization by state and political party</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 0 features and 16 fields
+Bounding box:  xmin: NA ymin: NA xmax: NA ymax: NA
+Geodetic CRS:  NAD83
+# A tibble: 0 × 17
+# ℹ 17 variables: STATENAME &lt;chr&gt;, ID &lt;chr&gt;, DISTRICT &lt;chr&gt;, STARTCONG &lt;chr&gt;,
+#   ENDCONG &lt;chr&gt;, DISTRICTSI &lt;chr&gt;, COUNTY &lt;chr&gt;, PAGE &lt;chr&gt;, LAW &lt;chr&gt;,
+#   NOTE &lt;chr&gt;, BESTDEC &lt;chr&gt;, FINALNOTE &lt;chr&gt;, RNOTE &lt;chr&gt;, LASTCHANGE &lt;chr&gt;,
+#   FROMCOUNTY &lt;lgl&gt;, geometry &lt;GEOMETRY [°]&gt;, color &lt;chr&gt;</code></pre>
+</div>
+</div>
+<section id="we-created-separate-plots-to-display-regions-and-state-affiliations-democratic-or-republican-across-the-u.s.-the-plots-plot_northeast-plot_southeast-plot_midwest-plot_southwest-and-plot_west-visualize-each-regions-layout" class="level2">
+<h2 class="anchored" data-anchor-id="we-created-separate-plots-to-display-regions-and-state-affiliations-democratic-or-republican-across-the-u.s.-the-plots-plot_northeast-plot_southeast-plot_midwest-plot_southwest-and-plot_west-visualize-each-regions-layout">We created separate plots to display <strong>regions</strong> and <strong>state affiliations</strong> (Democratic or Republican) across the U.S. The plots — ## <strong>plot_northeast</strong>, <strong>plot_southeast</strong>, <strong>plot_midwest</strong>, <strong>plot_southwest</strong>, and <strong>plot_west</strong> — visualize each region’s layout,</h2>
+</section>
+<section id="highlighting-the-party-affiliation-within-each-state.-this-approach-offers-a-clear-view-of-the-political-landscape-across-states-within-each-region." class="level2">
+<h2 class="anchored" data-anchor-id="highlighting-the-party-affiliation-within-each-state.-this-approach-offers-a-clear-view-of-the-political-landscape-across-states-within-each-region.">highlighting the party affiliation within each state. This approach offers a clear view of the political landscape across states within each region.</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-15-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-15-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-15-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-15-5.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="we-created-a-map-displaying-the-number-of-electoral-votes-by-state-with-an-accompanying-list-detailing-the-electoral-vote-count" class="level2">
+<h2 class="anchored" data-anchor-id="we-created-a-map-displaying-the-number-of-electoral-votes-by-state-with-an-accompanying-list-detailing-the-electoral-vote-count">We created a map displaying the number of electoral votes by state, with an accompanying list detailing the electoral vote count</h2>
+</section>
+<section id="for-each-state." class="level2">
+<h2 class="anchored" data-anchor-id="for-each-state.">for each state.</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co">#| results: hide</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Install necessary packages if not already installed</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"sf"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) <span class="fu">install.packages</span>(<span class="st">"sf"</span>)</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"ggplot2"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) <span class="fu">install.packages</span>(<span class="st">"ggplot2"</span>)</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"dplyr"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) <span class="fu">install.packages</span>(<span class="st">"dplyr"</span>)</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Load necessary libraries</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the path to the shapefile (replace with your actual path)</span></span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>shapefile_path <span class="ot">&lt;-</span> <span class="st">"C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/congress_shapefiles/congress_094/districtShapes/districts094.shp"</span></span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the shapefile</span></span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>districts <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(shapefile_path)</span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a data frame for electoral votes</span></span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a>electoral_votes <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">STATENAME =</span> <span class="fu">c</span>(<span class="st">"Alabama"</span>, <span class="st">"Kentucky"</span>, <span class="st">"North Dakota"</span>, <span class="st">"Alaska"</span>, <span class="st">"Louisiana"</span>, <span class="st">"Ohio"</span>, </span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Arizona"</span>, <span class="st">"Maine"</span>, <span class="st">"Oklahoma"</span>, <span class="st">"Arkansas"</span>, <span class="st">"Maryland"</span>, <span class="st">"Oregon"</span>, </span>
+<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a>                <span class="st">"California"</span>, <span class="st">"Massachusetts"</span>, <span class="st">"Pennsylvania"</span>, <span class="st">"Colorado"</span>, <span class="st">"Michigan"</span>, </span>
+<span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Rhode Island"</span>, <span class="st">"Connecticut"</span>, <span class="st">"Minnesota"</span>, <span class="st">"South Carolina"</span>, <span class="st">"Delaware"</span>, </span>
+<span id="cb27-28"><a href="#cb27-28" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Mississippi"</span>, <span class="st">"South Dakota"</span>, <span class="st">"District of Columbia"</span>, <span class="st">"Missouri"</span>, <span class="st">"Tennessee"</span>, </span>
+<span id="cb27-29"><a href="#cb27-29" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Florida"</span>, <span class="st">"Montana"</span>, <span class="st">"Texas"</span>, <span class="st">"Georgia"</span>, <span class="st">"Nebraska"</span>, <span class="st">"Utah"</span>, <span class="st">"Hawaii"</span>, </span>
+<span id="cb27-30"><a href="#cb27-30" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Nevada"</span>, <span class="st">"Vermont"</span>, <span class="st">"Idaho"</span>, <span class="st">"New Hampshire"</span>, <span class="st">"Virginia"</span>, <span class="st">"Illinois"</span>, </span>
+<span id="cb27-31"><a href="#cb27-31" aria-hidden="true" tabindex="-1"></a>                <span class="st">"New Jersey"</span>, <span class="st">"Washington"</span>, <span class="st">"Indiana"</span>, <span class="st">"New Mexico"</span>, <span class="st">"West Virginia"</span>, </span>
+<span id="cb27-32"><a href="#cb27-32" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Iowa"</span>, <span class="st">"New York"</span>, <span class="st">"Wisconsin"</span>, <span class="st">"Kansas"</span>, <span class="st">"North Carolina"</span>, <span class="st">"Wyoming"</span>),</span>
+<span id="cb27-33"><a href="#cb27-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">votes =</span> <span class="fu">c</span>(<span class="dv">9</span>, <span class="dv">8</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">8</span>, <span class="dv">17</span>, <span class="dv">11</span>, <span class="dv">4</span>, <span class="dv">7</span>, <span class="dv">6</span>, <span class="dv">10</span>, <span class="dv">8</span>, <span class="dv">54</span>, <span class="dv">11</span>, <span class="dv">19</span>, <span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">4</span>, <span class="dv">7</span>, <span class="dv">10</span>, </span>
+<span id="cb27-34"><a href="#cb27-34" aria-hidden="true" tabindex="-1"></a>            <span class="dv">9</span>, <span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">10</span>, <span class="dv">11</span>, <span class="dv">30</span>, <span class="dv">4</span>, <span class="dv">40</span>, <span class="dv">16</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">13</span>, <span class="dv">19</span>, </span>
+<span id="cb27-35"><a href="#cb27-35" aria-hidden="true" tabindex="-1"></a>            <span class="dv">14</span>, <span class="dv">12</span>, <span class="dv">11</span>, <span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">28</span>, <span class="dv">10</span>, <span class="dv">6</span>, <span class="dv">16</span>, <span class="dv">3</span>)</span>
+<span id="cb27-36"><a href="#cb27-36" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb27-37"><a href="#cb27-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-38"><a href="#cb27-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure `STATENAME` in the shapefile is in the same format as the electoral_votes data</span></span>
+<span id="cb27-39"><a href="#cb27-39" aria-hidden="true" tabindex="-1"></a>districts<span class="sc">$</span>STATENAME <span class="ot">&lt;-</span> <span class="fu">as.character</span>(districts<span class="sc">$</span>STATENAME)</span>
+<span id="cb27-40"><a href="#cb27-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-41"><a href="#cb27-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Aggregate districts into single state polygons</span></span>
+<span id="cb27-42"><a href="#cb27-42" aria-hidden="true" tabindex="-1"></a>states <span class="ot">&lt;-</span> districts <span class="sc">%&gt;%</span></span>
+<span id="cb27-43"><a href="#cb27-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(STATENAME) <span class="sc">%&gt;%</span></span>
+<span id="cb27-44"><a href="#cb27-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">geometry =</span> <span class="fu">st_union</span>(geometry), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Returning more (or less) than 1 row per `summarise()` group was deprecated in
+dplyr 1.1.0.
+ℹ Please use `reframe()` instead.
+ℹ When switching from `summarise()` to `reframe()`, remember that `reframe()`
+  always returns an ungrouped data frame and adjust accordingly.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge electoral votes data with the state geometry data</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>states <span class="ot">&lt;-</span> states <span class="sc">%&gt;%</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(electoral_votes, <span class="at">by =</span> <span class="st">"STATENAME"</span>)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Custom color palette</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>custom_palette <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"#FFF9C4"</span>, <span class="st">"#FFE082"</span>, <span class="st">"#FFCA28"</span>, <span class="st">"#FFB300"</span>, <span class="st">"#FF8F00"</span>, <span class="st">"#F57C00"</span>, <span class="st">"#E65100"</span>)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the US map with electoral votes by state</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Alaska and Hawaii positioning is adjusted manually</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> states, <span class="fu">aes</span>(<span class="at">fill =</span> votes), <span class="at">color =</span> <span class="st">"grey30"</span>, <span class="at">size =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Separate Alaska and Hawaii with custom transformations</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> states <span class="sc">%&gt;%</span> <span class="fu">filter</span>(STATENAME <span class="sc">==</span> <span class="st">"Alaska"</span>),</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>          <span class="fu">aes</span>(<span class="at">fill =</span> votes), <span class="at">color =</span> <span class="st">"grey30"</span>, <span class="at">size =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">crs =</span> <span class="fu">st_crs</span>(<span class="dv">5070</span>), <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">170</span>, <span class="sc">-</span><span class="dv">130</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">72</span>)) <span class="sc">+</span> <span class="co"># Move Alaska</span></span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> states <span class="sc">%&gt;%</span> <span class="fu">filter</span>(STATENAME <span class="sc">==</span> <span class="st">"Hawaii"</span>),</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>          <span class="fu">aes</span>(<span class="at">fill =</span> votes), <span class="at">color =</span> <span class="st">"grey30"</span>, <span class="at">size =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">crs =</span> <span class="fu">st_crs</span>(<span class="dv">5070</span>), <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">160</span>, <span class="sc">-</span><span class="dv">154</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">18</span>, <span class="dv">23</span>)) <span class="sc">+</span> <span class="co"># Move Hawaii</span></span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(<span class="at">colors =</span> custom_palette, <span class="at">na.value =</span> <span class="st">"gray90"</span>, <span class="at">name =</span> <span class="st">"Votes"</span>) <span class="sc">+</span></span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Number of Electoral Votes by State"</span>,</span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Electoral votes for the 2024 election are allocated to states based on the 2020 Census."</span></span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">18</span>) <span class="sc">+</span>  <span class="co"># Increase base size for larger plot</span></span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">24</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb29-28"><a href="#cb29-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"right"</span></span>
+<span id="cb29-29"><a href="#cb29-29" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb29-30"><a href="#cb29-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>), <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>)) <span class="sc">+</span></span>
+<span id="cb29-31"><a href="#cb29-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">crs =</span> <span class="fu">st_crs</span>(<span class="dv">5070</span>), <span class="at">expand =</span> <span class="cn">FALSE</span>)  <span class="co"># Adjust projection to show the continental US</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Coordinate system already present. Adding new coordinate system, which will
+replace the existing one.
+Coordinate system already present. Adding new coordinate system, which will
+replace the existing one.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="using-the-usmap-library-we-successfully-printed-a-map-of-the-united-states" class="level2">
+<h2 class="anchored" data-anchor-id="using-the-usmap-library-we-successfully-printed-a-map-of-the-united-states">## Using the usmap library, we successfully printed a map of the United States</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Load necessary libraries</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>presidential_data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/1976-2020-president.csv"</span>)</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Install usmap package if not already installed</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"usmap"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) <span class="fu">install.packages</span>(<span class="st">"usmap"</span>)</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Load usmap</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(usmap)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'usmap' was built under R version 4.4.2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_usmap</span>(<span class="at">regions =</span> <span class="st">"states"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(presidential_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  year   state state_po state_fips state_cen state_ic       office
+1 1976 ALABAMA       AL          1        63       41 US PRESIDENT
+2 1976 ALABAMA       AL          1        63       41 US PRESIDENT
+3 1976 ALABAMA       AL          1        63       41 US PRESIDENT
+4 1976 ALABAMA       AL          1        63       41 US PRESIDENT
+5 1976 ALABAMA       AL          1        63       41 US PRESIDENT
+6 1976 ALABAMA       AL          1        63       41 US PRESIDENT
+                candidate             party_detailed writein candidatevotes
+1           CARTER, JIMMY                   DEMOCRAT   FALSE         659170
+2            FORD, GERALD                 REPUBLICAN   FALSE         504070
+3          MADDOX, LESTER AMERICAN INDEPENDENT PARTY   FALSE           9198
+4 BUBAR, BENJAMIN ""BEN""                PROHIBITION   FALSE           6669
+5               HALL, GUS        COMMUNIST PARTY USE   FALSE           1954
+6         MACBRIDE, ROGER                LIBERTARIAN   FALSE           1481
+  totalvotes  version notes party_simplified
+1    1182850 20210113    NA         DEMOCRAT
+2    1182850 20210113    NA       REPUBLICAN
+3    1182850 20210113    NA            OTHER
+4    1182850 20210113    NA            OTHER
+5    1182850 20210113    NA            OTHER
+6    1182850 20210113    NA      LIBERTARIAN</code></pre>
+</div>
+</div>
+</section>
+<section id="using-the-usmap-library-we-successfully-printed-a-map-of-the-united-states-including-all-states-with-alaska-and-hawaii-displayed-accurately-alongside-the-mainland.-this-library-is-particularly-useful-for-visualizing-u.s.-state-data-on-a-consistent-map-layout-that-includes-all-50-states." class="level2">
+<h2 class="anchored" data-anchor-id="using-the-usmap-library-we-successfully-printed-a-map-of-the-united-states-including-all-states-with-alaska-and-hawaii-displayed-accurately-alongside-the-mainland.-this-library-is-particularly-useful-for-visualizing-u.s.-state-data-on-a-consistent-map-layout-that-includes-all-50-states.">Using the usmap library, we successfully printed a map of the United States, including all states, with Alaska and Hawaii displayed accurately alongside the mainland. This library is particularly useful for visualizing U.S. state data on a consistent map layout that includes all 50 states.</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Load necessary libraries</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(usmap)</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(maps)</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Load your data (update with the actual path if needed)</span></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>presidential_data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/1976-2020-president.csv"</span>)</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter data for the year 2020</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>presidential_data_2020 <span class="ot">&lt;-</span> presidential_data <span class="sc">%&gt;%</span></span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2020</span>)</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify the winning party in each state by the highest percentage of votes</span></span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>max_percent_rows <span class="ot">&lt;-</span> presidential_data_2020 <span class="sc">%&gt;%</span></span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(state) <span class="sc">%&gt;%</span></span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(candidatevotes <span class="sc">==</span> <span class="fu">max</span>(candidatevotes)) <span class="sc">%&gt;%</span></span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract states won by Democrats</span></span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a>Blue_states <span class="ot">&lt;-</span> max_percent_rows <span class="sc">%&gt;%</span></span>
+<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(party_simplified <span class="sc">==</span> <span class="st">"DEMOCRAT"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(state) <span class="sc">%&gt;%</span></span>
+<span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tolower</span>()  <span class="co"># Convert state names to lowercase to match `map_data`</span></span>
+<span id="cb36-30"><a href="#cb36-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-31"><a href="#cb36-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare the map data for ggplot</span></span>
+<span id="cb36-32"><a href="#cb36-32" aria-hidden="true" tabindex="-1"></a>map_data <span class="ot">&lt;-</span> <span class="fu">map_data</span>(<span class="st">"state"</span>)</span>
+<span id="cb36-33"><a href="#cb36-33" aria-hidden="true" tabindex="-1"></a>map_data<span class="sc">$</span>fill <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(map_data<span class="sc">$</span>region <span class="sc">%in%</span> Blue_states, <span class="st">"blue"</span>, <span class="st">"red"</span>)  <span class="co"># Color Democrats blue, others red</span></span>
+<span id="cb36-34"><a href="#cb36-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-35"><a href="#cb36-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the map</span></span>
+<span id="cb36-36"><a href="#cb36-36" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb36-37"><a href="#cb36-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_map</span>(<span class="at">data =</span> map_data, <span class="at">map =</span> map_data,</span>
+<span id="cb36-38"><a href="#cb36-38" aria-hidden="true" tabindex="-1"></a>           <span class="fu">aes</span>(<span class="at">x =</span> long, <span class="at">y =</span> lat, <span class="at">map_id =</span> region, <span class="at">fill =</span> fill),</span>
+<span id="cb36-39"><a href="#cb36-39" aria-hidden="true" tabindex="-1"></a>           <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">size =</span> <span class="fl">0.25</span>) <span class="sc">+</span></span>
+<span id="cb36-40"><a href="#cb36-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_identity</span>() <span class="sc">+</span></span>
+<span id="cb36-41"><a href="#cb36-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"US Presidential Election Results by State - 2020"</span>,</span>
+<span id="cb36-42"><a href="#cb36-42" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Blue: Democrat, Red: Republican"</span>) <span class="sc">+</span></span>
+<span id="cb36-43"><a href="#cb36-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb36-44"><a href="#cb36-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb36-45"><a href="#cb36-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">16</span>),</span>
+<span id="cb36-46"><a href="#cb36-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">12</span>)</span>
+<span id="cb36-47"><a href="#cb36-47" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in geom_map(data = map_data, map = map_data, aes(x = long, y = lat, :
+Ignoring unknown aesthetics: x and y</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="using-a-choropleth-map-with-the-usmap-library-we-plotted-u.s.-states-in-red-and-blue-to-represent-republican-and-democratic-states-respectively-and-shaded-them-according-to-the-number-of-votes-each-state-received.-this-provides-a-clear-visual-of-the-voting-landscape-across-the-u.s." class="level2">
+<h2 class="anchored" data-anchor-id="using-a-choropleth-map-with-the-usmap-library-we-plotted-u.s.-states-in-red-and-blue-to-represent-republican-and-democratic-states-respectively-and-shaded-them-according-to-the-number-of-votes-each-state-received.-this-provides-a-clear-visual-of-the-voting-landscape-across-the-u.s.">Using a choropleth map with the usmap library, we plotted U.S. states in red and blue to represent Republican and Democratic states, respectively, and shaded them according to the number of votes each state received. This provides a clear visual of the voting landscape across the U.S.</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Load necessary libraries</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(maps)</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Load your presidential election data (adjust the path as needed)</span></span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>presidential_data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/1976-2020-president.csv"</span>)</span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter data for the year 2020</span></span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>presidential_data_2020 <span class="ot">&lt;-</span> presidential_data <span class="sc">%&gt;%</span></span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2020</span>)</span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the percentage of votes each candidate received in each state</span></span>
+<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a>presidential_data_2020 <span class="ot">&lt;-</span> presidential_data_2020 <span class="sc">%&gt;%</span></span>
+<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(state) <span class="sc">%&gt;%</span></span>
+<span id="cb38-21"><a href="#cb38-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Percent =</span> (candidatevotes <span class="sc">/</span> totalvotes) <span class="sc">*</span> <span class="dv">100</span>)</span>
+<span id="cb38-22"><a href="#cb38-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-23"><a href="#cb38-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify the winning party in each state by the highest percentage of votes</span></span>
+<span id="cb38-24"><a href="#cb38-24" aria-hidden="true" tabindex="-1"></a>max_percent_rows <span class="ot">&lt;-</span> presidential_data_2020 <span class="sc">%&gt;%</span></span>
+<span id="cb38-25"><a href="#cb38-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(state) <span class="sc">%&gt;%</span></span>
+<span id="cb38-26"><a href="#cb38-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Percent <span class="sc">==</span> <span class="fu">max</span>(Percent)) <span class="sc">%&gt;%</span></span>
+<span id="cb38-27"><a href="#cb38-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb38-28"><a href="#cb38-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-29"><a href="#cb38-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract states won by Democrats and Republicans</span></span>
+<span id="cb38-30"><a href="#cb38-30" aria-hidden="true" tabindex="-1"></a>Blue_states <span class="ot">&lt;-</span> max_percent_rows <span class="sc">%&gt;%</span></span>
+<span id="cb38-31"><a href="#cb38-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(party_simplified <span class="sc">==</span> <span class="st">"DEMOCRAT"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb38-32"><a href="#cb38-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(state) <span class="sc">%&gt;%</span></span>
+<span id="cb38-33"><a href="#cb38-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tolower</span>()</span>
+<span id="cb38-34"><a href="#cb38-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-35"><a href="#cb38-35" aria-hidden="true" tabindex="-1"></a>Red_states <span class="ot">&lt;-</span> max_percent_rows <span class="sc">%&gt;%</span></span>
+<span id="cb38-36"><a href="#cb38-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(party_simplified <span class="sc">==</span> <span class="st">"REPUBLICAN"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb38-37"><a href="#cb38-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(state) <span class="sc">%&gt;%</span></span>
+<span id="cb38-38"><a href="#cb38-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tolower</span>()</span>
+<span id="cb38-39"><a href="#cb38-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-40"><a href="#cb38-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare states and their percentages for mapping</span></span>
+<span id="cb38-41"><a href="#cb38-41" aria-hidden="true" tabindex="-1"></a>states_and_percentages <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb38-42"><a href="#cb38-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">region =</span> <span class="fu">tolower</span>(max_percent_rows<span class="sc">$</span>state),</span>
+<span id="cb38-43"><a href="#cb38-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">percent =</span> max_percent_rows<span class="sc">$</span>Percent</span>
+<span id="cb38-44"><a href="#cb38-44" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb38-45"><a href="#cb38-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-46"><a href="#cb38-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Create map data with fill color based on the party and transparency based on percentage</span></span>
+<span id="cb38-47"><a href="#cb38-47" aria-hidden="true" tabindex="-1"></a>map_data <span class="ot">&lt;-</span> <span class="fu">map_data</span>(<span class="st">"state"</span>)</span>
+<span id="cb38-48"><a href="#cb38-48" aria-hidden="true" tabindex="-1"></a>map_data<span class="sc">$</span>fill <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(map_data<span class="sc">$</span>region <span class="sc">%in%</span> Blue_states, <span class="st">"blue"</span>,</span>
+<span id="cb38-49"><a href="#cb38-49" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">ifelse</span>(map_data<span class="sc">$</span>region <span class="sc">%in%</span> Red_states, <span class="st">"red"</span>, <span class="st">"purple"</span>))</span>
+<span id="cb38-50"><a href="#cb38-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-51"><a href="#cb38-51" aria-hidden="true" tabindex="-1"></a><span class="co"># Join vote percentage data with map data</span></span>
+<span id="cb38-52"><a href="#cb38-52" aria-hidden="true" tabindex="-1"></a>map_data <span class="ot">&lt;-</span> <span class="fu">left_join</span>(map_data, states_and_percentages, <span class="at">by =</span> <span class="st">"region"</span>)</span>
+<span id="cb38-53"><a href="#cb38-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-54"><a href="#cb38-54" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the map</span></span>
+<span id="cb38-55"><a href="#cb38-55" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb38-56"><a href="#cb38-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_map</span>(<span class="at">data =</span> map_data, <span class="at">map =</span> map_data,</span>
+<span id="cb38-57"><a href="#cb38-57" aria-hidden="true" tabindex="-1"></a>           <span class="fu">aes</span>(<span class="at">x =</span> long, <span class="at">y =</span> lat, <span class="at">map_id =</span> region, <span class="at">fill =</span> fill, <span class="at">alpha =</span> percent),</span>
+<span id="cb38-58"><a href="#cb38-58" aria-hidden="true" tabindex="-1"></a>           <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">size =</span> <span class="fl">0.25</span>) <span class="sc">+</span></span>
+<span id="cb38-59"><a href="#cb38-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"blue"</span> <span class="ot">=</span> <span class="st">"blue"</span>, <span class="st">"red"</span> <span class="ot">=</span> <span class="st">"red"</span>, <span class="st">"purple"</span> <span class="ot">=</span> <span class="st">"purple"</span>),</span>
+<span id="cb38-60"><a href="#cb38-60" aria-hidden="true" tabindex="-1"></a>                    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Democrat"</span>, <span class="st">"Republican"</span>, <span class="st">"Other"</span>),</span>
+<span id="cb38-61"><a href="#cb38-61" aria-hidden="true" tabindex="-1"></a>                    <span class="at">drop =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb38-62"><a href="#cb38-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"How States Voted in the 2020 Presidential Election"</span>) <span class="sc">+</span></span>
+<span id="cb38-63"><a href="#cb38-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb38-64"><a href="#cb38-64" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"white"</span>, <span class="at">color =</span> <span class="st">"white"</span>),</span>
+<span id="cb38-65"><a href="#cb38-65" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"white"</span>),</span>
+<span id="cb38-66"><a href="#cb38-66" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb38-67"><a href="#cb38-67" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb38-68"><a href="#cb38-68" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb38-69"><a href="#cb38-69" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb38-70"><a href="#cb38-70" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="fu">guide_legend</span>(<span class="at">title =</span> <span class="st">"Party"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in geom_map(data = map_data, map = map_data, aes(x = long, y = lat, :
+Ignoring unknown aesthetics: x and y</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="using-a-choropleth-map-with-the-usmap-library-we-plotted-u.s.-states-in-red-and-blue-to-represent-republican-and-democratic-states-respectively-and-shaded-them-according-to-the-number-of-electoral-votes-each-state-has.-this-approach-provides-a-clear-visual-of-the-electoral-landscape-across-the-u.s.-highlighting-each-states-electoral-weight-in-the-election." class="level2">
+<h2 class="anchored" data-anchor-id="using-a-choropleth-map-with-the-usmap-library-we-plotted-u.s.-states-in-red-and-blue-to-represent-republican-and-democratic-states-respectively-and-shaded-them-according-to-the-number-of-electoral-votes-each-state-has.-this-approach-provides-a-clear-visual-of-the-electoral-landscape-across-the-u.s.-highlighting-each-states-electoral-weight-in-the-election.">## Using a choropleth map with the <code>usmap</code> library, we plotted U.S. states in red and blue to represent Republican and Democratic states, respectively, and shaded them according to the <strong>number of electoral votes</strong> each state has. This approach provides a clear visual of the electoral landscape across the U.S., highlighting each state’s electoral weight in the election.</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="co">#| results: hide</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Install necessary packages if not already installed</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"sf"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) <span class="fu">install.packages</span>(<span class="st">"sf"</span>)</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"ggplot2"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) <span class="fu">install.packages</span>(<span class="st">"ggplot2"</span>)</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"dplyr"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) <span class="fu">install.packages</span>(<span class="st">"dplyr"</span>)</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Load necessary libraries</span></span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the path to the shapefile (replace with your actual path)</span></span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>shapefile_path <span class="ot">&lt;-</span> <span class="st">"C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/Mini 03 Data/congress_shapefiles/congress_094/districtShapes/districts094.shp"</span></span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the shapefile</span></span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>districts <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(shapefile_path)</span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a data frame for electoral votes</span></span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a>electoral_votes <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">STATENAME =</span> <span class="fu">c</span>(<span class="st">"Alabama"</span>, <span class="st">"Kentucky"</span>, <span class="st">"North Dakota"</span>, <span class="st">"Alaska"</span>, <span class="st">"Louisiana"</span>, <span class="st">"Ohio"</span>, </span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Arizona"</span>, <span class="st">"Maine"</span>, <span class="st">"Oklahoma"</span>, <span class="st">"Arkansas"</span>, <span class="st">"Maryland"</span>, <span class="st">"Oregon"</span>, </span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a>                <span class="st">"California"</span>, <span class="st">"Massachusetts"</span>, <span class="st">"Pennsylvania"</span>, <span class="st">"Colorado"</span>, <span class="st">"Michigan"</span>, </span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Rhode Island"</span>, <span class="st">"Connecticut"</span>, <span class="st">"Minnesota"</span>, <span class="st">"South Carolina"</span>, <span class="st">"Delaware"</span>, </span>
+<span id="cb40-28"><a href="#cb40-28" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Mississippi"</span>, <span class="st">"South Dakota"</span>, <span class="st">"District of Columbia"</span>, <span class="st">"Missouri"</span>, <span class="st">"Tennessee"</span>, </span>
+<span id="cb40-29"><a href="#cb40-29" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Florida"</span>, <span class="st">"Montana"</span>, <span class="st">"Texas"</span>, <span class="st">"Georgia"</span>, <span class="st">"Nebraska"</span>, <span class="st">"Utah"</span>, <span class="st">"Hawaii"</span>, </span>
+<span id="cb40-30"><a href="#cb40-30" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Nevada"</span>, <span class="st">"Vermont"</span>, <span class="st">"Idaho"</span>, <span class="st">"New Hampshire"</span>, <span class="st">"Virginia"</span>, <span class="st">"Illinois"</span>, </span>
+<span id="cb40-31"><a href="#cb40-31" aria-hidden="true" tabindex="-1"></a>                <span class="st">"New Jersey"</span>, <span class="st">"Washington"</span>, <span class="st">"Indiana"</span>, <span class="st">"New Mexico"</span>, <span class="st">"West Virginia"</span>, </span>
+<span id="cb40-32"><a href="#cb40-32" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Iowa"</span>, <span class="st">"New York"</span>, <span class="st">"Wisconsin"</span>, <span class="st">"Kansas"</span>, <span class="st">"North Carolina"</span>, <span class="st">"Wyoming"</span>),</span>
+<span id="cb40-33"><a href="#cb40-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">votes =</span> <span class="fu">c</span>(<span class="dv">9</span>, <span class="dv">8</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">8</span>, <span class="dv">17</span>, <span class="dv">11</span>, <span class="dv">4</span>, <span class="dv">7</span>, <span class="dv">6</span>, <span class="dv">10</span>, <span class="dv">8</span>, <span class="dv">54</span>, <span class="dv">11</span>, <span class="dv">19</span>, <span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">4</span>, <span class="dv">7</span>, <span class="dv">10</span>, </span>
+<span id="cb40-34"><a href="#cb40-34" aria-hidden="true" tabindex="-1"></a>            <span class="dv">9</span>, <span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">10</span>, <span class="dv">11</span>, <span class="dv">30</span>, <span class="dv">4</span>, <span class="dv">40</span>, <span class="dv">16</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">13</span>, <span class="dv">19</span>, </span>
+<span id="cb40-35"><a href="#cb40-35" aria-hidden="true" tabindex="-1"></a>            <span class="dv">14</span>, <span class="dv">12</span>, <span class="dv">11</span>, <span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">28</span>, <span class="dv">10</span>, <span class="dv">6</span>, <span class="dv">16</span>, <span class="dv">3</span>)</span>
+<span id="cb40-36"><a href="#cb40-36" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb40-37"><a href="#cb40-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-38"><a href="#cb40-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure `STATENAME` in the shapefile is in the same format as the electoral_votes data</span></span>
+<span id="cb40-39"><a href="#cb40-39" aria-hidden="true" tabindex="-1"></a>districts<span class="sc">$</span>STATENAME <span class="ot">&lt;-</span> <span class="fu">as.character</span>(districts<span class="sc">$</span>STATENAME)</span>
+<span id="cb40-40"><a href="#cb40-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-41"><a href="#cb40-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Aggregate districts into single state polygons</span></span>
+<span id="cb40-42"><a href="#cb40-42" aria-hidden="true" tabindex="-1"></a>states <span class="ot">&lt;-</span> districts <span class="sc">%&gt;%</span></span>
+<span id="cb40-43"><a href="#cb40-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(STATENAME) <span class="sc">%&gt;%</span></span>
+<span id="cb40-44"><a href="#cb40-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">geometry =</span> <span class="fu">st_union</span>(geometry), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Returning more (or less) than 1 row per `summarise()` group was deprecated in
+dplyr 1.1.0.
+ℹ Please use `reframe()` instead.
+ℹ When switching from `summarise()` to `reframe()`, remember that `reframe()`
+  always returns an ungrouped data frame and adjust accordingly.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge electoral votes data with the state geometry data</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>states <span class="ot">&lt;-</span> states <span class="sc">%&gt;%</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(electoral_votes, <span class="at">by =</span> <span class="st">"STATENAME"</span>)</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Custom color palette for electoral votes</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>custom_palette <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"#FFF9C4"</span>, <span class="st">"#FFE082"</span>, <span class="st">"#FFCA28"</span>, <span class="st">"#FFB300"</span>, <span class="st">"#FF8F00"</span>, <span class="st">"#F57C00"</span>, <span class="st">"#E65100"</span>)</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Separate data for Alaska and Hawaii for manual repositioning</span></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>continental_states <span class="ot">&lt;-</span> states <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>STATENAME <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Alaska"</span>, <span class="st">"Hawaii"</span>))</span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>alaska <span class="ot">&lt;-</span> states <span class="sc">%&gt;%</span> <span class="fu">filter</span>(STATENAME <span class="sc">==</span> <span class="st">"Alaska"</span>) <span class="sc">%&gt;%</span> <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="fu">st_crs</span>(<span class="dv">5070</span>))</span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>hawaii <span class="ot">&lt;-</span> states <span class="sc">%&gt;%</span> <span class="fu">filter</span>(STATENAME <span class="sc">==</span> <span class="st">"Hawaii"</span>) <span class="sc">%&gt;%</span> <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="fu">st_crs</span>(<span class="dv">5070</span>))</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the US map with electoral votes by state, adjusting Alaska and Hawaii</span></span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> continental_states, <span class="fu">aes</span>(<span class="at">fill =</span> votes), <span class="at">color =</span> <span class="st">"grey30"</span>, <span class="at">size =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Alaska repositioned in a separate viewport</span></span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> alaska, <span class="fu">aes</span>(<span class="at">fill =</span> votes), <span class="at">color =</span> <span class="st">"grey30"</span>, <span class="at">size =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">2400000</span>, <span class="sc">-</span><span class="dv">1200000</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">2100000</span>, <span class="dv">3500000</span>), <span class="at">datum =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb42-19"><a href="#cb42-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Hawaii repositioned in a separate viewport</span></span>
+<span id="cb42-20"><a href="#cb42-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> hawaii, <span class="fu">aes</span>(<span class="at">fill =</span> votes), <span class="at">color =</span> <span class="st">"grey30"</span>, <span class="at">size =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb42-21"><a href="#cb42-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">5000000</span>, <span class="dv">5500000</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">1000000</span>, <span class="dv">1600000</span>), <span class="at">datum =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb42-22"><a href="#cb42-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(<span class="at">colors =</span> custom_palette, <span class="at">na.value =</span> <span class="st">"gray90"</span>, <span class="at">name =</span> <span class="st">"Votes"</span>) <span class="sc">+</span></span>
+<span id="cb42-23"><a href="#cb42-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb42-24"><a href="#cb42-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Number of Electoral Votes by State"</span>,</span>
+<span id="cb42-25"><a href="#cb42-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Electoral votes for the 2024 election are allocated to states based on the 2020 Census."</span></span>
+<span id="cb42-26"><a href="#cb42-26" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb42-27"><a href="#cb42-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">18</span>) <span class="sc">+</span>  <span class="co"># Increase base size for larger plot</span></span>
+<span id="cb42-28"><a href="#cb42-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb42-29"><a href="#cb42-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">24</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb42-30"><a href="#cb42-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb42-31"><a href="#cb42-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"right"</span></span>
+<span id="cb42-32"><a href="#cb42-32" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb42-33"><a href="#cb42-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>), <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>)) <span class="sc">+</span></span>
+<span id="cb42-34"><a href="#cb42-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">crs =</span> <span class="fu">st_crs</span>(<span class="dv">5070</span>), <span class="at">expand =</span> <span class="cn">FALSE</span>)  <span class="co"># Adjust projection to show the continental US</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Coordinate system already present. Adding new coordinate system, which will
+replace the existing one.
+Coordinate system already present. Adding new coordinate system, which will
+replace the existing one.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp03_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/betelstar\.github\.io\/STA9750-2024-FALL\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
