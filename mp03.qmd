@@ -1009,7 +1009,6 @@ ggplot(data = states_electoral, aes(long, lat, group = group, fill = votes)) +
 ## for each state.
 
 ```{r}
-
 #| echo: false
 #| warning: false
 #| message: false
@@ -1093,7 +1092,6 @@ ggplot() +
 ## ## Using the usmap library, we successfully printed a map of the United States
 
 ```{r}
-
 #| echo: false
 #| warning: false
 #| message: false
@@ -1116,7 +1114,6 @@ head(presidential_data)
 
 
 ```{r}
-
 #| echo: false
 #| warning: false
 #| message: false
@@ -1173,7 +1170,6 @@ ggplot() +
 
 
 ```{r}
-
 #| echo: false
 #| warning: false
 #| message: false
@@ -1252,7 +1248,6 @@ ggplot() +
 ## ## Using a choropleth map with the `usmap` library, we plotted U.S. states in red and blue to represent Republican and Democratic states, respectively, and shaded them according to the **number of electoral votes** each state has. This approach provides a clear visual of the electoral landscape across the U.S., highlighting each state’s electoral weight in the election.
 
 ```{r}
-
 #| echo: false
 #| warning: false
 #| message: false
