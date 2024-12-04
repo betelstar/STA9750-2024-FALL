@@ -1053,244 +1053,31 @@ print(results)
 ```
 
 
-## Explanation of Wealth Growth Chart
+**Wealth Growth Chart Explanation**  
 
-### Overview
-- The chart compares the growth of wealth over time under two retirement plans: **Optional Retirement Plan (ORP)** and **Teacher Retirement System (TRS)**.
-- Historical data for stock and bond returns is used to simulate the ORP, while TRS wealth is calculated based on a defined benefit formula.
+**Overview**:  
+- Compares growth under two retirement plans: **ORP** (market-driven) and **TRS** (defined benefit).  
 
-### Key Components
-1. **ORP (Optional Retirement Plan)**:
-   - Wealth grows through monthly employee and employer contributions, adjusted for historical market returns.
-   - Contributions:
-     - **Employee rate**: 3.5%.
-     - **Employer rate**: 8% for the first 7 years, 10% thereafter.
-   - Returns:
-     - Weighted portfolio of **54% equities** and **10% bonds** reflects realistic market exposure.
+**ORP (Optional Retirement Plan)**:  
+- Growth through employee (3.5%) and employer contributions (8% first 7 years, 10% after).  
+- Returns: 54% equities, 10% bonds, reflecting market trends.  
 
-2. **TRS (Teacher Retirement System)**:
-   - A defined benefit plan based on:
-     - Starting salary.
-     - Salary growth rate (3% annually).
-     - Multiplier (2%) for years of service.
-   - Annual benefit is inflation-adjusted based on historical CPI data, capped between 1%-3%.
+**TRS (Teacher Retirement System)**:  
+- Based on starting salary, 3% annual growth, and a 2% multiplier per service year.  
+- Inflation-adjusted payouts (1%-3%), starting at age 65.  
 
-### Insights from the Chart
-- **ORP Growth**:
-  - Wealth fluctuates with market performance, showing higher growth during favorable market conditions.
-  - Contributions and compounding returns lead to exponential growth over time.
-  
-- **TRS Growth**:
-  - Wealth increases linearly, reflecting steady payouts starting at retirement age (65).
-  - Inflation adjustments ensure TRS payouts retain purchasing power but do not exhibit market-driven volatility.
+**Insights**:  
+- **ORP**: Higher growth potential but depends on market performance.  
+- **TRS**: Steady, predictable growth with inflation protection.  
 
-### Key Takeaways
-- **Market Dependency**: ORP wealth is more sensitive to market performance, offering higher growth potential but also greater risk.
-- **Stability**: TRS wealth grows steadily, providing predictable income, especially for risk-averse individuals.
-- **Comparison**: The chart allows individuals to weigh the trade-offs between potential market-driven growth (ORP) and stability (TRS) when planning for retirement.
-
-
-```{r}
-#| echo: false
-#| warning: false
-#| message: false
-
-# Load necessary libraries
-library(dplyr)
-library(ggplot2)
-
-# Load the dataset
-file_path <- "processed_monthly_data.csv"  # Replace with the actual file path
-monthly_data <- read.csv(file_path)
-
-# Ensure the `date` column is in Date format
-monthly_data$date <- as.Date(monthly_data$date)
-
-# Add derived columns for CPI change and stock/bond returns
-monthly_data <- monthly_data %>%
-  mutate(
-    CPI_Lag = lag(CPI),  # Lagged CPI for consistent length
-    CPI_Change = (CPI - CPI_Lag) / CPI_Lag,  # Calculate CPI change
-    US_Equities_Lag = lag(SPY_CLOSE),  # Lagged SPY_CLOSE
-    US_Equities_Return = (SPY_CLOSE - US_Equities_Lag) / US_Equities_Lag,  # Stock returns
-    Bonds_Return = (X10_Year_Bond + X2_Year_Bond) / 2 / 100  # Average bond returns
-  ) %>%
-  filter(!is.na(CPI_Change), !is.na(US_Equities_Return), !is.na(Bonds_Return))  # Remove incomplete rows
-
-# ORP Parameters
-orp_employee_rate <- 0.035
-orp_employer_rate_initial <- 0.08
-orp_employer_rate_later <- 0.10
-starting_salary <- 50000
-salary_growth_rate <- 0.03
-
-# Simulate ORP growth using historical data
-months <- 1:nrow(monthly_data)
-orp_balance_over_time <- numeric(length(months))
-current_balance <- 0
-
-for (month in months) {
-  current_salary <- starting_salary * (1 + salary_growth_rate)^((month - 1) / 12)
-  employee_contribution <- current_salary * orp_employee_rate / 12
-  employer_rate <- ifelse(month <= 7 * 12, orp_employer_rate_initial, orp_employer_rate_later)
-  employer_contribution <- current_salary * employer_rate / 12
-  total_contribution <- employee_contribution + employer_contribution
-  
-  # Monthly return based on historical data
-  monthly_return <- 0.54 * monthly_data$US_Equities_Return[month] +
-                    0.10 * monthly_data$Bonds_Return[month]
-  current_balance <- (current_balance + total_contribution) * (1 + monthly_return)
-  orp_balance_over_time[month] <- current_balance
-}
-
-# TRS Parameters
-trs_multiplier <- 0.02
-retirement_age <- 65
-start_age <- 25
-years_of_service <- retirement_age - start_age
-trs_annual_benefit <- (starting_salary * (1 + salary_growth_rate)^years_of_service) * years_of_service * trs_multiplier
-
-# Inflation Adjustment (using historical CPI data)
-cpi_last_12_months <- tail(monthly_data$CPI, 12)
-cpi_diff <- diff(cpi_last_12_months)
-cpi_lag <- head(cpi_last_12_months, -1)
-annual_inflation <- mean(cpi_diff / cpi_lag, na.rm = TRUE)
-inflation_adjustment <- min(max(annual_inflation * 0.5, 0.01), 0.03)  # Capped between 1%-3%
-trs_annual_benefit_adjusted <- trs_annual_benefit * (1 + inflation_adjustment)
-
-# Create Wealth Data for Visualization
-wealth_data <- data.frame(
-  Month = rep(months, 2),
-  Wealth = c(orp_balance_over_time, trs_annual_benefit_adjusted * (months %/% 12)),
-  Plan = rep(c("ORP", "TRS"), each = length(months))
-)
-
-# Plot Wealth Growth
-ggplot(wealth_data, aes(x = Month, y = Wealth, color = Plan)) +
-  geom_line(size = 1.2) +
-  labs(
-    title = "Wealth Growth Over Time: ORP vs TRS (Using Historical Data)",
-    x = "Months",
-    y = "Wealth ($)"
-  ) +
-  theme_minimal() +
-  theme(
-    legend.position = "bottom",
-    text = element_text(size = 12)
-  )
-
-
-
-```
+**Takeaway**:  
+The chart shows the trade-off between market-based growth (ORP) and stability (TRS).  
 
 
 
 
 
-```{r}
-#| echo: false
-#| warning: false
-#| message: false
 
-# Check and install the `scales` package if not already installed
-if (!requireNamespace("scales", quietly = TRUE)) {
-  install.packages("scales")
-}
-
-# Load necessary libraries
-library(dplyr)
-library(ggplot2)
-library(scales)  # Load the scales package for dollar formatting
-
-# Load the dataset
-file_path <- "processed_monthly_data.csv"  # Replace with the correct file path
-monthly_data <- read.csv(file_path)
-
-# Convert `date` column to Date format
-monthly_data$date <- as.Date(monthly_data$date)
-
-# Add derived columns for CPI change, stock returns, and bond returns
-monthly_data <- monthly_data %>%
-  mutate(
-    CPI_Lag = lag(CPI),  # Lagged CPI for calculation
-    CPI_Change = (CPI - CPI_Lag) / CPI_Lag,  # Calculate CPI change
-    US_Equities_Lag = lag(SPY_CLOSE),  # Lagged SPY_CLOSE for calculation
-    US_Equities_Return = (SPY_CLOSE - US_Equities_Lag) / US_Equities_Lag,  # Stock returns
-    Bonds_Return = (X10_Year_Bond + X2_Year_Bond) / 2 / 100  # Average bond returns
-  ) %>%
-  filter(!is.na(CPI_Change), !is.na(US_Equities_Return), !is.na(Bonds_Return))  # Remove incomplete rows
-
-# ORP Parameters
-orp_employee_rate <- 0.035
-orp_employer_rate_initial <- 0.08
-orp_employer_rate_later <- 0.10
-starting_salary <- 50000
-salary_growth_rate <- 0.03
-
-# Simulate ORP balance growth
-months <- 1:nrow(monthly_data)
-orp_balance <- numeric(length(months))
-current_balance <- 0
-
-for (month in months) {
-  # Calculate current salary with growth
-  current_salary <- starting_salary * (1 + salary_growth_rate)^((month - 1) / 12)
-  
-  # Contributions
-  employee_contribution <- current_salary * orp_employee_rate / 12
-  employer_rate <- ifelse(month <= 7 * 12, orp_employer_rate_initial, orp_employer_rate_later)
-  employer_contribution <- current_salary * employer_rate / 12
-  total_contribution <- employee_contribution + employer_contribution
-  
-  # Monthly returns
-  monthly_return <- 0.54 * monthly_data$US_Equities_Return[month] +
-                    0.10 * monthly_data$Bonds_Return[month]
-  current_balance <- (current_balance + total_contribution) * (1 + monthly_return)
-  orp_balance[month] <- current_balance
-}
-
-# TRS Parameters
-trs_multiplier <- 0.02
-retirement_age <- 65
-start_age <- 25
-years_of_service <- retirement_age - start_age
-trs_annual_benefit <- (starting_salary * (1 + salary_growth_rate)^years_of_service) * years_of_service * trs_multiplier
-
-# Inflation adjustment for TRS using historical CPI
-cpi_last_12_months <- tail(monthly_data$CPI, 12)
-cpi_diff <- diff(cpi_last_12_months)
-cpi_lag <- head(cpi_last_12_months, -1)
-annual_inflation <- mean(cpi_diff / cpi_lag, na.rm = TRUE)
-inflation_adjustment <- min(max(annual_inflation * 0.5, 0.01), 0.03)  # Cap 1%-3%
-trs_annual_benefit_adjusted <- trs_annual_benefit * (1 + inflation_adjustment)
-
-# Calculate combined wealth (ORP + TRS)
-total_wealth <- orp_balance + trs_annual_benefit_adjusted * (months %/% 12)
-
-# Create combined wealth data for visualization
-combined_wealth_data <- data.frame(
-  Month = months,
-  Total_Wealth = total_wealth
-)
-
-# Plot combined wealth with dollar formatting
-ggplot(combined_wealth_data, aes(x = Month, y = Total_Wealth)) +
-  geom_line(size = 1.2, color = "blue") +
-  scale_y_continuous(labels = label_dollar()) +  # Format y-axis as dollars
-  labs(
-    title = "Total Wealth Growth Over Time: ORP + TRS",
-    x = "Months",
-    y = "Total Wealth ($)"
-  ) +
-  theme_minimal() +
-  theme(
-    text = element_text(size = 12)
-  )
-
-
-
-
-```
 
 ```{r}
 #| echo: false
@@ -1380,80 +1167,7 @@ print_assumptions(assumptions)
 
 
 ```
-```{r}
-#| echo: false
-#| warning: false
-#| message: false
 
-# Display assumptions and explain how they are derived from the dataset
-assumptions <- list(
-  "General Assumptions" = list(
-    "Starting Salary" = "$50,000",
-    "Salary Growth Rate" = "3% annually",
-    "Simulation Period" = "Monthly, over 40 years"
-  ),
-  "ORP Assumptions" = list(
-    "Employee Contribution Rate" = "3.5% (fixed)",
-    "Employer Contribution Rate (First 7 Years)" = "8% (fixed)",
-    "Employer Contribution Rate (After 7 Years)" = "10% (fixed)",
-    "Equity Allocation" = "54% US Equities, 10% Bonds",
-    "Average Annual Return (Historical)" = paste0(
-      "Derived from the `SPY_CLOSE` column in the dataset: ",
-      round(mean(monthly_data$US_Equities_Return, na.rm = TRUE) * 12 * 100, 2),
-      "%"
-    ),
-    "Bond Return (Historical)" = paste0(
-      "Derived from the `X10_Year_Bond` and `X2_Year_Bond` columns: ",
-      round(mean(monthly_data$Bonds_Return, na.rm = TRUE) * 12 * 100, 2),
-      "%"
-    )
-  ),
-  "TRS Assumptions" = list(
-    "Years of Service" = "40 years (Age 25 to 65)",
-    "TRS Multiplier" = "2% per year of service (fixed)",
-    "Final Average Salary (FAS)" = "Computed using last 3 years of salary",
-    "Inflation Adjustment (Historical)" = paste0(
-      "Derived from the `CPI` column in the dataset: ",
-      round(mean(monthly_data$CPI_Change, na.rm = TRUE) * 100, 2),
-      "% annually (capped at 1%-3%)"
-    )
-  )
-)
-
-# Function to print assumptions with dataset references
-print_assumptions <- function(assumptions) {
-  cat("Assumptions and Their Derivation from the Dataset:\n")
-  for (category in names(assumptions)) {
-    cat("\n", category, ":\n", sep = "")
-    for (key in names(assumptions[[category]])) {
-      cat("  -", key, ":", assumptions[[category]][[key]], "\n")
-    }
-  }
-}
-
-# Call the function to display the assumptions
-print_assumptions(assumptions)
-
-
-```
-
-## Visualize Bootstrap Distributions
-
-### Equity Returns Distribution
-- **Description**:  
-  - The histogram displays the frequency distribution of mean equity returns across bootstrap samples.
-  - Blue bars visually represent the spread of equity return means, highlighting variability.
-
-### Bond Returns Distribution
-- **Description**:  
-  - The histogram displays the frequency distribution of mean bond returns across bootstrap samples.
-  - Green bars illustrate the spread of bond return means, showcasing their variability.
-
-### Insights
-- **Variability**:  
-  - The analysis reveals the variability of equity and bond returns over multiple resampled datasets.
-- **Understanding Stability**:  
-  - Visualizing the bootstrap distributions helps assess the spread and stability of return estimates.
 
 
 
@@ -1465,251 +1179,118 @@ print_assumptions(assumptions)
 # Load necessary libraries
 library(dplyr)
 library(ggplot2)
+library(scales)
 
 # Load the dataset
-file_path <- "processed_monthly_data.csv"  # Replace with your dataset path
+file_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/processed_monthly_data.csv"
 monthly_data <- read.csv(file_path)
 
-# Ensure the `date` column is in Date format
+# Convert `date` column to Date type
 monthly_data$date <- as.Date(monthly_data$date)
 
-# Add derived columns for equity and bond returns
+# Add derived columns for CPI change and stock/bond returns
 monthly_data <- monthly_data %>%
   mutate(
-    US_Equities_Return = (SPY_CLOSE - lag(SPY_CLOSE)) / lag(SPY_CLOSE),  # Stock returns
-    Bonds_Return = (X10_Year_Bond + X2_Year_Bond) / 2 / 100  # Average bond returns
+    CPI_Lag = lag(CPI),
+    CPI_Change = (CPI - CPI_Lag) / CPI_Lag,
+    US_Equities_Lag = lag(SPY_CLOSE),
+    US_Equities_Return = (SPY_CLOSE - US_Equities_Lag) / US_Equities_Lag,
+    Bonds_Return = (X10_Year_Bond + X2_Year_Bond) / 2 / 100
   ) %>%
-  filter(!is.na(US_Equities_Return), !is.na(Bonds_Return))  # Remove NA rows
+  filter(!is.na(CPI_Change), !is.na(US_Equities_Return), !is.na(Bonds_Return))
 
-# Define the bootstrap parameters
-set.seed(123)  # For reproducibility
-n_boot <- 500  # Number of bootstrap samples
-n <- nrow(monthly_data)  # Sample size
+# Assumptions for ORP
+orp_employee_rate <- 0.035  # Employee contributes 3.5% of salary
+orp_employer_rate_initial <- 0.08  # Employer contributes 8% in the first 7 years
+orp_employer_rate_later <- 0.10  # Employer contributes 10% after 7 years
+starting_salary <- 50000  # Starting salary in dollars
+salary_growth_rate <- 0.03  # Annual salary growth rate (3%)
+total_months <- 300  # Simulating for 300 months (25 years)
 
-# Bootstrap resampling
-bootstrap_results <- data.frame(
-  resample_id = integer(),
-  mean_equity_return = numeric(),
-  mean_bond_return = numeric()
-)
+# Simulate the accumulation phase
+orp_balance <- numeric(total_months)
+current_balance_orp <- 0
 
-for (i in 1:n_boot) {
-  # Resample rows with replacement
-  boot_sample <- monthly_data %>% slice_sample(n = n, replace = TRUE)
+for (month in 1:total_months) {
+  # Calculate monthly salary
+  current_salary <- starting_salary * (1 + salary_growth_rate)^((month - 1) / 12)
   
-  # Compute statistics for this bootstrap sample
-  equity_mean <- mean(boot_sample$US_Equities_Return, na.rm = TRUE)
-  bond_mean <- mean(boot_sample$Bonds_Return, na.rm = TRUE)
+  # Calculate contributions
+  employee_contribution <- current_salary * orp_employee_rate / 12
+  employer_rate <- ifelse(month <= 84, orp_employer_rate_initial, orp_employer_rate_later)
+  employer_contribution <- current_salary * employer_rate / 12
+  total_contribution <- employee_contribution + employer_contribution
   
-  # Store the results
-  bootstrap_results <- rbind(bootstrap_results, data.frame(
-    resample_id = i,
-    mean_equity_return = equity_mean,
-    mean_bond_return = bond_mean
-  ))
+  # Calculate monthly return
+  monthly_return <- if (month <= nrow(monthly_data)) {
+    0.54 * monthly_data$US_Equities_Return[month] +
+    0.10 * monthly_data$Bonds_Return[month]
+  } else {
+    0.003  # Assuming an average 0.3% return for months without data
+  }
+  
+  # Update balance
+  current_balance_orp <- (current_balance_orp + total_contribution) * (1 + monthly_return)
+  orp_balance[month] <- current_balance_orp
 }
 
-# Calculate bootstrap variances
-bootstrap_variances <- bootstrap_results %>%
-  summarize(
-    var_equity_return = var(mean_equity_return),
-    var_bond_return = var(mean_bond_return)
-  )
-
-# Display results
-cat("Bootstrap Results:\n")
-cat("Variance of Equity Returns:", bootstrap_variances$var_equity_return, "\n")
-cat("Variance of Bond Returns:", bootstrap_variances$var_bond_return, "\n")
-
-# Visualization of Bootstrap Distribution
-ggplot(bootstrap_results, aes(x = mean_equity_return)) +
-  geom_histogram(bins = 30, fill = "blue", alpha = 0.7) +
-  labs(
-    title = "Bootstrap Distribution of Mean Equity Returns",
-    x = "Mean Equity Return",
-    y = "Frequency"
-  ) +
-  theme_minimal()
-
-ggplot(bootstrap_results, aes(x = mean_bond_return)) +
-  geom_histogram(bins = 30, fill = "green", alpha = 0.7) +
-  labs(
-    title = "Bootstrap Distribution of Mean Bond Returns",
-    x = "Mean Bond Return",
-    y = "Frequency"
-  ) +
-  theme_minimal()
-
-
-
-```
-
-## Monte Carlo Simulation: Portfolio Growth with Changing Returns
-
-### Overview
-- This simulation models portfolio growth over 30 years with an initial investment of $100,000.
-- The portfolio allocation is **70% equities** and **30% bonds**.
-- Three scenarios are analyzed:
-  - **Base Case**: 5% annual equity return, 3% annual bond return.
-  - **Higher Returns**: 10% increase in equity and bond returns.
-  - **Lower Returns**: 10% decrease in equity and bond returns.
-
-### Assumptions
-- **Equity variance**: 6.786352e-06  
-- **Bond variance**: 7.180288e-07  
-- **Portfolio weights**: 70% equities, 30% bonds  
-- Monthly returns are calculated by dividing annual returns by 12.
-
-### Simulation Process
-1. **Generate Monthly Returns**: 
-   - Simulate equity and bond returns using random normal distributions based on their mean and variance.
-2. **Combine Portfolio Returns**: 
-   - Calculate total returns weighted by 70% equities and 30% bonds.
-3. **Compute Portfolio Growth**: 
-   - Compound monthly returns over 360 months (30 years) to simulate portfolio growth.
-
-### Results
-- The simulation outputs portfolio growth under three scenarios:
-  - **Base Case**: Moderate growth with average market returns.
-  - **Higher Returns**: Faster growth reflecting favorable market conditions.
-  - **Lower Returns**: Slower growth highlighting unfavorable market conditions.
-
-### Visualization
-- The line plot illustrates portfolio value over time:
-  - **Base Case**: A steady growth curve.
-  - **Higher Returns**: A steeper growth trajectory due to increased returns.
-  - **Lower Returns**: A flatter growth curve emphasizing the impact of lower returns.
-
-
-
-
-```{r}
-#| echo: false
-#| warning: false
-#| message: false
-
-# Load necessary libraries
-library(dplyr)
-library(ggplot2)
-library(scales)  # For dollar formatting
-
-# Variances from previous bootstrap analysis
-variance_equity_returns <- 6.786352e-06
-variance_bond_returns <- 7.180288e-07
-
-# Long-term assumptions for financial returns
-mean_equity_return <- 0.05  # Assume 5% annual equity return
-mean_bond_return <- 0.03    # Assume 3% annual bond return
-
-# Convert annualized returns to monthly returns
-monthly_equity_return <- mean_equity_return / 12
-monthly_bond_return <- mean_bond_return / 12
-
-# Monte Carlo simulation settings
-set.seed(123)  # For reproducibility
-n_months <- 360  # 30 years of monthly returns
-initial_investment <- 100000  # Assume $100,000 initial investment
-n_simulations <- 3  # Number of simulations
-
-# Simulate portfolio growth for changing return scenarios
-simulate_portfolio_growth <- function(equity_mean, bond_mean, equity_var, bond_var, months, initial_value) {
-  # Generate simulated monthly returns
-  simulated_equity_returns <- rnorm(months, mean = equity_mean, sd = sqrt(equity_var))
-  simulated_bond_returns <- rnorm(months, mean = bond_mean, sd = sqrt(bond_var))
-  
-  # Combine returns into a portfolio (e.g., 70% equity, 30% bond)
-  portfolio_weights <- c(0.7, 0.3)
-  simulated_portfolio_returns <- portfolio_weights[1] * simulated_equity_returns +
-                                 portfolio_weights[2] * simulated_bond_returns
-  
-  # Compute cumulative portfolio growth
-  cumprod(1 + simulated_portfolio_returns) * initial_value
-}
-
-# Define different return scenarios
-scenarios <- data.frame(
-  Simulation = c("Base Case", "Higher Returns", "Lower Returns"),
-  Equity_Mean = c(monthly_equity_return, monthly_equity_return * 1.1, monthly_equity_return * 0.9),
-  Bond_Mean = c(monthly_bond_return, monthly_bond_return * 1.1, monthly_bond_return * 0.9),
-  Equity_Variance = c(variance_equity_returns, variance_equity_returns * 1.1, variance_equity_returns * 0.9),
-  Bond_Variance = c(variance_bond_returns, variance_bond_returns * 1.1, variance_bond_returns * 0.9)
+# Create data for visualization
+accumulation_data <- data.frame(
+  Month = 1:total_months,
+  Balance = orp_balance
 )
 
-# Run simulations
-portfolio_growth_list <- lapply(1:n_simulations, function(i) {
-  simulate_portfolio_growth(
-    equity_mean = scenarios$Equity_Mean[i],
-    bond_mean = scenarios$Bond_Mean[i],
-    equity_var = scenarios$Equity_Variance[i],
-    bond_var = scenarios$Bond_Variance[i],
-    months = n_months,
-    initial_value = initial_investment
-  )
-})
+# Find the maximum value and corresponding month
+max_value <- max(accumulation_data$Balance)
+max_month <- accumulation_data$Month[which.max(accumulation_data$Balance)]
 
-# Combine results into a data frame for plotting
-portfolio_data <- data.frame(
-  Month = rep(1:n_months, n_simulations),
-  Portfolio_Value = unlist(portfolio_growth_list),
-  Simulation = rep(scenarios$Simulation, each = n_months)
-)
-
-# Plot the portfolio growth for all scenarios
-ggplot(portfolio_data, aes(x = Month, y = Portfolio_Value, color = Simulation)) +
-  geom_line(size = 1.2) +
-  scale_y_continuous(labels = label_dollar()) +  # Format y-axis as dollars
+# Plot the accumulation phase
+ggplot(accumulation_data, aes(x = Month, y = Balance)) +
+  geom_line(size = 1.2, color = "blue") +
+  scale_y_continuous(labels = dollar_format(), expand = expansion(mult = c(0, 0.1))) +  # Add extra space at the top
+  geom_text(
+    aes(x = max_month, y = max_value, label = paste0("$", format(round(max_value, 2), big.mark = ","))),
+    vjust = -0.5, size = 4, color = "blue"
+  ) +
   labs(
-    title = "Monte Carlo Simulations: Portfolio Growth with Changing Returns",
-    x = "Months",
-    y = "Portfolio Value ($)"
+    title = "Retirement Account Balance During Accumulation (First 300 Months)",
+    x = "Month",
+    y = "Balance ($)"
   ) +
   theme_minimal() +
   theme(
-    legend.position = "bottom",
-    text = element_text(size = 12)
+    text = element_text(size = 12),
+    plot.margin = margin(15, 15, 15, 15)  # Add generous margins around the plot
   )
 
 
 
 ```
-# Monte Carlo Simulation of Portfolio Returns
-## Exploring Base Case, Higher Returns, and Lower Returns Scenarios
 
+## **Assumptions for Retirement Account Simulation**  
 
-### This Monte Carlo simulation examines portfolio returns over 30 years under three scenarios: Base Case, Higher Returns, and Lower Returns. It models a 70% equity and 30% bond portfolio using historical assumptions and variance estimates, providing insights into expected performance and risk levels.
+1. **Contributions**:  
+   - Employee contributes 3.5% of their monthly salary.  
+   - Employer contributes 8% of the monthly salary for the first 7 years, increasing to 10% afterward.  
 
-## Key Statistics:
-### 1. Base Case: Mean monthly return of 0.37%, variance of 3.17 × 10⁻⁶, standard deviation of 0.18%.
-### 2. Higher Returns: Mean monthly return of 0.42%, variance of 3.90 × 10⁻⁶, standard deviation of 0.20%.
-### 3. Lower Returns: Mean monthly return of 0.34%, variance of 3.14 × 10⁻⁶, standard deviation of 0.18%.
+2. **Salary**:  
+   - Starting salary is $50,000 annually.  
+   - Salary grows at 3% per year, compounded monthly.  
 
-## Insights:
-### The Base Case shows stable growth with moderate risk, while the Higher Returns scenario highlights increased opportunities at the cost of higher volatility. The Lower Returns scenario emphasizes the importance of conservative expectations in uncertain environments. Density plots reveal the probability distribution of monthly returns across scenarios, providing a clear view of potential outcomes.
+3. **Investment Returns**:  
+   - 54% allocated to equities and 10% to bonds.  
+   - Returns are compounded monthly.  
 
-## Simulation Results
+4. **Timeframe**:  
+   - The simulation spans 300 months, equivalent to 25 years.  
 
-### Base Case
-- **Mean monthly return**: 0.37%  
-- **Variance**: 0.00000317  
-- **Standard deviation**: 0.178%  
-- Represents stable growth with moderate risk.
+5. **Growth Mechanism**:  
+   - Monthly contributions are based on the current salary and contribution rates.  
+   - Returns are compounded on the account balance every month.  
 
-### Higher Returns
-- **Mean monthly return**: 0.42%  
-- **Variance**: 0.00000390  
-- **Standard deviation**: 0.197%  
-- Indicates higher potential returns with increased volatility.
+6. **Balance Tracking**:  
+   - Monthly balances are calculated, with the maximum balance over the 25 years highlighted.  
 
-### Lower Returns
-- **Mean monthly return**: 0.34%  
-- **Variance**: 0.00000314  
-- **Standard deviation**: 0.177%  
-- Emphasizes realistic expectations and lower risk.
-
-### Insight
-- Highlights the trade-off between risk and return across scenarios.
-
-## Portfolio Return Simulation: Mean, Variance, and Standard Deviation Across Scenarios
 
 ```{r}
 #| echo: false
@@ -1718,95 +1299,471 @@ ggplot(portfolio_data, aes(x = Month, y = Portfolio_Value, color = Simulation)) 
 
 # Load necessary libraries
 library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+# Monte Carlo Parameters
+set.seed(123)  # For reproducibility
+n_sim <- 1000  # Number of Monte Carlo simulations
+years <- 25  # Number of years to simulate
+monthly_periods <- years * 12  # Convert years to months
+
+# Portfolio Scenarios
+base_case_mean <- 0.005  # 0.5% monthly return
+base_case_sd <- 0.02  # 2% monthly standard deviation
+
+higher_returns_mean <- 0.007  # 0.7% monthly return
+higher_returns_sd <- 0.02  # 2% monthly standard deviation
+
+lower_returns_mean <- 0.003  # 0.3% monthly return
+lower_returns_sd <- 0.02  # 2% monthly standard deviation
+
+# Initial portfolio value
+initial_portfolio <- 100000  # Starting portfolio value ($)
+
+# Simulate Monte Carlo for each scenario
+simulate_returns <- function(mean, sd) {
+  # Generate random returns for `n_sim` simulations
+  matrix(rnorm(n_sim * monthly_periods, mean, sd), ncol = monthly_periods)
+}
+
+# Base Case Scenario
+base_case_returns <- simulate_returns(base_case_mean, base_case_sd)
+base_case_portfolio <- t(apply(base_case_returns, 1, function(x) {
+  cumprod(1 + x) * initial_portfolio
+}))
+
+# Higher Returns Scenario
+higher_returns <- simulate_returns(higher_returns_mean, higher_returns_sd)
+higher_returns_portfolio <- t(apply(higher_returns, 1, function(x) {
+  cumprod(1 + x) * initial_portfolio
+}))
+
+# Lower Returns Scenario
+lower_returns <- simulate_returns(lower_returns_mean, lower_returns_sd)
+lower_returns_portfolio <- t(apply(lower_returns, 1, function(x) {
+  cumprod(1 + x) * initial_portfolio
+}))
+
+# Combine final portfolio values
+final_values <- data.frame(
+  Base_Case = base_case_portfolio[, monthly_periods],
+  Higher_Returns = higher_returns_portfolio[, monthly_periods],
+  Lower_Returns = lower_returns_portfolio[, monthly_periods]
+)
+
+# Visualization of Monte Carlo Paths
+plot_monte_carlo <- function(portfolio_matrix, title, color) {
+  portfolio_df <- as.data.frame(portfolio_matrix)
+  portfolio_df$Simulation <- 1:nrow(portfolio_df)
+  portfolio_long <- portfolio_df %>%
+    pivot_longer(-Simulation, names_to = "Month", values_to = "Portfolio_Value") %>%
+    mutate(Month = as.numeric(gsub("V", "", Month)))
+  
+  ggplot(portfolio_long, aes(x = Month, y = Portfolio_Value, group = Simulation)) +
+    geom_line(alpha = 0.05, color = color) +
+    labs(
+      title = title,
+      x = "Month",
+      y = "Portfolio Value ($)"
+    ) +
+    theme_minimal()
+}
+
+# Plot Monte Carlo Simulations
+plot_monte_carlo(base_case_portfolio, "Monte Carlo Simulation: Base Case", "royalblue")
+plot_monte_carlo(higher_returns_portfolio, "Monte Carlo Simulation: Higher Returns", "green")
+plot_monte_carlo(lower_returns_portfolio, "Monte Carlo Simulation: Lower Returns", "orange")
+
+# Summary of Final Portfolio Values
+summary_results <- final_values %>%
+  summarise(
+    Base_Case_Mean = mean(Base_Case),
+    Base_Case_SD = sd(Base_Case),
+    Higher_Returns_Mean = mean(Higher_Returns),
+    Higher_Returns_SD = sd(Higher_Returns),
+    Lower_Returns_Mean = mean(Lower_Returns),
+    Lower_Returns_SD = sd(Lower_Returns)
+  )
+
+# Display summary statistics
+print("Summary of Final Portfolio Values:")
+print(summary_results)
+
+
+
+```
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Load necessary libraries
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+# Monte Carlo Parameters
+set.seed(123)  # For reproducibility
+n_sim <- 1000  # Number of Monte Carlo simulations
+years <- 25  # Number of years to simulate
+monthly_periods <- years * 12  # Convert years to months
+
+# Portfolio Scenarios
+base_case_mean <- 0.005  # 0.5% monthly return
+base_case_sd <- 0.02  # 2% monthly standard deviation
+
+higher_returns_mean <- 0.007  # 0.7% monthly return
+higher_returns_sd <- 0.02  # 2% monthly standard deviation
+
+lower_returns_mean <- 0.003  # 0.3% monthly return
+lower_returns_sd <- 0.02  # 2% monthly standard deviation
+
+# Initial portfolio value
+initial_portfolio <- 100000  # Starting portfolio value ($)
+
+# Function to simulate Monte Carlo returns
+simulate_returns <- function(mean, sd) {
+  # Generate random returns for `n_sim` simulations
+  matrix(rnorm(n_sim * monthly_periods, mean, sd), ncol = monthly_periods)
+}
+
+# Simulate portfolio growth for each scenario
+simulate_portfolio <- function(returns_matrix) {
+  t(apply(returns_matrix, 1, function(x) {
+    cumprod(1 + x) * initial_portfolio
+  }))
+}
+
+# Simulate returns and portfolio values
+base_case_returns <- simulate_returns(base_case_mean, base_case_sd)
+base_case_portfolio <- simulate_portfolio(base_case_returns)
+
+higher_returns <- simulate_returns(higher_returns_mean, higher_returns_sd)
+higher_returns_portfolio <- simulate_portfolio(higher_returns)
+
+lower_returns <- simulate_returns(lower_returns_mean, lower_returns_sd)
+lower_returns_portfolio <- simulate_portfolio(lower_returns)
+
+# Calculate mean portfolio values for each scenario
+mean_base_case <- colMeans(base_case_portfolio)
+mean_higher_returns <- colMeans(higher_returns_portfolio)
+mean_lower_returns <- colMeans(lower_returns_portfolio)
+
+# Function to plot Monte Carlo simulation with a mean line
+plot_monte_carlo_with_mean <- function(portfolio_matrix, mean_values, title, color) {
+  # Reshape portfolio data into tidy format for ggplot
+  portfolio_df <- as.data.frame(portfolio_matrix)
+  portfolio_df$Simulation <- 1:nrow(portfolio_df)
+  portfolio_long <- portfolio_df %>%
+    pivot_longer(-Simulation, names_to = "Month", values_to = "Portfolio_Value") %>%
+    mutate(Month = as.numeric(gsub("V", "", Month)))  # Convert column names to numeric months
+  
+  # Create the plot
+  ggplot() +
+    # Add Monte Carlo simulation paths
+    geom_line(data = portfolio_long, aes(x = Month, y = Portfolio_Value, group = Simulation), 
+              alpha = 0.05, color = color) +
+    # Add the mean line
+    geom_line(data = data.frame(Month = 1:monthly_periods, Portfolio_Value = mean_values), 
+              aes(x = Month, y = Portfolio_Value), color = "darkblue", size = 1.2) +
+    # Add labels and theme
+    labs(
+      title = title,
+      x = "Month",
+      y = "Portfolio Value ($)"
+    ) +
+    theme_minimal()
+}
+
+# Plot Monte Carlo simulations with mean lines
+plot_monte_carlo_with_mean(base_case_portfolio, mean_base_case, 
+                           "Monte Carlo Simulation: Base Case (With Mean Line)", "royalblue")
+
+plot_monte_carlo_with_mean(higher_returns_portfolio, mean_higher_returns, 
+                           "Monte Carlo Simulation: Higher Returns (With Mean Line)", "orange")
+
+plot_monte_carlo_with_mean(lower_returns_portfolio, mean_lower_returns, 
+                           "Monte Carlo Simulation: Lower Returns (With Mean Line)", "green")
+
+# Summary of final portfolio values
+final_values <- data.frame(
+  Base_Case = base_case_portfolio[, monthly_periods],
+  Higher_Returns = higher_returns_portfolio[, monthly_periods],
+  Lower_Returns = lower_returns_portfolio[, monthly_periods]
+)
+
+summary_results <- final_values %>%
+  summarise(
+    Base_Case_Mean = mean(Base_Case),
+    Base_Case_SD = sd(Base_Case),
+    Higher_Returns_Mean = mean(Higher_Returns),
+    Higher_Returns_SD = sd(Higher_Returns),
+    Lower_Returns_Mean = mean(Lower_Returns),
+    Lower_Returns_SD = sd(Lower_Returns)
+  )
+
+# Display summary statistics
+print("Summary of Final Portfolio Values:")
+print(summary_results)
+
+
+
+```
+
+
+
+## **Summary of Final Portfolio Values**  
+
+After running the Monte Carlo simulation, the final portfolio values are:  
+
+1. **Base Case**:  
+   - Mean: $450,909  
+   - Standard Deviation (SD): $156,981  
+   - Represents moderate growth with typical returns (0.5% monthly).  
+
+2. **Higher Returns**:  
+   - Mean: $810,389  
+   - SD: $282,429  
+   - Reflects faster growth but with higher risk (0.7% monthly).  
+
+3. **Lower Returns**:  
+   - Mean: $241,587  
+   - SD: $156,981  
+   - Shows slower growth with lower risk (0.3% monthly).  
+
+**Key Takeaways**:  
+- The mean represents the expected final value for each scenario.  
+- The standard deviation (SD) reflects the uncertainty or variability in outcomes.  
+
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Load necessary libraries
+library(dplyr)
+library(tidyr)
 library(ggplot2)
 library(scales)  # For dollar formatting
 
-# Variances from previous bootstrap analysis
-variance_equity_returns <- 6.786352e-06
-variance_bond_returns <- 7.180288e-07
-
-# Long-term assumptions for financial returns
-mean_equity_return <- 0.05  # Assume 5% annual equity return
-mean_bond_return <- 0.03    # Assume 3% annual bond return
-
-# Convert annualized returns to monthly returns
-monthly_equity_return <- mean_equity_return / 12
-monthly_bond_return <- mean_bond_return / 12
-
-# Monte Carlo simulation settings
+# Monte Carlo Parameters
 set.seed(123)  # For reproducibility
-n_months <- 360  # 30 years of monthly returns
-n_simulations <- 1000  # Number of simulations for distributions
+n_sim <- 1000  # Number of Monte Carlo simulations
+years <- 25  # Number of years to simulate
+monthly_periods <- years * 12  # Convert years to months
 
-# Simulate portfolio returns for distribution visualization
-simulate_portfolio_returns <- function(equity_mean, bond_mean, equity_var, bond_var, months) {
-  # Generate simulated monthly returns
-  simulated_equity_returns <- rnorm(months, mean = equity_mean, sd = sqrt(equity_var))
-  simulated_bond_returns <- rnorm(months, mean = bond_mean, sd = sqrt(bond_var))
-  
-  # Combine returns into a portfolio (e.g., 70% equity, 30% bond)
-  portfolio_weights <- c(0.7, 0.3)
-  simulated_portfolio_returns <- portfolio_weights[1] * simulated_equity_returns +
-                                 portfolio_weights[2] * simulated_bond_returns
-  
-  simulated_portfolio_returns
+# Portfolio Scenarios
+base_case_mean <- 0.005  # 0.5% monthly return
+base_case_sd <- 0.02  # 2% monthly standard deviation
+
+higher_returns_mean <- 0.007  # 0.7% monthly return
+higher_returns_sd <- 0.03  # 3% monthly standard deviation (increased variability)
+
+lower_returns_mean <- 0.003  # 0.3% monthly return
+lower_returns_sd <- 0.01  # 1% monthly standard deviation (decreased variability)
+
+# Initial portfolio value
+initial_portfolio <- 0  # Starting portfolio value ($)
+
+# Function to simulate portfolio growth with contributions
+simulate_portfolio_with_contributions <- function(returns_matrix, monthly_contribution) {
+  t(apply(returns_matrix, 1, function(x) {
+    portfolio <- numeric(length(x))
+    for (i in seq_along(x)) {
+      if (i == 1) {
+        # First month's value = contribution
+        portfolio[i] <- monthly_contribution * (1 + x[i])
+      } else {
+        # Subsequent months' value = previous value + contribution
+        portfolio[i] <- (portfolio[i - 1] + monthly_contribution) * (1 + x[i])
+      }
+    }
+    portfolio
+  }))
 }
 
-# Define different return scenarios
-scenarios <- data.frame(
-  Simulation = c("Base Case", "Higher Returns", "Lower Returns"),
-  Equity_Mean = c(monthly_equity_return, monthly_equity_return * 1.1, monthly_equity_return * 0.9),
-  Bond_Mean = c(monthly_bond_return, monthly_bond_return * 1.1, monthly_bond_return * 0.9),
-  Equity_Variance = c(variance_equity_returns, variance_equity_returns * 1.1, variance_equity_returns * 0.9),
-  Bond_Variance = c(variance_bond_returns, variance_bond_returns * 1.1, variance_bond_returns * 0.9)
+# Monthly contribution (e.g., $500)
+monthly_contribution <- 500
+
+# Simulate returns and portfolio values
+base_case_returns <- simulate_returns(base_case_mean, base_case_sd)
+base_case_portfolio <- simulate_portfolio_with_contributions(base_case_returns, monthly_contribution)
+
+higher_returns <- simulate_returns(higher_returns_mean, higher_returns_sd)
+higher_returns_portfolio <- simulate_portfolio_with_contributions(higher_returns, monthly_contribution)
+
+lower_returns <- simulate_returns(lower_returns_mean, lower_returns_sd)
+lower_returns_portfolio <- simulate_portfolio_with_contributions(lower_returns, monthly_contribution)
+
+# Calculate mean portfolio values for each scenario
+mean_base_case <- colMeans(base_case_portfolio)
+mean_higher_returns <- colMeans(higher_returns_portfolio)
+mean_lower_returns <- colMeans(lower_returns_portfolio)
+
+# Function to plot Monte Carlo simulation with mean line and dollar formatting
+plot_monte_carlo_with_mean <- function(portfolio_matrix, mean_values, title, color) {
+  # Reshape portfolio data into tidy format for ggplot
+  portfolio_df <- as.data.frame(portfolio_matrix)
+  portfolio_df$Simulation <- 1:nrow(portfolio_df)
+  portfolio_long <- portfolio_df %>%
+    pivot_longer(-Simulation, names_to = "Month", values_to = "Portfolio_Value") %>%
+    mutate(Month = as.numeric(gsub("V", "", Month)))  # Convert column names to numeric months
+  
+  # Create the plot
+  ggplot() +
+    # Add Monte Carlo simulation paths
+    geom_line(data = portfolio_long, aes(x = Month, y = Portfolio_Value, group = Simulation), 
+              alpha = 0.05, color = color) +
+    # Add the mean line
+    geom_line(data = data.frame(Month = 1:monthly_periods, Portfolio_Value = mean_values), 
+              aes(x = Month, y = Portfolio_Value), color = "darkblue", size = 1.2) +
+    # Add labels, dollar formatting, and theme
+    labs(
+      title = title,
+      x = "Month",
+      y = "Portfolio Value ($)"
+    ) +
+    scale_y_continuous(labels = scales::dollar) +  # Dollar formatting for y-axis
+    theme_minimal()
+}
+
+# Plot Monte Carlo simulations with mean lines and dollar formatting
+plot_monte_carlo_with_mean(base_case_portfolio, mean_base_case, 
+                           "Monte Carlo Simulation: Base Case (With Contributions)", "royalblue")
+
+plot_monte_carlo_with_mean(higher_returns_portfolio, mean_higher_returns, 
+                           "Monte Carlo Simulation: Higher Returns (With Contributions)", "orange")
+
+plot_monte_carlo_with_mean(lower_returns_portfolio, mean_lower_returns, 
+                           "Monte Carlo Simulation: Lower Returns (With Contributions)", "green")
+
+# Summary of final portfolio values
+final_values <- data.frame(
+  Base_Case = base_case_portfolio[, monthly_periods],
+  Higher_Returns = higher_returns_portfolio[, monthly_periods],
+  Lower_Returns = lower_returns_portfolio[, monthly_periods]
 )
 
-# Generate return distributions for each scenario
-return_distributions <- lapply(1:nrow(scenarios), function(i) {
-  simulate_portfolio_returns(
-    equity_mean = scenarios$Equity_Mean[i],
-    bond_mean = scenarios$Bond_Mean[i],
-    equity_var = scenarios$Equity_Variance[i],
-    bond_var = scenarios$Bond_Variance[i],
-    months = n_months
+summary_results <- final_values %>%
+  summarise(
+    Base_Case_Mean = mean(Base_Case),
+    Base_Case_SD = sd(Base_Case),
+    Higher_Returns_Mean = mean(Higher_Returns),
+    Higher_Returns_SD = sd(Higher_Returns),
+    Lower_Returns_Mean = mean(Lower_Returns),
+    Lower_Returns_SD = sd(Lower_Returns)
   )
-})
 
-# Combine return distributions into a single data frame
-distribution_data <- data.frame(
-  Returns = unlist(return_distributions),
-  Simulation = rep(scenarios$Simulation, each = n_months)
+# Display summary statistics
+print("Summary of Final Portfolio Values:")
+print(summary_results)
+
+
+```
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Load necessary libraries
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+# Combine all return data into a single dataframe
+return_data <- data.frame(
+  Base_Case = as.vector(base_case_returns),
+  Higher_Returns = as.vector(higher_returns),
+  Lower_Returns = as.vector(lower_returns)
 )
 
-# Calculate statistics for each scenario
-statistics <- distribution_data %>%
-  group_by(Simulation) %>%
-  summarize(
-    Mean = mean(Returns),
-    Variance = var(Returns),
-    Std_Dev = sd(Returns)
-  )
+# Convert the data into long format for ggplot
+return_data_long <- return_data %>%
+  pivot_longer(cols = everything(), names_to = "Scenario", values_to = "Monthly_Return")
 
-print(statistics)
-
-# Plot the distribution of portfolio returns
-ggplot(distribution_data, aes(x = Returns, fill = Simulation)) +
-  geom_density(alpha = 0.6) +
-  scale_x_continuous(labels = scales::percent_format(accuracy = 0.1)) +  # Format x-axis as percentages
+# Create density plot
+ggplot(return_data_long, aes(x = Monthly_Return, fill = Scenario)) +
+  geom_density(alpha = 0.5) +  # Add density curves with transparency
   labs(
     title = "Distribution of Simulated Monthly Portfolio Returns",
     x = "Monthly Portfolio Returns (%)",
     y = "Density",
-    fill = "Simulation"
+    fill = "Scenario"
   ) +
+  scale_x_continuous(labels = scales::percent_format(accuracy = 0.1)) +  # Format x-axis as percentages
   theme_minimal() +
   theme(
-    legend.position = "bottom",
-    text = element_text(size = 12)
+    legend.position = "bottom"
   )
+
 
 
 
 ```
 
 
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Load necessary libraries
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(scales)
+
+# Combine portfolio data across all months and simulations
+all_portfolios <- data.frame(
+  Base_Case = as.vector(base_case_portfolio),
+  Higher_Returns = as.vector(higher_returns_portfolio),
+  Lower_Returns = as.vector(lower_returns_portfolio)
+)
+
+# Convert the data into long format for ggplot
+all_portfolios_long <- all_portfolios %>%
+  pivot_longer(cols = everything(), names_to = "Scenario", values_to = "Portfolio_Value")
+
+# Create a density plot for all Monte Carlo simulations
+ggplot(all_portfolios_long, aes(x = Portfolio_Value, fill = Scenario)) +
+  geom_density(alpha = 0.5) +  # Add density curves with transparency
+  labs(
+    title = "Distribution of Monte Carlo Simulations: Portfolio Values",
+    x = "Portfolio Value ($)",
+    y = "Frequency",
+    fill = "Scenario"
+  ) +
+  scale_x_continuous(labels = scales::dollar) +  # Format x-axis as dollars
+  scale_y_continuous(labels = scales::comma) +  # Format y-axis as numbers
+  theme_minimal() +
+  theme(
+    legend.position = "bottom"
+  )
+
+
+
+```
+
+Meaning of the Chart: Distribution of Monte Carlo Simulations
+------------------------------------------------------------
+- Shows portfolio value distributions for Base Case, Higher Returns, and Lower Returns.
+- X-axis: Portfolio values in dollars; Y-axis: How often these values occur (density).
+
+Interpretation:
+- Base Case (Red): Moderate, predictable growth.
+- Higher Returns (Green): Faster growth, higher risk.
+- Lower Returns (Blue): Slower, steadier growth.
+
+Key Insights:
+- Peak: Most common portfolio value.
+- Spread: Wider = more uncertainty; narrower = more predictable.
+- Overlaps: Where scenarios produce similar results.
+
+Purpose:
+- Visualizes the range and likelihood of portfolio outcomes.
