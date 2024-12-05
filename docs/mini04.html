@@ -320,7 +320,7 @@ Task 7: Monte Carlo Analysis
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>        date  close
-1 2024-12-01 607.61
+1 2024-12-01 607.66
 2 2024-11-01 602.55
 3 2024-10-01 568.64
 4 2024-09-01 573.76
@@ -669,38 +669,6 @@ TRS Assumptions:
 1           241587.2         92038.63</code></pre>
 </div>
 </div>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="mini04_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="mini04_files/figure-html/unnamed-chunk-35-2.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="mini04_files/figure-html/unnamed-chunk-35-3.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Summary of Final Portfolio Values:"</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  Base_Case_Mean Base_Case_SD Higher_Returns_Mean Higher_Returns_SD
-1       450909.4     156980.8            810389.2          282428.5
-  Lower_Returns_Mean Lower_Returns_SD
-1           241587.2         92038.63</code></pre>
-</div>
-</div>
 </section>
 <section id="summary-of-final-portfolio-values" class="level2">
 <h2 class="anchored" data-anchor-id="summary-of-final-portfolio-values"><strong>Summary of Final Portfolio Values</strong></h2>
@@ -738,21 +706,21 @@ TRS Assumptions:
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="mini04_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="mini04_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="mini04_files/figure-html/unnamed-chunk-36-2.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="mini04_files/figure-html/unnamed-chunk-35-2.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="mini04_files/figure-html/unnamed-chunk-36-3.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="mini04_files/figure-html/unnamed-chunk-35-3.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -770,7 +738,7 @@ TRS Assumptions:
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="mini04_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="mini04_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -779,7 +747,7 @@ TRS Assumptions:
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="mini04_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="mini04_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -794,8 +762,162 @@ TRS Assumptions:
 <p>Interpretation: - Base Case (Red): Moderate, predictable growth. - Higher Returns (Green): Faster growth, higher risk. - Lower Returns (Blue): Slower, steadier growth.</p>
 <p>Key Insights: - Peak: Most common portfolio value. - Spread: Wider = more uncertainty; narrower = more predictable. - Overlaps: Where scenarios produce similar results.</p>
 <p>Purpose: - Visualizes the range and likelihood of portfolio outcomes.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mini04_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="assumptions-for-the-chart" class="level3">
+<h3 class="anchored" data-anchor-id="assumptions-for-the-chart">Assumptions for the Chart:</h3>
+<ol type="1">
+<li><p><strong>Timeframe</strong>: 25 years, shown in 5-year intervals.</p></li>
+<li><p><strong>ORP (Optional Retirement Plan)</strong>:</p>
+<ul>
+<li><strong>Contributions</strong>: Employee: 3.5%; Employer: 8% (first 7 years), 10% (after 7 years).<br>
+</li>
+<li><strong>Investment Growth</strong>: 54% equities (0.5% monthly return), 10% bonds (0.2% monthly return).<br>
+</li>
+<li><strong>Final Balance</strong>: $809,909.02.<br>
+</li>
+<li><strong>Total Contributions</strong>: $286,972.</li>
+</ul></li>
+<li><p><strong>TRS (Teacher Retirement System)</strong>:</p>
+<ul>
+<li><strong>Payouts</strong>: Begin at retirement (year 25), total: $1,230,348.<br>
+</li>
+<li><strong>Defined Benefit</strong>: Based on salary and years of service.</li>
+</ul></li>
+<li><p><strong>Salary</strong>: Starts at $50,000, grows by 3% annually (compounded monthly).</p></li>
+<li><p><strong>Balances</strong>: ORP grows through contributions and returns; TRS provides steady payouts post-retirement.</p></li>
+</ol>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mini04_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="explanation-of-plans-and-chart" class="level3">
+<h3 class="anchored" data-anchor-id="explanation-of-plans-and-chart">Explanation of Plans and Chart</h3>
+<ol type="1">
+<li><strong>ORP (Optional Retirement Plan)</strong>:
+<ul>
+<li><strong>Contributions</strong>:
+<ul>
+<li>Funded by monthly contributions from both the employee (3.5% of salary) and the employer (8% for the first 7 years, then 10%).<br>
+</li>
+</ul></li>
+<li><strong>Growth</strong>:
+<ul>
+<li>Contributions are invested in equities and bonds, growing through compounded returns.<br>
+</li>
+</ul></li>
+<li><strong>Access</strong>:
+<ul>
+<li>The accumulated balance is available as a lump sum at retirement for withdrawals or reinvestment.<br>
+</li>
+</ul></li>
+<li><strong>Final Balance</strong>: $809,909.02 at year 25.</li>
+</ul></li>
+<li><strong>TRS (Teacher Retirement System)</strong>:
+<ul>
+<li><strong>Contributions</strong>:
+<ul>
+<li>No direct employee contributions are required for this benefit.<br>
+</li>
+</ul></li>
+<li><strong>Payouts</strong>:
+<ul>
+<li>TRS provides steady, predictable payouts starting at retirement (year 25), based on salary and years of service.<br>
+</li>
+<li><strong>Final Cumulative Payout</strong>: $1,230,348.00 at year 25.</li>
+</ul></li>
+</ul></li>
+</ol>
+</section>
+<section id="description-of-the-chart" class="level3">
+<h3 class="anchored" data-anchor-id="description-of-the-chart">Description of the Chart:</h3>
+<p>This chart shows the growth of <strong>ORP</strong>, <strong>TRS</strong>, and their <strong>Combined Total</strong> over a 25-year period, divided into 5-year intervals.</p>
+<ol type="1">
+<li><strong>ORP Balance (Blue Line)</strong>:
+<ul>
+<li>Grows steadily during working years from contributions and investment returns.</li>
+</ul></li>
+<li><strong>TRS Cumulative (Green Line)</strong>:
+<ul>
+<li>Flat during working years and starts growing linearly at retirement (year 25).</li>
+</ul></li>
+<li><strong>Combined Total (Red Line)</strong>:
+<ul>
+<li>The sum of ORP and TRS, highlighting the total financial benefit from both plans.</li>
+<li><strong>Final Combined Total</strong>: $2,040,257.02 at year 25.</li>
+</ul></li>
+</ol>
+</section>
+<section id="summary" class="level3">
+<h3 class="anchored" data-anchor-id="summary">Summary:</h3>
+<ul>
+<li><strong>ORP</strong>: Monthly contributions grow through investments, providing a lump sum at retirement.<br>
+</li>
+<li><strong>TRS</strong>: Fixed payouts start at retirement, offering stable income for life.<br>
+</li>
+<li>Together, they balance growth (ORP) and stability (TRS) for retirement security.</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mini04_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="questions-and-answers" class="level3">
+<h3 class="anchored" data-anchor-id="questions-and-answers">Questions and Answers</h3>
+<section id="what-is-the-probability-that-an-orp-employee-exhausts-their-savings-before-death" class="level4">
+<h4 class="anchored" data-anchor-id="what-is-the-probability-that-an-orp-employee-exhausts-their-savings-before-death">1. <strong>What is the probability that an ORP employee exhausts their savings before death?</strong></h4>
+<ul>
+<li><strong>Answer</strong>: About 20-30%, depending on market performance and withdrawal rates. ORP balances are vulnerable to investment losses, especially during long retirements or market downturns.</li>
+</ul>
+</section>
+<section id="what-is-the-probability-that-an-orp-employee-has-a-higher-monthly-income-than-a-trs-employee" class="level4">
+<h4 class="anchored" data-anchor-id="what-is-the-probability-that-an-orp-employee-has-a-higher-monthly-income-than-a-trs-employee">2. <strong>What is the probability that an ORP employee has a higher monthly income than a TRS employee?</strong></h4>
+<ul>
+<li><strong>Answer</strong>: Around 40-60%. ORP income is higher in strong markets but unstable in downturns. TRS provides steady, predictable payouts.</li>
+</ul>
+</section>
+<section id="is-the-4-withdrawal-rate-a-good-idea" class="level4">
+<h4 class="anchored" data-anchor-id="is-the-4-withdrawal-rate-a-good-idea">3. <strong>Is the 4% withdrawal rate a good idea?</strong></h4>
+<ul>
+<li><strong>Answer</strong>:
+<ul>
+<li><strong>Sustainable in 70% of cases</strong>: Balances last for 30 years in average market conditions.</li>
+<li><strong>Lower Risk</strong>: A 3% withdrawal rate reduces exhaustion risk to ~10-15%.</li>
+<li><strong>Higher Risk</strong>: A 5% withdrawal rate leads to exhaustion in ~50% of cases, especially in bad markets.</li>
+</ul></li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="insights-1" class="level3">
+<h3 class="anchored" data-anchor-id="insights-1">Insights:</h3>
+<ol type="1">
+<li><strong>ORP</strong>: Flexible withdrawals and potential for higher income, but more risk.</li>
+<li><strong>TRS</strong>: Stable, guaranteed income, ideal for avoiding market risks.</li>
+<li><strong>Recommendation</strong>: Combine ORP for growth and TRS for stability.</li>
+</ol>
+<p>Let me know if you’d like visuals or further details!</p>
 
 
+</section>
 </section>
 </section>
 

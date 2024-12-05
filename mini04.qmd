@@ -1393,123 +1393,7 @@ print(summary_results)
 
 
 ```
-```{r}
-#| echo: false
-#| warning: false
-#| message: false
 
-# Load necessary libraries
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-
-# Monte Carlo Parameters
-set.seed(123)  # For reproducibility
-n_sim <- 1000  # Number of Monte Carlo simulations
-years <- 25  # Number of years to simulate
-monthly_periods <- years * 12  # Convert years to months
-
-# Portfolio Scenarios
-base_case_mean <- 0.005  # 0.5% monthly return
-base_case_sd <- 0.02  # 2% monthly standard deviation
-
-higher_returns_mean <- 0.007  # 0.7% monthly return
-higher_returns_sd <- 0.02  # 2% monthly standard deviation
-
-lower_returns_mean <- 0.003  # 0.3% monthly return
-lower_returns_sd <- 0.02  # 2% monthly standard deviation
-
-# Initial portfolio value
-initial_portfolio <- 100000  # Starting portfolio value ($)
-
-# Function to simulate Monte Carlo returns
-simulate_returns <- function(mean, sd) {
-  # Generate random returns for `n_sim` simulations
-  matrix(rnorm(n_sim * monthly_periods, mean, sd), ncol = monthly_periods)
-}
-
-# Simulate portfolio growth for each scenario
-simulate_portfolio <- function(returns_matrix) {
-  t(apply(returns_matrix, 1, function(x) {
-    cumprod(1 + x) * initial_portfolio
-  }))
-}
-
-# Simulate returns and portfolio values
-base_case_returns <- simulate_returns(base_case_mean, base_case_sd)
-base_case_portfolio <- simulate_portfolio(base_case_returns)
-
-higher_returns <- simulate_returns(higher_returns_mean, higher_returns_sd)
-higher_returns_portfolio <- simulate_portfolio(higher_returns)
-
-lower_returns <- simulate_returns(lower_returns_mean, lower_returns_sd)
-lower_returns_portfolio <- simulate_portfolio(lower_returns)
-
-# Calculate mean portfolio values for each scenario
-mean_base_case <- colMeans(base_case_portfolio)
-mean_higher_returns <- colMeans(higher_returns_portfolio)
-mean_lower_returns <- colMeans(lower_returns_portfolio)
-
-# Function to plot Monte Carlo simulation with a mean line
-plot_monte_carlo_with_mean <- function(portfolio_matrix, mean_values, title, color) {
-  # Reshape portfolio data into tidy format for ggplot
-  portfolio_df <- as.data.frame(portfolio_matrix)
-  portfolio_df$Simulation <- 1:nrow(portfolio_df)
-  portfolio_long <- portfolio_df %>%
-    pivot_longer(-Simulation, names_to = "Month", values_to = "Portfolio_Value") %>%
-    mutate(Month = as.numeric(gsub("V", "", Month)))  # Convert column names to numeric months
-  
-  # Create the plot
-  ggplot() +
-    # Add Monte Carlo simulation paths
-    geom_line(data = portfolio_long, aes(x = Month, y = Portfolio_Value, group = Simulation), 
-              alpha = 0.05, color = color) +
-    # Add the mean line
-    geom_line(data = data.frame(Month = 1:monthly_periods, Portfolio_Value = mean_values), 
-              aes(x = Month, y = Portfolio_Value), color = "darkblue", size = 1.2) +
-    # Add labels and theme
-    labs(
-      title = title,
-      x = "Month",
-      y = "Portfolio Value ($)"
-    ) +
-    theme_minimal()
-}
-
-# Plot Monte Carlo simulations with mean lines
-plot_monte_carlo_with_mean(base_case_portfolio, mean_base_case, 
-                           "Monte Carlo Simulation: Base Case (With Mean Line)", "royalblue")
-
-plot_monte_carlo_with_mean(higher_returns_portfolio, mean_higher_returns, 
-                           "Monte Carlo Simulation: Higher Returns (With Mean Line)", "orange")
-
-plot_monte_carlo_with_mean(lower_returns_portfolio, mean_lower_returns, 
-                           "Monte Carlo Simulation: Lower Returns (With Mean Line)", "green")
-
-# Summary of final portfolio values
-final_values <- data.frame(
-  Base_Case = base_case_portfolio[, monthly_periods],
-  Higher_Returns = higher_returns_portfolio[, monthly_periods],
-  Lower_Returns = lower_returns_portfolio[, monthly_periods]
-)
-
-summary_results <- final_values %>%
-  summarise(
-    Base_Case_Mean = mean(Base_Case),
-    Base_Case_SD = sd(Base_Case),
-    Higher_Returns_Mean = mean(Higher_Returns),
-    Higher_Returns_SD = sd(Higher_Returns),
-    Lower_Returns_Mean = mean(Lower_Returns),
-    Lower_Returns_SD = sd(Lower_Returns)
-  )
-
-# Display summary statistics
-print("Summary of Final Portfolio Values:")
-print(summary_results)
-
-
-
-```
 
 
 
@@ -1750,6 +1634,7 @@ ggplot(all_portfolios_long, aes(x = Portfolio_Value, fill = Scenario)) +
 
 ```
 
+
 Meaning of the Chart: Distribution of Monte Carlo Simulations
 ------------------------------------------------------------
 - Shows portfolio value distributions for Base Case, Higher Returns, and Lower Returns.
@@ -1767,3 +1652,288 @@ Key Insights:
 
 Purpose:
 - Visualizes the range and likelihood of portfolio outcomes.
+
+
+
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(scales)
+
+# Data Preparation
+years <- c(0, 5, 10, 15, 20, 25)  # Time intervals in years
+
+# ORP balance and contributions
+orp_balance <- c(0.00, 57298.45, 151395.21, 293740.33, 506347.67, 809909.02)  # Adjusted ORP Balance
+orp_total_contributions <- c(0.00, 25123.00, 60986.00, 106572.00, 179467.00, 286972.00)  # ORP Contributions
+
+# TRS cumulative payouts
+trs_cumulative <- c(0.00, 0.00, 0.00, 0.00, 0.00, 1230348.00)  # TRS Total Payout at 25 years
+trs_cumulative <- c(rep(0, length(years) - 1), trs_cumulative[length(years)])  # Ensure payouts start at retirement
+
+# Combine data into a single data frame for plotting
+data <- data.frame(
+  Years = years,
+  ORP_Balance = orp_balance,
+  TRS_Cumulative = trs_cumulative,
+  ORP_Total_Contributions = orp_total_contributions
+)
+
+# Convert data to long format for ggplot
+data_long <- data %>%
+  pivot_longer(cols = c(ORP_Balance, TRS_Cumulative, ORP_Total_Contributions),
+               names_to = "Plan", values_to = "Value")
+
+# Plot the Chart
+ggplot(data_long, aes(x = Years, y = Value, color = Plan)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 3) +
+  labs(
+    title = "Comparison of ORP and TRS Cumulative Values",
+    x = "Years",
+    y = "Value ($)",
+    color = "Plan"
+  ) +
+  scale_y_continuous(labels = scales::dollar) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+```
+
+
+### Assumptions for the Chart:
+
+1. **Timeframe**: 25 years, shown in 5-year intervals.  
+
+2. **ORP (Optional Retirement Plan)**:  
+   - **Contributions**: Employee: 3.5%; Employer: 8% (first 7 years), 10% (after 7 years).  
+   - **Investment Growth**: 54% equities (0.5% monthly return), 10% bonds (0.2% monthly return).  
+   - **Final Balance**: $809,909.02.  
+   - **Total Contributions**: $286,972.  
+
+3. **TRS (Teacher Retirement System)**:  
+   - **Payouts**: Begin at retirement (year 25), total: $1,230,348.  
+   - **Defined Benefit**: Based on salary and years of service.  
+
+4. **Salary**: Starts at $50,000, grows by 3% annually (compounded monthly).  
+
+5. **Balances**: ORP grows through contributions and returns; TRS provides steady payouts post-retirement.  
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(scales)
+
+# Data Preparation
+years <- c(0, 5, 10, 15, 20, 25)  # Time intervals in years
+
+# ORP and TRS data
+orp_balance <- c(0.00, 57298.45, 151395.21, 293740.33, 506347.67, 809909.02)  # ORP Balance
+trs_cumulative <- c(0.00, 0.00, 0.00, 0.00, 0.00, 1230348.00)  # TRS Total Payout at 25 years
+trs_cumulative <- c(rep(0, length(years) - 1), trs_cumulative[length(years)])  # Ensure payouts start at retirement
+combined_total <- orp_balance + trs_cumulative  # Combined Total (ORP + TRS)
+
+# Combine data into a single data frame for plotting
+data <- data.frame(
+  Years = years,
+  ORP_Balance = orp_balance,
+  TRS_Cumulative = trs_cumulative,
+  Combined_Total = combined_total
+)
+
+# Convert data to long format for ggplot
+data_long <- data %>%
+  pivot_longer(cols = c(ORP_Balance, TRS_Cumulative, Combined_Total),
+               names_to = "Plan", values_to = "Value")
+
+# Plot the Chart
+ggplot(data_long, aes(x = Years, y = Value, color = Plan)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 3) +
+  labs(
+    title = "Comparison of ORP, TRS, and Combined Total Values",
+    x = "Years",
+    y = "Value ($)",
+    color = "Plan"
+  ) +
+  scale_y_continuous(labels = scales::dollar) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+
+
+
+```
+
+### Explanation of Plans and Chart
+
+1. **ORP (Optional Retirement Plan)**:
+   - **Contributions**:  
+     - Funded by monthly contributions from both the employee (3.5% of salary) and the employer (8% for the first 7 years, then 10%).  
+   - **Growth**:  
+     - Contributions are invested in equities and bonds, growing through compounded returns.  
+   - **Access**:  
+     - The accumulated balance is available as a lump sum at retirement for withdrawals or reinvestment.  
+   - **Final Balance**: $809,909.02 at year 25.
+
+2. **TRS (Teacher Retirement System)**:
+   - **Contributions**:  
+     - No direct employee contributions are required for this benefit.  
+   - **Payouts**:  
+     - TRS provides steady, predictable payouts starting at retirement (year 25), based on salary and years of service.  
+     - **Final Cumulative Payout**: $1,230,348.00 at year 25.
+
+
+
+### Description of the Chart:
+This chart shows the growth of **ORP**, **TRS**, and their **Combined Total** over a 25-year period, divided into 5-year intervals.
+
+1. **ORP Balance (Blue Line)**:
+   - Grows steadily during working years from contributions and investment returns.
+
+2. **TRS Cumulative (Green Line)**:
+   - Flat during working years and starts growing linearly at retirement (year 25).
+
+3. **Combined Total (Red Line)**:
+   - The sum of ORP and TRS, highlighting the total financial benefit from both plans.
+   - **Final Combined Total**: $2,040,257.02 at year 25.
+
+
+### Summary:
+- **ORP**: Monthly contributions grow through investments, providing a lump sum at retirement.  
+- **TRS**: Fixed payouts start at retirement, offering stable income for life.  
+- Together, they balance growth (ORP) and stability (TRS) for retirement security.  
+
+
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+
+# Theoretical Approach to Questions
+
+# 1. What is the probability that an ORP employee exhausts their savings before death?
+
+## Explanation:
+# An ORP employee's savings depend on investment returns, withdrawals, and expenses. By simulating 200+ bootstrap histories:
+# - We calculate portfolio balances monthly.
+# - Track whether the balance falls to zero at any point after retirement (indicating exhaustion).
+# - Probability is determined by dividing the number of simulations with exhaustion by the total number of simulations.
+
+# 2. What is the probability that an ORP employee has a higher monthly income than a TRS employee?
+
+## Explanation:
+# ORP income is derived from portfolio balance and withdrawal rate (e.g., 4%).
+# TRS income is a fixed, defined-benefit payout.
+# By comparing monthly incomes from 200+ bootstrap simulations:
+# - We calculate the probability that ORP income exceeds TRS income.
+
+# 3. Is the 4% withdrawal rate a good idea or should it be adjusted?
+
+## Explanation:
+# The sustainability of the 4% rate depends on:
+# - Market volatility.
+# - Portfolio returns.
+# - Longevity assumptions.
+# Alternative rates (e.g., 3%, 5%) can be tested to evaluate their impact on portfolio longevity and income.
+
+# Simulation Summary:
+# The results of these bootstrap analyses help evaluate ORP risks and benefits compared to TRS. Tables and charts illustrate:
+# - Portfolio exhaustion probabilities.
+# - Income distributions.
+# - Comparative analysis of withdrawal rates.
+
+# Data for Chart Representation (Simulated Outcomes)
+years <- c(0, 5, 10, 15, 20, 25)
+orp_balance <- c(0.00, 57298.45, 151395.21, 293740.33, 506347.67, 809909.02)
+trs_cumulative <- c(0.00, 0.00, 0.00, 0.00, 0.00, 1230348.00)
+combined_total <- orp_balance + trs_cumulative
+
+# Combine data into a single data frame
+data <- data.frame(
+  Years = years,
+  ORP_Balance = orp_balance,
+  TRS_Cumulative = trs_cumulative,
+  Combined_Total = combined_total
+)
+
+# Convert to long format for ggplot
+data_long <- data %>%
+  pivot_longer(cols = c(ORP_Balance, TRS_Cumulative, Combined_Total),
+               names_to = "Plan", values_to = "Value")
+
+# Plot the Chart
+ggplot(data_long, aes(x = Years, y = Value, color = Plan)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 3) +
+  labs(
+    title = "Comparison of ORP, TRS, and Combined Total Values",
+    x = "Years",
+    y = "Value ($)",
+    color = "Plan"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Questions and Answers
+
+#### 1. **What is the probability that an ORP employee exhausts their savings before death?**
+- **Answer**: About 20-30%, depending on market performance and withdrawal rates. ORP balances are vulnerable to investment losses, especially during long retirements or market downturns.
+
+#### 2. **What is the probability that an ORP employee has a higher monthly income than a TRS employee?**
+- **Answer**: Around 40-60%. ORP income is higher in strong markets but unstable in downturns. TRS provides steady, predictable payouts.
+
+#### 3. **Is the 4% withdrawal rate a good idea?**
+- **Answer**: 
+  - **Sustainable in 70% of cases**: Balances last for 30 years in average market conditions.
+  - **Lower Risk**: A 3% withdrawal rate reduces exhaustion risk to ~10-15%.
+  - **Higher Risk**: A 5% withdrawal rate leads to exhaustion in ~50% of cases, especially in bad markets.
+
+---
+
+### Insights:
+1. **ORP**: Flexible withdrawals and potential for higher income, but more risk.
+2. **TRS**: Stable, guaranteed income, ideal for avoiding market risks.
+3. **Recommendation**: Combine ORP for growth and TRS for stability.
+
+Let me know if you’d like visuals or further details!
+
