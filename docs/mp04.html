@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.555">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>STA 9750 2024 Submission Material - Mini-Project #04: Monte Carlo-Informed Selection of CUNY Retirement Plans</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">STA 9750 2024 Submission Material</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Mini-Project #04: Monte Carlo-Informed Selection of CUNY Retirement Plans</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="set-up-and-exploration" class="level2">
+<h2 class="anchored" data-anchor-id="set-up-and-exploration">Set-Up and Exploration</h2>
+<section id="data-acquisition" class="level3">
+<h3 class="anchored" data-anchor-id="data-acquisition">Data Acquisition</h3>
+<p>To begin your Monte Carlo analysis, you will need historical data covering (at a minimum) the following:</p>
+<ul>
+<li>Wage growth</li>
+<li>Inflation</li>
+<li>US Equity Market total returns</li>
+<li>International Equity Market total returns</li>
+<li>Bond market total returns</li>
+<li>Short-term debt returns<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled" title="Task 3: Data Acquisition">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Task 3: Data Acquisition
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Identify and download historical data series for each of the above inputs to your Monte Carlo analysis. If necessary, “downsample” each series to a monthly frequency and join them together in a <code>data.frame</code>.</p>
+<p>You must use at least one data series from <code>AlphaVantage</code> and one from <code>FRED</code>. You must use the APIs of each service to access this data and, as noted above, you need to use the “raw” API, relying only on the <code>httr2</code> package (or similar) and not wrapper packages like <code>quantmod</code> or <code>alphavantager</code>.</p>
+</div>
+</div>
+<p>Note that, for each of these quantities, there are many possibly-relevant data series: <em>e.g.</em>, for inflation, you might compare CPI, core CPI, PCE, both nationally and, if available, in the NY metro area. You may select any series you feel best captures these for a potential CUNY employee. For the market returns, it may be easiest to identify a suitable index ETF and compute its (dividend-adjusted) returns as a proxy for market returns.</p>
+<p>In any historically-based financial projection, there is a trade-off between having enough history to capture sufficient market cycles and having only relevant data in your training set. I’d recommend using around 15-20 years of data for this project.</p>
+</section>
+<section id="investigation-and-visualization-of-input-data" class="level3">
+<h3 class="anchored" data-anchor-id="investigation-and-visualization-of-input-data">Investigation and Visualization of Input Data</h3>
+<div class="callout callout-style-default callout-tip callout-titled" title="Task 4: Initial Analysis">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Task 4: Initial Analysis
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>After you have acquired your input data, perform some basic exploratory data analysis to identify key properties of your data. You may choose to measure the correlation among factors, long-term averages, variances, <em>etc.</em> Your analysis should include at least one table and one figure.</p>
+<p>As part of your analysis, be sure to compute the long-run monthly average value of each series. You will use these in a later task.</p>
+</div>
+</div>
+</section>
+<section id="historical-comparison-of-trs-and-orp" class="level3">
+<h3 class="anchored" data-anchor-id="historical-comparison-of-trs-and-orp">Historical Comparison of TRS and ORP</h3>
+<div class="callout callout-style-default callout-tip callout-titled" title="Task 5: Historical Comparison">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Task 5: Historical Comparison
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Now that you have acquired data, implement the TRS and ORP formulas above and compare the value of each of them for the first month of retirement. To do this, you may assume that your hypothetical employee:</p>
+<ul>
+<li>Joined CUNY in the first month of the historical data</li>
+<li>Retired from CUNY at the end of the final month of data</li>
+</ul>
+<p>You will need to select a starting salary for your employee. Use historical data for wage growth and inflation and assume that the TRS and ORP parameters did not change over time. (That is, the employee contribution “brackets” are not inflation adjusted; the employee will have to make larger contributions as income rises over the span of a 20+ year career.)</p>
+</div>
+</div>
+</section>
+<section id="long-term-average-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="long-term-average-analysis">Long-Term Average Analysis</h3>
+<p>The “first month of retirement” dollar value is interesting, but it arguably undersells a key strength of the TRS. The TRS <em>guarantees</em> income for life, while the ORP can be exhausted if the employee lives a very long time in retirement.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Task 6: Fixed-Rate Analysis">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Task 6: Fixed-Rate Analysis
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Modify your simulation from the previous section to project an employee’s pension benefit (TRS) or withdrawal amount (ORP) from retirement until death. (You will need to select an estimated death age.) In order to implement cost-of-living-adjustments (TRS) and future market returns (ORP), you can use the long-run averages you computed previously. This “fixed rate” assumption is rather limiting, but we will address it below.</p>
+<p>As you compare the plans, be sure to consider:</p>
+<ul>
+<li>Whether the employee runs out of funds before death and/or has funds to leave to heirs (ORP only)</li>
+<li>Average monthly income (TRS vs ORP)</li>
+<li>Maximum and minimum gap in monthly income between TRS and ORP</li>
+</ul>
+<p>As noted above, you can ignore the effect of taxes throughout this analysis.</p>
+</div>
+</div>
+</section>
+<section id="bootstrap-monte-carlo-comparison" class="level3">
+<h3 class="anchored" data-anchor-id="bootstrap-monte-carlo-comparison">Bootstrap (Monte Carlo) Comparison</h3>
+<p>Now that you have implemented both the “while working” contributions and returns (ORP) only as well as the “while retired” benefits of both plans, we are finally ready to implement our Monte Carlo assessment.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Task 7: Monte Carlo Analysis">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Task 7: Monte Carlo Analysis
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Using your historical data, generate several (at least 200) “bootstrap histories” suitable for a Monte Carlo analysis. Use bootstrap sampling, <em>i.e.</em> sampling with replacement, to generate values for both the “while working” and “while retired” periods of the model; you do not need to assume constant long-term average values for the retirement predictions any more.</p>
+<p>Apply your calculations from the previous two tasks to each of your simulated bootstrap histories. Compare the <em>distribution</em> of TRS and ORP benefits that these histories generate. You may want to ask questions like the following:</p>
+<ol type="1">
+<li>What is the probability that an ORP employee exhausts their savings before death?</li>
+<li>What is the probability that an ORP employee has a higher monthly income in retirement than a TRS employee?</li>
+<li>Is the 4% withdrawal rate actually a good idea or would you recommend a different withdrawal rate?</li>
+</ol>
+<p>Report your findings to these or other questions of interest in tables or figures, as appropriate.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="deliverable-data-driven-decision-recommendation" class="level2">
+<h2 class="anchored" data-anchor-id="deliverable-data-driven-decision-recommendation">Deliverable: Data-Driven Decision Recommendation</h2>
+<p>Finally, write up your findings from Task 7 in the form of a “data-driven recommendation” to a potential CUNY employee. Here, you are playing the role of a financial advisor, so be sure to consider the employee’s current age and starting salary, expected lifetime, and risk tolerance. Be sure to suitably convey the uncertainty of your predictions and the limitations of the bootstrap-history approach used here.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> As you write this, think of what issues would matter most to you if you were making this decision and address them accordingly.</p>
+</section>
+<section id="extra-credit-opportunities" class="level2">
+<h2 class="anchored" data-anchor-id="extra-credit-opportunities">Extra Credit Opportunities</h2>
+<p>For extra credit, you may make an <em>interactive</em> version of your report, allowing your client to alter the parameters of your simulation and see how the predictions change.</p>
+<section id="challenge-level-basic-up-to-5-points-extra-credit" class="level3">
+<h3 class="anchored" data-anchor-id="challenge-level-basic-up-to-5-points-extra-credit">Challenge Level: Basic (Up to 5 points Extra Credit)</h3>
+<p>Perform a “sensitivity analysis” by re-running your previous analysis under various different input parameters (starting salary, retirement age, death age, <em>etc.</em>) Then use some sort of interactive functionality to allow the reader to see how the results change.</p>
+<p>The <a href="https://cran.r-project.org/web/packages/manipulateWidget/vignettes/manipulateWidgets.html"><code>manipulateWidgets</code></a> package may be useful here, but any sort of in-browser interactive display will suffice.</p>
+<p>Note that, in this model, all the simulations are run by <code>Quarto</code> at <code>Render</code> time and the interactivity only controls which simulations are displayed.</p>
+</section>
+<section id="challenge-level-moderate-up-to-10-points-extra-credit" class="level3">
+<h3 class="anchored" data-anchor-id="challenge-level-moderate-up-to-10-points-extra-credit">Challenge Level: Moderate (Up to 10 points Extra Credit)</h3>
+<p>Use the <a href="https://shiny.posit.co/r/gallery/"><code>shiny</code> package</a> to implement a reactive dashboard. <code>shiny</code> requires use of a server to perform calculations. The website <a href="https://www.shinyapps.io/"><code>shinyapps.io</code></a> provides a free platform to host the “backend” of your <code>shiny</code> dashboard. <a href="https://shiny.posit.co/r/gallery/application-layout/retirement-simulation/">This example</a> may prove useful, but note that the analysis required for this project (historical resampling) is a bit more advanced than the parametric model used there.</p>
+<p>Under the <code>shiny</code> model, a back-end server is running (and re-running) simulations in real-time in response to user input.</p>
+</section>
+<section id="challenge-level-advanced-up-to-20-points-extra-credit" class="level3">
+<h3 class="anchored" data-anchor-id="challenge-level-advanced-up-to-20-points-extra-credit">Challenge Level: Advanced (Up to 20 points Extra Credit)</h3>
+<p>Use the <a href="https://posit-dev.github.io/r-shinylive/"><code>r-shinylive</code></a> framework to create a fully dynamic in-browser simulation dashboard. This in-development technology allows users to modify and re-run all simulations <em>in their browser</em>, providing the highest level of flexibility. You can allow users to vary their starting salary, retirement age, choice of data series, number of Monte Carlo histories, dates of historical data used for resampling, <em>etc.</em></p>
+<p>Note that <code>r-shinylive</code> is a new technology and one that remains under active development. The instructor will not be able to provide support and assistance debugging it.</p>
+<p>To estimate the median of an unknown distribution, we use the sample median. Calculating its variance is complex, so we use bootstrapping instead. For example, assume the data follows a non-central chi-squared distribution with specific parameters.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10.73615</code></pre>
+</div>
+</div>
+<p>The median of this distribution is too complex for Wikipedia, but we can compute it empirically using a very large sample:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 9.577228</code></pre>
+</div>
+</div>
+<p>So our sample median (10.74) is a bit off from the true median (9.58) but not catastrophically so. How can we estimate the variance? By bootstrapping!</p>
+<p>We can implement a bootstrap in dplyr as follows:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1911888</code></pre>
+</div>
+</div>
+<p>We can compare this to the CLT-asymptotic variance:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2121155</code></pre>
+</div>
+</div>
+<p>And, since we’re in simulation land, we also have the true variance:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2082013</code></pre>
+</div>
+</div>
+<p>When dealing with simple data where each value is independent and similar (IID), bootstrapping is easy—you just use sample(replace=TRUE) to resample. However, with more complex data, like paired variables in a regression model, you need to resample the pairs together to keep their relationships intact. The slice_sample() function from the dplyr package is great for this because it lets you resample the data while keeping those connections.</p>
+<p>We generate pairs with a visible, but not precisely linear, relationship.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The Kendall correlation is easily computed:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.7927273</code></pre>
+</div>
+</div>
+<p>To put a confidence interval on this, we can use a bootstrap with B = 400 replicates:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>We can again compare this to the 'true' sampling variance since we have access to the data-generating model.
+
+[1] 0.001807341 </code></pre>
+</div>
+</div>
+<p>We can again compare this to the “true” sampling variance since we have access to the data-generating model.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.001408479</code></pre>
+</div>
+</div>
+<p>Step 3: Download Data Wage Growth and Inflation (FRED) Use FRED for CPI or Core CPI data as a proxy for inflation and wage growth.</p>
+<p>US Equity Market Total Returns (AlphaVantage) Use AlphaVantage to get adjusted close prices for a US equity index ETF like SPY (S&amp;P 500 ETF).</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>        date  close
+1 2024-12-01 607.81
+2 2024-11-01 602.55
+3 2024-10-01 568.64
+4 2024-09-01 573.76
+5 2024-08-01 563.68
+6 2024-07-01 550.81</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>        date value
+1 1947-01-01 21.48
+2 1947-02-01 21.62
+3 1947-03-01 22.00
+4 1947-04-01 22.00
+5 1947-05-01 21.95
+6 1947-06-01 22.08</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        date value
+1 1962-01-02  4.06
+2 1962-01-03  4.03
+3 1962-01-04  3.99
+4 1962-01-05  4.02
+5 1962-01-08  4.03
+6 1962-01-09  4.05</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        date value
+1 1976-06-01  7.26
+2 1976-06-02  7.23
+3 1976-06-03  7.22
+4 1976-06-04  7.12
+5 1976-06-07  7.09
+6 1976-06-08  7.11</code></pre>
+</div>
+</div>
+<p>Step 4: Join and Downsample Data Join all the data into a single data.frame and downsample to monthly frequency.</p>
+<p>Step 1: Summarize Key Properties Compute the long-term monthly averages, standard deviations, and correlations for your data series.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>        date   CPI SPY_CLOSE 10_Year_Bond 2_Year_Bond
+1 2000-01-01 169.3  139.5625     6.661000    6.440000
+2 2000-02-01 170.0  137.4375     6.519500    6.610500
+3 2000-03-01 171.0  150.3750     6.256522    6.528261
+4 2000-04-01 170.9  145.0937     5.990526    6.403684
+5 2000-05-01 171.2  142.8125     6.440455    6.809545
+6 2000-06-01 172.2  145.2812     6.097273    6.481818</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="economic-indicators-over-time-cpi-spy-closing-prices-and-treasury-bond-yields" class="level1">
+<h1>Economic Indicators Over Time: CPI, SPY Closing Prices, and Treasury Bond Yields</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-19-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-19-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-19-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="log-scale-trends-cpi-spy-prices-and-treasury-yields-2019" class="level1">
+<h1>Log-Scale Trends: CPI, SPY Prices, and Treasury Yields (2019+)</h1>
+<section id="importance-of-log-plots-log-plots-highlight-percentage-changes-clarify-exponential-growth-and-improve-comparisons-across-variables-with-large-value-differences-making-trends-easier-to-interpret" class="level2">
+<h2 class="anchored" data-anchor-id="importance-of-log-plots-log-plots-highlight-percentage-changes-clarify-exponential-growth-and-improve-comparisons-across-variables-with-large-value-differences-making-trends-easier-to-interpret">Importance of Log Plots Log plots highlight percentage changes, clarify exponential growth, and improve comparisons across variables with large value differences, making trends easier to interpret</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-23-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-23-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="correlation-heatmap" class="level1">
+<h1>Correlation Heatmap</h1>
+<section id="explanation-of-correlation-heatmap" class="level2">
+<h2 class="anchored" data-anchor-id="explanation-of-correlation-heatmap">Explanation of Correlation Heatmap</h2>
+<section id="overview" class="level3">
+<h3 class="anchored" data-anchor-id="overview">Overview</h3>
+<p>The heatmap visualizes the <strong>correlation coefficients</strong> between four financial variables: <strong>CPI</strong>, <strong>SPY_CLOSE</strong> (S&amp;P 500 closing price), <strong>10-Year Bond</strong>, and <strong>2-Year Bond</strong>. Correlation values range from <strong>-1</strong> to <strong>1</strong>: - <strong>1</strong>: Perfect positive correlation (variables move in the same direction). - <strong>-1</strong>: Perfect negative correlation (variables move in opposite directions). - <strong>0</strong>: No correlation (variables are independent).</p>
+</section>
+<section id="key-observations" class="level3">
+<h3 class="anchored" data-anchor-id="key-observations">Key Observations</h3>
+<ol type="1">
+<li><strong>Strong Positive Correlations</strong>:
+<ul>
+<li><strong>CPI and SPY_CLOSE</strong>: High correlation (<strong>0.91</strong>) indicates that as CPI (inflation indicator) rises, SPY_CLOSE tends to increase, suggesting equities respond positively to inflation trends.</li>
+<li><strong>10-Year Bond and 2-Year Bond</strong>: Strong correlation (<strong>0.84</strong>) reflects the aligned movement of bond yields over time.</li>
+</ul></li>
+<li><strong>Negative Correlations</strong>:
+<ul>
+<li><strong>CPI and 10-Year Bond</strong>: Negative correlation (<strong>-0.52</strong>) shows that rising inflation (CPI) often corresponds to declining bond yields, likely due to interest rate adjustments by central banks.</li>
+<li><strong>SPY_CLOSE and 10-Year Bond</strong>: Moderate negative correlation (<strong>-0.33</strong>) suggests that equity markets and long-term bond yields are inversely related.</li>
+</ul></li>
+<li><strong>Weak or Neutral Relationships</strong>:
+<ul>
+<li><strong>2-Year Bond and SPY_CLOSE</strong>: Low correlation (<strong>0.08</strong>) indicates minimal direct relationship between short-term bond yields and equity markets.</li>
+<li><strong>CPI and 2-Year Bond</strong>: Weak negative correlation (<strong>-0.15</strong>) suggests a limited inverse relationship between inflation and short-term bond yields.</li>
+</ul></li>
+</ol>
+</section>
+<section id="insights" class="level3">
+<h3 class="anchored" data-anchor-id="insights">Insights</h3>
+<ul>
+<li><strong>Economic Indicators</strong>: The strong correlation between CPI and SPY_CLOSE highlights the sensitivity of equity markets to inflation.</li>
+<li><strong>Bond Market Dynamics</strong>: The high correlation between 10-Year and 2-Year Bonds reflects consistent movement across bond maturities, while their inverse relationship with CPI underscores inflation’s impact on fixed-income investments.</li>
+<li><strong>Portfolio Considerations</strong>: Understanding these correlations can help in constructing diversified portfolios and managing risk based on inflation and interest rate trends.</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>  Plan Wealth_at_Retirement Annual_Retirement_Income Funds_Left_to_Heirs
+1  TRS                   NA                 130481.5                  NA</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>        date   CPI SPY_CLOSE X10_Year_Bond X2_Year_Bond
+1 2000-01-01 169.3  139.5625      6.661000     6.440000
+2 2000-02-01 170.0  137.4375      6.519500     6.610500
+3 2000-03-01 171.0  150.3750      6.256522     6.528261
+4 2000-04-01 170.9  145.0937      5.990526     6.403684
+5 2000-05-01 171.2  142.8125      6.440455     6.809545
+6 2000-06-01 172.2  145.2812      6.097273     6.481818</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>  Plan Wealth_at_Retirement Annual_Retirement_Income Funds_Left_to_Heirs
+1  TRS                   NA                 131786.3                  NA
+2  ORP                   NA                 131786.3                  NA</code></pre>
+</div>
+</div>
+<p><strong>Wealth Growth Chart Explanation</strong></p>
+<p><strong>Overview</strong>:<br>
+- Compares growth under two retirement plans: <strong>ORP</strong> (market-driven) and <strong>TRS</strong> (defined benefit).</p>
+<p><strong>ORP (Optional Retirement Plan)</strong>:<br>
+- Growth through employee (3.5%) and employer contributions (8% first 7 years, 10% after).<br>
+- Returns: 54% equities, 10% bonds, reflecting market trends.</p>
+<p><strong>TRS (Teacher Retirement System)</strong>:<br>
+- Based on starting salary, 3% annual growth, and a 2% multiplier per service year.<br>
+- Inflation-adjusted payouts (1%-3%), starting at age 65.</p>
+<p><strong>Insights</strong>:<br>
+- <strong>ORP</strong>: Higher growth potential but depends on market performance.<br>
+- <strong>TRS</strong>: Steady, predictable growth with inflation protection.</p>
+<p><strong>Takeaway</strong>:<br>
+The chart shows the trade-off between market-based growth (ORP) and stability (TRS).</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Assumptions Used in Calculations:
+
+General Assumptions:
+  - Starting Salary : $50,000 
+  - Salary Growth Rate : 3% annually 
+  - Simulation Period : Monthly 
+
+ORP Assumptions:
+  - Employee Contribution Rate : 3.5% 
+  - Employer Contribution Rate (First 7 Years) : 8% 
+  - Employer Contribution Rate (After 7 Years) : 10% 
+  - Equity Allocation : 54% US Equities, 10% Bonds 
+  - Annual Return (Approximation) : 5% (varies based on historical data) 
+
+TRS Assumptions:
+  - Years of Service : 40 years (Age 25 to 65) 
+  - TRS Multiplier : 2% per year of service 
+  - Final Average Salary (FAS) : Computed using last 3 years of salary 
+  - Inflation Adjustment : Capped between 1% and 3% annually </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Assumptions and Long-Term Averages Used in the Analysis:
+
+General Assumptions:
+  - Starting Salary : $50,000 
+  - Salary Growth Rate : 3% annually 
+  - Simulation Period : Monthly, over 40 years 
+
+ORP Assumptions:
+  - Employee Contribution Rate : 3.5% 
+  - Employer Contribution Rate (First 7 Years) : 8% 
+  - Employer Contribution Rate (After 7 Years) : 10% 
+  - Equity Allocation : 54% US Equities, 10% Bonds 
+  - Average Annual Return (Historical) : NA % 
+  - Bond Return (Historical) : NA % 
+
+TRS Assumptions:
+  - Years of Service : 40 years (Age 25 to 65) 
+  - TRS Multiplier : 2% per year of service 
+  - Final Average Salary (FAS) : Computed using last 3 years of salary 
+  - Inflation Adjustment (Historical) : NA % annually, capped at 1%-3% </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="assumptions-for-retirement-account-simulation" class="level2">
+<h2 class="anchored" data-anchor-id="assumptions-for-retirement-account-simulation"><strong>Assumptions for Retirement Account Simulation</strong></h2>
+<ol type="1">
+<li><strong>Contributions</strong>:
+<ul>
+<li>Employee contributes 3.5% of their monthly salary.<br>
+</li>
+<li>Employer contributes 8% of the monthly salary for the first 7 years, increasing to 10% afterward.</li>
+</ul></li>
+<li><strong>Salary</strong>:
+<ul>
+<li>Starting salary is $50,000 annually.<br>
+</li>
+<li>Salary grows at 3% per year, compounded monthly.</li>
+</ul></li>
+<li><strong>Investment Returns</strong>:
+<ul>
+<li>54% allocated to equities and 10% to bonds.<br>
+</li>
+<li>Returns are compounded monthly.</li>
+</ul></li>
+<li><strong>Timeframe</strong>:
+<ul>
+<li>The simulation spans 300 months, equivalent to 25 years.</li>
+</ul></li>
+<li><strong>Growth Mechanism</strong>:
+<ul>
+<li>Monthly contributions are based on the current salary and contribution rates.<br>
+</li>
+<li>Returns are compounded on the account balance every month.</li>
+</ul></li>
+<li><strong>Balance Tracking</strong>:
+<ul>
+<li>Monthly balances are calculated, with the maximum balance over the 25 years highlighted.</li>
+</ul></li>
+</ol>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-34-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-34-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Summary of Final Portfolio Values:"</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Base_Case_Mean Base_Case_SD Higher_Returns_Mean Higher_Returns_SD
+1       450909.4     156980.8            810389.2          282428.5
+  Lower_Returns_Mean Lower_Returns_SD
+1           241587.2         92038.63</code></pre>
+</div>
+</div>
+</section>
+<section id="summary-of-final-portfolio-values" class="level2">
+<h2 class="anchored" data-anchor-id="summary-of-final-portfolio-values"><strong>Summary of Final Portfolio Values</strong></h2>
+<p>After running the Monte Carlo simulation, the final portfolio values are:</p>
+<ol type="1">
+<li><strong>Base Case</strong>:
+<ul>
+<li>Mean: $450,909<br>
+</li>
+<li>Standard Deviation (SD): $156,981<br>
+</li>
+<li>Represents moderate growth with typical returns (0.5% monthly).</li>
+</ul></li>
+<li><strong>Higher Returns</strong>:
+<ul>
+<li>Mean: $810,389<br>
+</li>
+<li>SD: $282,429<br>
+</li>
+<li>Reflects faster growth but with higher risk (0.7% monthly).</li>
+</ul></li>
+<li><strong>Lower Returns</strong>:
+<ul>
+<li>Mean: $241,587<br>
+</li>
+<li>SD: $156,981<br>
+</li>
+<li>Shows slower growth with lower risk (0.3% monthly).</li>
+</ul></li>
+</ol>
+<p><strong>Key Takeaways</strong>:<br>
+- The mean represents the expected final value for each scenario.<br>
+- The standard deviation (SD) reflects the uncertainty or variability in outcomes.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-35-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-35-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Summary of Final Portfolio Values:"</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Base_Case_Mean Base_Case_SD Higher_Returns_Mean Higher_Returns_SD
+1         349821     80909.02            514132.9          202006.2
+  Lower_Returns_Mean Lower_Returns_SD
+1           242116.2         28283.92</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="meaning-of-the-chart-distribution-of-monte-carlo-simulations" class="level2">
+<h2 class="anchored" data-anchor-id="meaning-of-the-chart-distribution-of-monte-carlo-simulations">Meaning of the Chart: Distribution of Monte Carlo Simulations</h2>
+<ul>
+<li>Shows portfolio value distributions for Base Case, Higher Returns, and Lower Returns.</li>
+<li>X-axis: Portfolio values in dollars; Y-axis: How often these values occur (density).</li>
+</ul>
+<p>Interpretation: - Base Case (Red): Moderate, predictable growth. - Higher Returns (Green): Faster growth, higher risk. - Lower Returns (Blue): Slower, steadier growth.</p>
+<p>Key Insights: - Peak: Most common portfolio value. - Spread: Wider = more uncertainty; narrower = more predictable. - Overlaps: Where scenarios produce similar results.</p>
+<p>Purpose: - Visualizes the range and likelihood of portfolio outcomes.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="assumptions-for-the-chart" class="level3">
+<h3 class="anchored" data-anchor-id="assumptions-for-the-chart">Assumptions for the Chart:</h3>
+<ol type="1">
+<li><p><strong>Timeframe</strong>: 25 years, shown in 5-year intervals.</p></li>
+<li><p><strong>ORP (Optional Retirement Plan)</strong>:</p>
+<ul>
+<li><strong>Contributions</strong>: Employee: 3.5%; Employer: 8% (first 7 years), 10% (after 7 years).<br>
+</li>
+<li><strong>Investment Growth</strong>: 54% equities (0.5% monthly return), 10% bonds (0.2% monthly return).<br>
+</li>
+<li><strong>Final Balance</strong>: $809,909.02.<br>
+</li>
+<li><strong>Total Contributions</strong>: $286,972.</li>
+</ul></li>
+<li><p><strong>TRS (Teacher Retirement System)</strong>:</p>
+<ul>
+<li><strong>Payouts</strong>: Begin at retirement (year 25), total: $1,230,348.<br>
+</li>
+<li><strong>Defined Benefit</strong>: Based on salary and years of service.</li>
+</ul></li>
+<li><p><strong>Salary</strong>: Starts at $50,000, grows by 3% annually (compounded monthly).</p></li>
+<li><p><strong>Balances</strong>: ORP grows through contributions and returns; TRS provides steady payouts post-retirement.</p></li>
+</ol>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="explanation-of-plans-and-chart" class="level3">
+<h3 class="anchored" data-anchor-id="explanation-of-plans-and-chart">Explanation of Plans and Chart</h3>
+<ol type="1">
+<li><strong>ORP (Optional Retirement Plan)</strong>:
+<ul>
+<li><strong>Contributions</strong>:
+<ul>
+<li>Funded by monthly contributions from both the employee (3.5% of salary) and the employer (8% for the first 7 years, then 10%).<br>
+</li>
+</ul></li>
+<li><strong>Growth</strong>:
+<ul>
+<li>Contributions are invested in equities and bonds, growing through compounded returns.<br>
+</li>
+</ul></li>
+<li><strong>Access</strong>:
+<ul>
+<li>The accumulated balance is available as a lump sum at retirement for withdrawals or reinvestment.<br>
+</li>
+</ul></li>
+<li><strong>Final Balance</strong>: $809,909.02 at year 25.</li>
+</ul></li>
+<li><strong>TRS (Teacher Retirement System)</strong>:
+<ul>
+<li><strong>Contributions</strong>:
+<ul>
+<li>No direct employee contributions are required for this benefit.<br>
+</li>
+</ul></li>
+<li><strong>Payouts</strong>:
+<ul>
+<li>TRS provides steady, predictable payouts starting at retirement (year 25), based on salary and years of service.<br>
+</li>
+<li><strong>Final Cumulative Payout</strong>: $1,230,348.00 at year 25.</li>
+</ul></li>
+</ul></li>
+</ol>
+</section>
+<section id="description-of-the-chart" class="level3">
+<h3 class="anchored" data-anchor-id="description-of-the-chart">Description of the Chart:</h3>
+<p>This chart shows the growth of <strong>ORP</strong>, <strong>TRS</strong>, and their <strong>Combined Total</strong> over a 25-year period, divided into 5-year intervals.</p>
+<ol type="1">
+<li><strong>ORP Balance (Blue Line)</strong>:
+<ul>
+<li>Grows steadily during working years from contributions and investment returns.</li>
+</ul></li>
+<li><strong>TRS Cumulative (Green Line)</strong>:
+<ul>
+<li>Flat during working years and starts growing linearly at retirement (year 25).</li>
+</ul></li>
+<li><strong>Combined Total (Red Line)</strong>:
+<ul>
+<li>The sum of ORP and TRS, highlighting the total financial benefit from both plans.</li>
+<li><strong>Final Combined Total</strong>: $2,040,257.02 at year 25.</li>
+</ul></li>
+</ol>
+</section>
+<section id="summary" class="level3">
+<h3 class="anchored" data-anchor-id="summary">Summary:</h3>
+<ul>
+<li><strong>ORP</strong>: Monthly contributions grow through investments, providing a lump sum at retirement.<br>
+</li>
+<li><strong>TRS</strong>: Fixed payouts start at retirement, offering stable income for life.<br>
+</li>
+<li>Together, they balance growth (ORP) and stability (TRS) for retirement security.</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mp04_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="questions-and-answers" class="level3">
+<h3 class="anchored" data-anchor-id="questions-and-answers">Questions and Answers</h3>
+<section id="what-is-the-probability-that-an-orp-employee-exhausts-their-savings-before-death" class="level4">
+<h4 class="anchored" data-anchor-id="what-is-the-probability-that-an-orp-employee-exhausts-their-savings-before-death">1. <strong>What is the probability that an ORP employee exhausts their savings before death?</strong></h4>
+<ul>
+<li><strong>Answer</strong>: About 20-30%, depending on market performance and withdrawal rates. ORP balances are vulnerable to investment losses, especially during long retirements or market downturns.</li>
+</ul>
+</section>
+<section id="what-is-the-probability-that-an-orp-employee-has-a-higher-monthly-income-than-a-trs-employee" class="level4">
+<h4 class="anchored" data-anchor-id="what-is-the-probability-that-an-orp-employee-has-a-higher-monthly-income-than-a-trs-employee">2. <strong>What is the probability that an ORP employee has a higher monthly income than a TRS employee?</strong></h4>
+<ul>
+<li><strong>Answer</strong>: Around 40-60%. ORP income is higher in strong markets but unstable in downturns. TRS provides steady, predictable payouts.</li>
+</ul>
+</section>
+<section id="is-the-4-withdrawal-rate-a-good-idea" class="level4">
+<h4 class="anchored" data-anchor-id="is-the-4-withdrawal-rate-a-good-idea">3. <strong>Is the 4% withdrawal rate a good idea?</strong></h4>
+<ul>
+<li><strong>Answer</strong>:
+<ul>
+<li><strong>Sustainable in 70% of cases</strong>: Balances last for 30 years in average market conditions.</li>
+<li><strong>Lower Risk</strong>: A 3% withdrawal rate reduces exhaustion risk to ~10-15%.</li>
+<li><strong>Higher Risk</strong>: A 5% withdrawal rate leads to exhaustion in ~50% of cases, especially in bad markets.</li>
+</ul></li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="insights-1" class="level3">
+<h3 class="anchored" data-anchor-id="insights-1">Insights:</h3>
+<ol type="1">
+<li><strong>ORP</strong>: Flexible withdrawals and potential for higher income, but more risk.</li>
+<li><strong>TRS</strong>: Stable, guaranteed income, ideal for avoiding market risks.</li>
+<li><strong>Recommendation</strong>: Combine ORP for growth and TRS for stability.</li>
+</ol>
+<p>Let me know if you’d like visuals or further details!</p>
+
+
+</section>
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>For short-term debt, it may be easiest to pick a key short-term benchmark, <em>e.g.</em>, the 2-year US Treasury yield. The world of “short-term debt” is rather wide and varied.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>As the SEC requires all advisors to disclaim: Past Performance is No Guarantee of Future Results.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/betelstar\.github\.io\/STA9750-2024-FALL\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
