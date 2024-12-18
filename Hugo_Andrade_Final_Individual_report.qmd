@@ -1,0 +1,796 @@
+---
+title: "MTA Ridership Analysis: Trends, Correlations, and Piecewise Regression with PCA"
+format: html
+editor: visual
+---
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+
+# Alphabetically organized and unique list of required packages
+required_packages <- c(
+  "boot",        # Bootstrap resampling
+  "broom",       # Tidy statistical model outputs
+  "car",         # Regression diagnostics (e.g., VIF)
+  "dplyr",       # Data manipulation (filter, mutate, summarize)
+  "factoextra",  # Visualization of PCA and clustering
+  "GGally",      # Pair plots, correlation
+  "ggcorrplot",  # Visualize correlation matrices
+  "ggplot2",     # Data visualization
+  "glmnet",      # Ridge/Lasso regression
+  "gridExtra",   # Combine multiple ggplots
+  "janitor",     # Clean column names
+  "kableExtra",  # Create rich tables in RMarkdown
+  "knitr",       # Knitting RMarkdown documents
+  "lubridate",   # Date manipulation
+  "Matrix",      # Sparse matrix support
+  "modelr",      # Functions for regression modeling
+  "plotly",      # Interactive plots
+  "purrr",       # Functional programming tools (map, reduce)
+  "readxl",      # Reading Excel files
+  "rmarkdown",   # Render markdown documents
+  "scales",      # Format scales (e.g., axis labels)
+  "stats",       # Base statistical functions
+  "stringr",     # String manipulation
+  "tidyr",       # Data manipulation (pivot, gather, spread)
+  "tidymodels"   # Framework for machine learning workflows
+)
+
+# Function to check if packages are installed and install if necessary
+install_if_needed <- function(packages) {
+  for (pkg in packages) {
+    if (!require(pkg, character.only = TRUE)) {
+      install.packages(pkg, dependencies = TRUE)
+      library(pkg, character.only = TRUE)
+    }
+  }
+}
+
+# Install missing packages
+install_if_needed(required_packages)
+
+# Load all libraries dynamically
+invisible(lapply(required_packages, library, character.only = TRUE))
+
+
+
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+# Alphabetically organized and unique list of required packages
+required_packages <- c(
+  "boot",        # Bootstrap resampling
+  "broom",       # Tidy statistical model outputs
+  "car",         # Regression diagnostics (e.g., VIF)
+  "dplyr",       # Data manipulation (filter, mutate, summarize)
+  "factoextra",  # Visualization of PCA and clustering
+  "GGally",      # Pair plots, correlation
+  "ggcorrplot",  # Visualize correlation matrices
+  "ggplot2",     # Data visualization
+  "glmnet",      # Ridge/Lasso regression
+  "gridExtra",   # Combine multiple ggplots
+  "janitor",     # Clean column names
+  "kableExtra",  # Create rich tables in RMarkdown
+  "knitr",       # Knitting RMarkdown documents
+  "lubridate",   # Date manipulation
+  "Matrix",      # Sparse matrix support
+  "modelr",      # Functions for regression modeling
+  "plotly",      # Interactive plots
+  "purrr",       # Functional programming tools (map, reduce)
+  "rgl",         # Interactive 3D plots
+  "readxl",      # Reading Excel files
+  "rmarkdown",   # Render markdown documents
+  "scales",      # Format scales (e.g., axis labels)
+  "stats",       # Base statistical functions
+  "stringr",     # String manipulation
+  "tidyr",       # Data manipulation (pivot, gather, spread)
+  "tidymodels"   # Framework for machine learning workflows
+)
+
+# Function to check if packages are installed and install if necessary
+install_if_needed <- function(packages) {
+  for (pkg in packages) {
+    if (!require(pkg, character.only = TRUE)) {
+      install.packages(pkg, dependencies = TRUE)
+      library(pkg, character.only = TRUE)
+    }
+  }
+}
+
+# Install missing packages
+install_if_needed(required_packages)
+
+# Load all libraries dynamically
+invisible(lapply(required_packages, library, character.only = TRUE))
+
+# Confirmation Message
+cat("All required packages are installed and loaded.\n")
+
+
+```
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+
+# Load the dataset
+file_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/docs/MTA_Agency_Wide_Data_For_R.xlsx"
+data <- read_excel(file_path)
+
+# Clean column names and rename variables for readability
+data <- data %>%
+  clean_names() %>%   # Standardizes column names (snake_case)
+  rename(
+    `Subway Ridership` = subway,
+    `Access-A-Ride (AAR)` = aar,
+    `Bridges and Tunnels (BT)` = bt,
+    `Long Island Rail Road (LIRR)` = lirr,
+    `Metro-North Railroad (MNR)` = mnr,
+    `MTA Bus` = mta_bus,
+    `NYCT Bus` = nyct_bus,
+    `Staten Island Railway (SIR)` = sir
+  )
+
+# Preview the cleaned dataset
+head(data)
+
+
+
+
+```
+
+
+
+## **Figure 1: Correlation Matrix**
+
+The **correlation matrix** is a table that shows how strongly the ridership trends of different MTA systems are related to each other.
+
+- **Values close to 1**: This means a **strong positive relationship**. For example, if subway ridership increases, MTA Bus and Metro-North Railroad ridership are likely to increase as well.  
+- **Lower values**: This indicates a **weaker relationship**, meaning the ridership of one system does not necessarily follow the trends of another.
+
+## **Key Insights**
+
+- **Subway Ridership**, **MTA Bus**, and **Metro-North Railroad** are highly correlated (with values greater than 0.9). This means their ridership trends are very similar, likely because these systems serve similar groups of commuters.  
+- **Bridges and Tunnels** have weaker correlations with other systems. This is probably because they cater to car commuters rather than public transit riders.  
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+
+# Load the dataset
+file_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/docs/MTA_Agency_Wide_Data_For_R.xlsx"
+data <- read_excel(file_path)
+
+# Clean column names and rename variables for readability
+data <- data %>%
+  clean_names() %>%
+  rename(
+    `Subway Ridership` = subway,
+    `Access-A-Ride (AAR)` = aar,
+    `Bridges and Tunnels (BT)` = bt,
+    `Long Island Rail Road (LIRR)` = lirr,
+    `Metro-North Railroad (MNR)` = mnr,
+    `MTA Bus` = mta_bus,
+    `NYCT Bus` = nyct_bus,
+    `Staten Island Railway (SIR)` = sir
+  )
+
+# Select numerical columns for correlation analysis
+correlation_data <- data %>%
+  select(-date)  # Exclude 'date' column if present
+
+# Compute the correlation matrix
+cor_matrix <- cor(correlation_data, use = "pairwise.complete.obs")
+
+# Plot the correlation matrix
+ggcorrplot(
+  cor_matrix,
+  type = "lower",            # Show only the lower triangle
+  lab = TRUE,                # Display correlation coefficients
+  lab_size = 4,              # Adjust label size
+  colors = c("blue", "white", "orange"),  # Gradient colors
+  title = "MTA Ridership Correlation Matrix",  # Add title
+  ggtheme = theme_minimal()  # Use a clean theme
+)
+
+
+
+```
+
+##  **Figure 2 to 5: **Explanation of the Output Charts**
+
+1. **Subway Ridership Chart**  
+   - Shows changes in subway ridership over time, with a clear line and data points for key values.
+
+2. **High Correlation Group Chart**  
+   - Displays trends for systems like **Metro-North Railroad (MNR)** and **NYCT Bus**, which move similarly due to high correlation.
+
+3. **Mid Correlation Group Chart**  
+   - Focuses on moderately related systems like **MTA Bus** and **Bridges and Tunnels (BT)**, showing partial similarity in trends.
+
+4. **Low Correlation Group Chart**  
+   - Highlights **Staten Island Railway (SIR)**, whose trends are unique and less connected to others.
+
+## **Key Insights**
+- The charts group systems by correlation, making it easy to see which ones behave similarly or differently over time.
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+# Load and clean the data
+file_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/docs/MTA_Agency_Wide_Data_For_R.xlsx"
+data <- read_excel(file_path)
+
+data <- clean_names(data) %>%
+  rename(
+    `Subway Ridership` = subway,
+    `Access-A-Ride (AAR)` = aar,
+    `Bridges and Tunnels (BT)` = bt,
+    `Long Island Rail Road (LIRR)` = lirr,
+    `Metro-North Railroad (MNR)` = mnr,
+    `MTA Bus` = mta_bus,
+    `NYCT Bus` = nyct_bus,
+    `Staten Island Railway (SIR)` = sir
+  )
+
+# Function to add formatted ridership numbers dynamically to variable names
+add_ridership_labels <- function(data, group_vars) {
+  latest_data <- data %>%
+    summarise(across(all_of(group_vars), ~ last(na.omit(.)))) %>%
+    pivot_longer(cols = everything(), names_to = "Variable", values_to = "Ridership")
+  
+  labels <- paste0(latest_data$Variable, " (", comma(round(latest_data$Ridership, 0)), ")")
+  names(labels) <- latest_data$Variable
+  return(labels)
+}
+
+# Full color palette
+color_palette <- c(
+  "royalblue", "orange", "green", "purple", "brown",
+  "pink", "cyan", "gold", "red", "darkgreen", "lightblue", "darkorange", 
+  "limegreen", "violet", "tan", "coral", "teal", "khaki"
+)
+
+# Function to plot line charts with unique colors
+plot_line_chart <- function(data, group_vars, group_name, custom_labels = NULL, colors) {
+  # Reshape data into long format
+  data_long <- data %>%
+    select(date, all_of(group_vars)) %>%
+    pivot_longer(cols = -date, names_to = "Variable", values_to = "Value")
+  
+  # Apply custom labels if provided
+  if (!is.null(custom_labels)) {
+    data_long$Variable <- factor(data_long$Variable, levels = names(custom_labels), labels = custom_labels)
+  }
+  
+  # Plot the line chart
+  ggplot(data_long, aes(x = as.numeric(date), y = Value, color = Variable, group = Variable)) +
+    geom_line(size = 1) +
+    geom_point(size = 2) +
+    scale_color_manual(values = colors) +  # Apply unique colors
+    scale_x_continuous(labels = comma) +  # Format x-axis numbers with commas
+    scale_y_continuous(labels = comma) +  # Format y-axis values with commas
+    labs(title = paste("Ridership Over Time -", group_name),
+         x = "Date (Numeric)", y = "Ridership", color = "Variable") +
+    theme_minimal(base_size = 12) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          plot.title = element_text(hjust = 0.5, size = 14))
+}
+
+# Subway Ridership Only
+subway_label <- add_ridership_labels(data, c("Subway Ridership"))
+subway_colors <- color_palette[1]  # Unique color for Subway
+subway_plot <- plot_line_chart(data, c("Subway Ridership"), "Subway Ridership", subway_label, subway_colors)
+
+# Define Correlation Groups
+high_corr <- c("Metro-North Railroad (MNR)", "NYCT Bus")
+mid_corr <- c("MTA Bus", "Bridges and Tunnels (BT)", "Access-A-Ride (AAR)")
+low_corr <- c("Staten Island Railway (SIR)")
+
+# Add formatted labels for each group
+high_corr_labels <- add_ridership_labels(data, high_corr)
+mid_corr_labels <- add_ridership_labels(data, mid_corr)
+low_corr_labels <- add_ridership_labels(data, low_corr)
+
+# Generate plots for each group with unique colors
+high_corr_colors <- color_palette[2:(1 + length(high_corr))]
+mid_corr_colors <- color_palette[(2 + length(high_corr)):(1 + length(high_corr) + length(mid_corr))]
+low_corr_colors <- color_palette[(2 + length(high_corr) + length(mid_corr)):length(color_palette)]
+
+high_corr_plot <- plot_line_chart(data, high_corr, "High Correlation Group", high_corr_labels, high_corr_colors)
+mid_corr_plot <- plot_line_chart(data, mid_corr, "Mid Correlation Group", mid_corr_labels, mid_corr_colors)
+low_corr_plot <- plot_line_chart(data, low_corr, "Low Correlation Group", low_corr_labels, low_corr_colors)
+
+# Print Plots in Order
+print(subway_plot)       # Subway Ridership First
+print(high_corr_plot)    # High Correlation Group
+print(mid_corr_plot)     # Mid Correlation Group
+print(low_corr_plot)     # Low Correlation Group
+
+
+
+
+
+```
+
+## **Why We Switched to PCA-Based Regression**
+
+We started with a **regular piecewise regression**, but severe **multicollinearity** (Table 1: VIF Summary Before and After Breakpoint) made it unreliable:  
+- **Pre-Breakpoint**: Predictors like **LIRR (67.75)** and **NYCT Bus (54.89)** had high VIF values.  
+- **Post-Breakpoint**: Multicollinearity worsened, with extreme VIFs like **MTA Bus (427.64)**.
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+
+# Load the data
+file_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/docs/MTA_Agency_Wide_Data_For_R.xlsx"
+data <- read_excel(file_path, sheet = 1)
+
+# Clean column names (fixes spaces and special characters)
+colnames(data) <- make.names(colnames(data))
+
+# Inspect the structure of the data
+glimpse(data)
+
+# Filter and select relevant columns
+data <- data %>%
+  filter(!is.na(Subway)) %>%
+  select(Date, Subway, AAR, BT, LIRR, MNR, MTA.Bus, NYCT.Bus, SIR)
+
+# Convert 'Date' to numeric for modeling and add breakpoint indicator
+data <- data %>%
+  mutate(Date = as.numeric(as.Date(Date)),
+         Post_Breakpoint = ifelse(Date >= as.numeric(as.Date("2020-03-01")), 1, 0))
+
+# Save pre and post data for further analysis
+break_date <- as.Date("2020-03-01")
+data_pre <- data %>% filter(Date < as.numeric(break_date))
+data_post <- data %>% filter(Date >= as.numeric(break_date))
+
+# Save to .RData for use in other scripts
+save(data, data_pre, data_post, file = "processed_data.RData")
+
+
+```
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: asis
+
+
+
+# Load the data
+file_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/docs/MTA_Agency_Wide_Data_For_R.xlsx"
+data <- read_excel(file_path)
+
+# Clean column names
+colnames(data) <- make.names(colnames(data))
+
+# Convert Date to proper Date format
+data <- data %>%
+  mutate(Date = as.Date(Date))
+
+# Define the breakpoint date
+break_date <- as.Date("2020-03-01")
+
+# Split the dataset into pre- and post-breakpoint periods
+data_pre <- data %>% filter(Date < break_date)
+data_post <- data %>% filter(Date >= break_date)
+
+# Define predictors and regression formula
+predictors <- c("AAR", "BT", "LIRR", "MNR", "MTA.Bus", "NYCT.Bus", "SIR")
+reg_formula <- as.formula(paste("Subway ~", paste(predictors, collapse = " + ")))
+
+# ---- Step 1: VIF Calculation ----
+# Fit linear models
+model_pre <- lm(reg_formula, data = data_pre)
+model_post <- lm(reg_formula, data = data_post)
+
+# Calculate VIF for pre- and post-breakpoint models
+vif_pre <- data.frame(Predictor = names(vif(model_pre)), VIF = vif(model_pre), Period = "Pre-Breakpoint")
+vif_post <- data.frame(Predictor = names(vif(model_post)), VIF = vif(model_post), Period = "Post-Breakpoint")
+
+# Combine VIF results
+vif_combined <- bind_rows(vif_pre, vif_post) %>%
+  mutate(Interpretation = case_when(
+    VIF < 5 ~ "Low multicollinearity",
+    VIF >= 5 & VIF < 10 ~ "Moderate collinearity",
+    VIF >= 10 ~ "Severe collinearity"
+  ))
+
+# Display VIF results
+cat("\n### Multicollinearity Assessment: Pre and Post-Breakpoint VIF\n")
+kable(vif_combined, caption = "VIF Summary Before and After Breakpoint", format = "html") %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+
+
+```
+
+
+
+
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+
+# Load libraries
+library(factoextra)
+
+# Load processed data
+load("processed_data.RData")
+
+# Step 1: PCA for Pre-Breakpoint Data
+pca_pre <- prcomp(data_pre %>% select(AAR, BT, LIRR, MNR, MTA.Bus, NYCT.Bus, SIR), scale. = TRUE)
+
+# Step 2: PCA for Post-Breakpoint Data
+pca_post <- prcomp(data_post %>% select(AAR, BT, LIRR, MNR, MTA.Bus, NYCT.Bus, SIR), scale. = TRUE)
+
+# Save PCA results
+save(pca_pre, pca_post, file = "pca_results.RData")
+
+
+
+
+```
+
+## **Solution: PCA-Based Regression**  
+We switched to **PCA (Principal Component Analysis)** to:  
+1. Combine highly correlated variables into **independent components**.  
+2. Eliminate multicollinearity while preserving key trends.  
+
+This made the **piecewise regression model stable** and more reliable.
+
+
+## **Fitted Piecewise Regression Models (First Two Charts)**
+
+1. **Pre-Breakpoint (Blue)**  
+   - Shows subway ridership before disruption.  
+   - Ridership fluctuates seasonally with clear peaks and drops.  
+   - The model (blue lines) closely matches the real data (black dots).
+
+2. **Post-Breakpoint (Orange)**  
+   - Shows subway ridership after disruption.  
+   - Ridership drops sharply but begins recovering steadily over time.  
+   - The model captures this recovery trend accurately.
+
+
+
+### **Bootstrap Coefficients (Last Two Charts)**  
+
+3. **Pre-Breakpoint Coefficients (Blue)**  
+   - Histograms show the distribution of model coefficients for components like **Intercept**, **Date**, and **PCA components (PC1, PC2, PC3)**.  
+   - The peaks in the histograms mean the coefficients are stable and reliable.
+
+4. **Post-Breakpoint Coefficients (Orange)**  
+   - Similar to the Pre-Breakpoint chart but for the recovery period.  
+   - Coefficients are more spread out, reflecting greater variability in the data during recovery.  
+   - Still, the peaks suggest the model remains trustworthy.
+
+
+
+### **Summary**  
+- The piecewise models effectively capture trends before and after the disruption.  
+- The bootstrap analysis confirms the models are stable, even with some variability post-breakpoint.
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+
+
+# Load the data
+file_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/docs/MTA_Agency_Wide_Data_For_R.xlsx"
+data <- read_excel(file_path, sheet = 1)
+
+# Clean column names
+colnames(data) <- make.names(colnames(data))
+
+# Step 1: Date Conversion and Add Breakpoint Flag
+data <- data %>%
+  mutate(
+    Date = case_when(
+      grepl("/", Date) ~ as.Date(Date, format = "%m/%d/%Y"),
+      grepl("-", Date) ~ as.Date(Date, format = "%Y-%m-%d"),
+      TRUE ~ as.Date(as.numeric(Date), origin = "1899-12-30")
+    ),
+    Date_num = as.numeric(Date),
+    Post_Breakpoint = ifelse(Date >= as.Date("2020-03-01"), 1, 0)
+  )
+
+# Step 2: Split Data for Pre and Post Breakpoints
+pre_data <- data %>% filter(Post_Breakpoint == 0 & !is.na(Subway))
+post_data <- data %>% filter(Post_Breakpoint == 1 & !is.na(Subway))
+
+# Step 3: Normalize Data Separately for Pre and Post
+pre_norm <- pre_data %>%
+  select(Subway, AAR, BT, LIRR, MNR, MTA.Bus, NYCT.Bus, SIR) %>%
+  mutate(across(-Subway, scale))
+
+post_norm <- post_data %>%
+  select(Subway, AAR, BT, LIRR, MNR, MTA.Bus, NYCT.Bus, SIR) %>%
+  mutate(across(-Subway, scale))
+
+# Step 4: Perform PCA for Pre and Post
+pca_pre <- prcomp(pre_norm %>% select(-Subway), center = TRUE, scale. = TRUE)
+pca_post <- prcomp(post_norm %>% select(-Subway), center = TRUE, scale. = TRUE)
+
+# Extract Principal Components
+pre_pca_data <- as.data.frame(pca_pre$x[, 1:3])
+post_pca_data <- as.data.frame(pca_post$x[, 1:3])
+colnames(pre_pca_data) <- colnames(post_pca_data) <- c("PC1", "PC2", "PC3")
+
+# Combine Pre/Post PCA Data with Original Data
+pre_combined <- cbind(pre_data %>% select(Date, Date_num, Subway), pre_pca_data)
+post_combined <- cbind(post_data %>% select(Date, Date_num, Subway), post_pca_data)
+
+# Step 5: Bootstrap Regression for Pre and Post
+set.seed(27)
+boot_pre <- bootstraps(pre_combined, times = 500)
+boot_post <- bootstraps(post_combined, times = 500)
+
+# Fit Piecewise Regression
+fit_bootstrap <- function(split, formula) {
+  lm(formula, data = analysis(split))
+}
+
+formula <- Subway ~ Date + PC1 + PC2 + PC3
+
+# Bootstrap models
+pre_models <- boot_pre %>% mutate(model = map(splits, ~fit_bootstrap(.x, formula)), coef_info = map(model, tidy))
+post_models <- boot_post %>% mutate(model = map(splits, ~fit_bootstrap(.x, formula)), coef_info = map(model, tidy))
+
+# Extract Coefficients
+pre_coefs <- pre_models %>% unnest(coef_info)
+post_coefs <- post_models %>% unnest(coef_info)
+
+# Step 6: Plot Piecewise Fitted Lines for Pre-Breakpoint
+pre_aug <- pre_models %>% sample_n(200) %>% mutate(augmented = map(model, augment)) %>% unnest(augmented)
+ggplot(pre_aug, aes(x = Date, y = Subway)) +
+  geom_line(aes(y = .fitted, group = id), alpha = .2, color = "royalblue") +
+  geom_point(data = pre_combined, aes(x = Date, y = Subway), color = "black") +
+  scale_y_continuous(labels = comma) +
+  scale_x_date(date_labels = "%b-%Y", date_breaks = "3 months") +
+  labs(title = "Fitted Piecewise Model: Pre-Breakpoint", x = "Month-Year", y = "Subway Ridership") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Step 7: Plot Piecewise Fitted Lines for Post-Breakpoint
+post_aug <- post_models %>% sample_n(200) %>% mutate(augmented = map(model, augment)) %>% unnest(augmented)
+ggplot(post_aug, aes(x = Date, y = Subway)) +
+  geom_line(aes(y = .fitted, group = id), alpha = .2, color = "orange") +
+  geom_point(data = post_combined, aes(x = Date, y = Subway), color = "black") +
+  scale_y_continuous(labels = comma) +
+  scale_x_date(date_labels = "%b-%Y", date_breaks = "6 months") +
+  labs(title = "Fitted Piecewise Model: Post-Breakpoint", x = "Month-Year", y = "Subway Ridership") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Step 8: Bootstrap Coefficients Plot for Pre-Breakpoint
+ggplot(pre_coefs, aes(x = estimate)) +
+  geom_histogram(bins = 30, fill = "royalblue", alpha = 0.6) +
+  facet_wrap(~ term, scales = "free") +
+  labs(title = "Bootstrap Coefficients: Pre-Breakpoint", x = "Coefficient Estimate", y = "Frequency")
+
+# Step 9: Bootstrap Coefficients Plot for Post-Breakpoint
+ggplot(post_coefs, aes(x = estimate)) +
+  geom_histogram(bins = 30, fill = "orange", alpha = 0.6) +
+  facet_wrap(~ term, scales = "free") +
+  labs(title = "Bootstrap Coefficients: Post-Breakpoint", x = "Coefficient Estimate", y = "Frequency")
+
+
+
+```
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+
+# Step 12: Generate Summary with Descriptive Significance Levels
+summarize_coefficients <- function(coefs) {
+  coefs %>%
+    group_by(term) %>%
+    summarize(
+      mean_estimate = mean(estimate, na.rm = TRUE),
+      std_error = sd(estimate, na.rm = TRUE),
+      t_stat = mean_estimate / std_error,
+      p_value = 2 * (1 - pnorm(abs(mean_estimate / std_error))),
+      significance = case_when(
+        p_value < 0.001 ~ "Highly Significant",
+        p_value < 0.01 ~ "Significant",
+        p_value < 0.05 ~ "Marginally Significant",
+        TRUE ~ "Not Significant"
+      )
+    ) %>%
+    ungroup()
+}
+
+# Summarize coefficients for pre and post
+pre_summary <- summarize_coefficients(pre_coefs)
+post_summary <- summarize_coefficients(post_coefs)
+
+# Step 13: Format and Display Summary Table
+library(kableExtra)
+
+generate_summary_table <- function(summary, title) {
+  summary %>%
+    mutate(
+      mean_estimate = scales::comma(mean_estimate, accuracy = 0.01),
+      std_error = scales::comma(std_error, accuracy = 0.01),
+      t_stat = round(t_stat, 2),
+      p_value = round(p_value, 3)
+    ) %>%
+    select(term, mean_estimate, std_error, t_stat, p_value, significance) %>%
+    kbl(
+      caption = title,
+      col.names = c("Term", "Mean Estimate", "Std. Error", "t-Statistic", "p-Value", "Significance"),
+      format = "html",
+      align = "c"
+    ) %>%
+    kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+}
+
+# Display Pre-Breakpoint Summary Table
+generate_summary_table(pre_summary, "Bootstrap Coefficients Summary: Pre-Breakpoint")
+
+# Display Post-Breakpoint Summary Table
+generate_summary_table(post_summary, "Bootstrap Coefficients Summary: Post-Breakpoint")
+
+
+
+```
+
+
+
+## Residual and Q-Q Plots: Pre-Breakpoint
+
+**Residual Plot**:  
+- This chart shows the residuals (errors) against the fitted values.  
+- Residuals are spread unevenly around the zero line, indicating that the model struggles to capture patterns perfectly.  
+
+**Q-Q Plot**:  
+- The Q-Q plot compares residuals to a theoretical normal distribution.  
+- Deviations from the red line suggest that the residuals are not perfectly normal, especially at the extremes.
+
+
+
+## Residual and Q-Q Plots: Post-Breakpoint  
+
+**Residual Plot**:  
+- Residuals are more scattered and less centered around zero, showing larger errors in the model.  
+- This reflects the more volatile data in the post-breakpoint period.  
+
+**Q-Q Plot**:  
+- Residuals deviate further from the red line, particularly on the lower end.  
+- This indicates non-normality, suggesting the model struggles with extreme variations in the data.
+
+
+
+## Key Takeaway  
+The pre-breakpoint model performs better than the post-breakpoint model, as residuals are smaller and closer to normal. The post-breakpoint period shows higher variability, making it harder to predict accurately.
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+# Load required libraries
+library(ggplot2)
+library(dplyr)
+
+# Function to generate residual plots and Q-Q plots
+generate_residual_plots <- function(model_data, model_title) {
+  # Residual Plot
+  residual_plot <- ggplot(model_data, aes(x = .fitted, y = .resid)) +
+    geom_point(alpha = 0.6, color = "blue") +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+    labs(
+      title = paste("Residual Plot:", model_title),
+      x = "Fitted Values",
+      y = "Residuals"
+    ) +
+    theme_minimal()
+
+  # Q-Q Plot
+  qq_plot <- ggplot(model_data, aes(sample = .resid)) +
+    stat_qq(alpha = 0.6, color = "blue") +
+    stat_qq_line(linetype = "dashed", color = "red") +
+    labs(
+      title = paste("Q-Q Plot:", model_title),
+      x = "Theoretical Quantiles",
+      y = "Sample Quantiles"
+    ) +
+    theme_minimal()
+
+  list(residual_plot = residual_plot, qq_plot = qq_plot)
+}
+
+# Extract residuals for pre-breakpoint
+pre_aug_residuals <- pre_models %>%
+  sample_n(1) %>%
+  mutate(augmented = map(model, augment)) %>%
+  unnest(augmented)
+
+# Extract residuals for post-breakpoint
+post_aug_residuals <- post_models %>%
+  sample_n(1) %>%
+  mutate(augmented = map(model, augment)) %>%
+  unnest(augmented)
+
+# Generate plots for pre-breakpoint model
+pre_plots <- generate_residual_plots(pre_aug_residuals, "Pre-Breakpoint Model")
+
+# Generate plots for post-breakpoint model
+post_plots <- generate_residual_plots(post_aug_residuals, "Post-Breakpoint Model")
+
+# Display plots
+print(pre_plots$residual_plot)
+print(pre_plots$qq_plot)
+
+print(post_plots$residual_plot)
+print(post_plots$qq_plot)
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+

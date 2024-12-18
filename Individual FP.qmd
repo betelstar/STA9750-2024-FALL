@@ -1,0 +1,439 @@
+---
+title: "Individual FP"
+format: pdf
+editor: visual
+---
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+# Define a list of required packages
+required_packages <- c("tidyr", "ggplot2", "readxl", "dplyr", "scales", "janitor", "ggcorrplot")
+
+# Function to check if packages are installed and install if necessary
+install_if_needed <- function(packages) {
+  for (pkg in packages) {
+    if (!require(pkg, character.only = TRUE)) {
+      install.packages(pkg)
+      library(pkg, character.only = TRUE)
+    }
+  }
+}
+
+# Check and install required packages
+install_if_needed(required_packages)
+
+
+```
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+# Load the dataset
+file_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/docs/MTA_Agency_Wide_Data_For_R.xlsx"
+data <- read_excel(file_path)
+
+# Clean column names and rename variables for readability
+library(janitor)
+data <- clean_names(data) %>%
+  rename(
+    `Subway Ridership` = subway,
+    `Access-A-Ride (AAR)` = aar,
+    `Bridges and Tunnels (BT)` = bt,
+    `Long Island Rail Road (LIRR)` = lirr,
+    `Metro-North Railroad (MNR)` = mnr,
+    `MTA Bus` = mta_bus,
+    `NYCT Bus` = nyct_bus,
+    `Staten Island Railway (SIR)` = sir
+  )
+
+
+```
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+# Calculate the correlation matrix
+corr_matrix <- cor(data %>% select(-date), use = "complete.obs")
+
+# Plot the correlation matrix
+library(ggcorrplot)
+ggcorrplot(
+  corr_matrix,
+  method = "circle",
+  type = "lower",
+  lab = TRUE,
+  colors = c("royalblue", "white", "orange"),
+  title = "Correlation Matrix"
+) + theme_minimal()
+
+
+```
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+# Reshape data to long format for plotting
+data_long <- data %>%
+  pivot_longer(cols = -date, names_to = "Variable", values_to = "Value")
+
+# Define correlation groups
+high_corr <- c("Subway Ridership", "Metro-North Railroad (MNR)", "Long Island Rail Road (LIRR)", "NYCT Bus")
+mid_corr <- c("Access-A-Ride (AAR)", "MTA Bus", "Bridges and Tunnels (BT)")
+low_corr <- c("Staten Island Railway (SIR)")
+
+# Get the most recent data points
+latest_data <- data_long %>%
+  group_by(Variable) %>%
+  filter(date == max(date)) %>%
+  ungroup()
+
+```
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+# High Correlation Plot
+high_data <- data_long %>% filter(Variable %in% high_corr)
+ggplot(high_data, aes(x = date, y = Value, color = Variable)) +
+  geom_line(size = 1) +
+  geom_point(data = latest_data %>% filter(Variable %in% high_corr),
+             aes(x = date, y = Value), size = 3, color = "red") +
+  labs(
+    title = "High Correlation Variables",
+    x = "Date",
+    y = "Ridership",
+    color = "Variable"
+  ) +
+  scale_y_continuous(labels = scales::comma) +
+  theme_minimal()
+
+
+```
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+# Mid Correlation Plot
+mid_data <- data_long %>% filter(Variable %in% mid_corr)
+ggplot(mid_data, aes(x = date, y = Value, color = Variable)) +
+  geom_line(size = 1) +
+  geom_point(data = latest_data %>% filter(Variable %in% mid_corr),
+             aes(x = date, y = Value), size = 3, color = "red") +
+  labs(
+    title = "Mid Correlation Variables",
+    x = "Date",
+    y = "Ridership",
+    color = "Variable"
+  ) +
+  scale_y_continuous(labels = scales::comma) +
+  theme_minimal()
+
+
+
+```
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+# Low Correlation Plot
+low_data <- data_long %>% filter(Variable %in% low_corr)
+ggplot(low_data, aes(x = date, y = Value, color = Variable)) +
+  geom_line(size = 1) +
+  geom_point(data = latest_data %>% filter(Variable %in% low_corr),
+             aes(x = date, y = Value), size = 3, color = "red") +
+  labs(
+    title = "Low Correlation Variables",
+    x = "Date",
+    y = "Ridership",
+    color = "Variable"
+  ) +
+  scale_y_continuous(labels = scales::comma) +
+  theme_minimal()
+
+
+```
+
+
+### REGRESSION
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+# Load required libraries
+library(tidymodels)
+library(readxl)
+library(dplyr)
+library(purrr)
+library(ggplot2)
+library(broom)
+
+# Load the data
+file_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/docs/MTA_Agency_Wide_Data_For_R.xlsx"
+data <- read_excel(file_path, sheet = 1)
+
+# Inspect data structure
+glimpse(data)
+
+# Filter and select relevant columns
+data <- data %>%
+  filter(!is.na(Subway)) %>%
+  select(Date, Subway)
+
+# Convert 'Date' to numeric for modeling and add breakpoint indicator
+data <- data %>%
+  mutate(Date = as.numeric(as.Date(Date)),
+         Post_Breakpoint = ifelse(Date >= as.numeric(as.Date("2020-03-01")), 1, 0))
+
+# Define a piecewise regression formula
+piecewise_formula <- Subway ~ Date + Date:Post_Breakpoint + Post_Breakpoint
+
+# Bootstrap resampling
+set.seed(27)
+boots <- bootstraps(data, times = 2000, apparent = TRUE)
+
+# Define a helper function to fit the piecewise regression model
+fit_piecewise_on_bootstrap <- function(split) {
+  lm(piecewise_formula, data = analysis(split))
+}
+
+# Apply the function to bootstrap samples and extract coefficients
+boot_models <- boots %>%
+  mutate(model = map(splits, fit_piecewise_on_bootstrap),
+         coef_info = map(model, tidy))
+
+# Visualize uncertainty in the fitted piecewise model first
+boot_aug <- boot_models %>%
+  sample_n(200) %>%
+  mutate(augmented = map(model, augment)) %>%
+  unnest(augmented)
+
+ggplot(boot_aug, aes(x = Date, y = Subway)) +
+  geom_line(aes(y = .fitted, group = id), alpha = .2, col = "blue") +
+  geom_point(data = data, aes(x = Date, y = Subway), size = 1, color = "black") +
+  geom_vline(xintercept = as.numeric(as.Date("2020-03-01")), linetype = "dashed", col = "red") +
+  labs(title = "Uncertainty in Fitted Piecewise Model", x = "Date (Numeric)", y = "Subway Ridership") +
+  theme_minimal()
+
+# Fit the regression model on the full data
+reg_model <- lm(piecewise_formula, data = data)
+
+# Display regression summary next
+print(summary(reg_model))
+
+# Unnest coefficients to view all bootstrap results
+boot_coefs <- boot_models %>%
+  unnest(coef_info)
+
+# Plot bootstrap histograms after regression summary
+ggplot(boot_coefs, aes(estimate)) +
+  geom_histogram(bins = 30, fill = "blue", alpha = 0.6) +
+  facet_wrap(~ term, scales = "free") +
+  labs(title = "Bootstrap Coefficients with Confidence Intervals", x = "Coefficient Estimate", y = "Frequency")
+
+# Calculate confidence intervals using the percentile method
+percentile_intervals <- int_pctl(boot_models, coef_info)
+
+# Display the coefficient terms table last
+print(percentile_intervals)
+
+
+```
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+# Load required libraries
+library(readxl)
+library(dplyr)
+
+# Load the data
+file_path <- "C:/Users/alien/OneDrive/Documents/STA9750-2024-FALL/docs/MTA_Agency_Wide_Data_For_R.xlsx"
+data <- read_excel(file_path, sheet = 1)
+
+# Inspect data structure
+glimpse(data)
+
+# Filter and select relevant columns
+data <- data %>%
+  filter(!is.na(Subway)) %>%
+  select(Date, Subway)
+
+# Convert 'Date' to numeric for modeling and add breakpoint indicator
+data <- data %>%
+  mutate(
+    Date = as.numeric(as.Date(Date)),
+    Post_Breakpoint = ifelse(Date >= as.numeric(as.Date("2020-03-01")), 1, 0)
+  )
+
+# Save the prepared dataset
+saveRDS(data, file = "prepared_data.rds")
+
+
+
+
+```
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+# Load required libraries
+library(tidymodels)
+
+# Load prepared data
+data <- readRDS("prepared_data.rds")
+
+# Define a piecewise regression formula
+piecewise_formula <- Subway ~ Date + Date:Post_Breakpoint + Post_Breakpoint
+
+# Bootstrap resampling
+set.seed(27)
+boots <- bootstraps(data, times = 2000, apparent = TRUE)
+
+# Define a helper function to fit the piecewise regression model
+fit_piecewise_on_bootstrap <- function(split) {
+  lm(piecewise_formula, data = analysis(split))
+}
+
+# Apply the function to bootstrap samples
+boot_models <- boots %>%
+  mutate(
+    model = map(splits, fit_piecewise_on_bootstrap),
+    coef_info = map(model, tidy)
+  )
+
+# Save bootstrap models
+saveRDS(boot_models, file = "boot_models.rds")
+
+
+
+
+```
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+# Load required libraries
+library(ggplot2)
+library(dplyr)
+library(purrr)
+library(broom)
+
+# Load prepared data and bootstrap models
+data <- readRDS("prepared_data.rds")
+boot_models <- readRDS("boot_models.rds")
+
+# Visualize uncertainty in the fitted piecewise model
+boot_aug <- boot_models %>%
+  sample_n(200) %>%
+  mutate(augmented = map(model, augment)) %>%
+  unnest(augmented)
+
+ggplot(boot_aug, aes(x = Date, y = Subway)) +
+  geom_line(aes(y = .fitted, group = id), alpha = 0.2, col = "blue") +
+  geom_point(data = data, aes(x = Date, y = Subway), size = 1, color = "black") +
+  geom_vline(
+    xintercept = as.numeric(as.Date("2020-03-01")),
+    linetype = "dashed",
+    col = "red"
+  ) +
+  labs(
+    title = "Uncertainty in Fitted Piecewise Model",
+    x = "Date (Numeric)",
+    y = "Subway Ridership"
+  ) +
+  theme_minimal()
+
+
+
+
+```
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+
+# Load required libraries
+library(ggplot2)
+library(dplyr)
+
+# Load bootstrap models
+boot_models <- readRDS("boot_models.rds")
+
+# Unnest coefficients
+boot_coefs <- boot_models %>%
+  unnest(coef_info)
+
+# Plot bootstrap coefficients
+ggplot(boot_coefs, aes(estimate)) +
+  geom_histogram(bins = 30, fill = "blue", alpha = 0.6) +
+  facet_wrap(~ term, scales = "free") +
+  labs(
+    title = "Bootstrap Coefficients with Confidence Intervals",
+    x = "Coefficient Estimate",
+    y = "Frequency"
+  )
+
+# Save confidence intervals using the percentile method
+percentile_intervals <- int_pctl(boot_models, coef_info)
+write.csv(percentile_intervals, file = "percentile_intervals.csv")
+
+# Print the intervals
+print(percentile_intervals)
+
+
+
+
+```
+
+
+
+
+
+
+
